@@ -1,57 +1,29 @@
-<h1 align="center">MiMoCode</h1>
+# Apex Arc
 
-<p align="center">
-  <img src="assets/readme/mimocode-banner.png" alt="MiMoCode" width="700">
-</p>
-
-<p align="center"><strong>MiMo Code: Where Models and Agents Co-Evolve</strong></p>
+<p align="center"><strong>Apex Arc: Where Models and Agents Co-Evolve</strong></p>
 
 <p align="center">
   中文 | <a href="README.md">English</a>
 </p>
 
-<p align="center">
-  <a href="https://mimo.xiaomi.com/zh/mimocode">官网</a> | <a href="https://mimo.xiaomi.com/zh/blog/mimo-code-long-horizon">博客</a>
-</p>
-
 ---
 
-MiMoCode 是一个终端原生的 AI 编程助手。它能读写代码、执行命令、管理 Git，通过持久化记忆系统，在多次会话间保持对你项目的深度理解，并自我进化。
-
-内置 MiMo Auto 限时免费通道——零配置即可开始使用。也支持接入各家主流 LLM 厂商 API。
+Apex Arc 是一个终端原生的 AI 编程助手。它能读写代码、执行命令、管理 Git，通过持久化记忆系统，在多次会话间保持对你项目的深度理解，并自我进化。
 
 ---
 
 ## 快速开始
 
 ```bash
-# 一键安装（macOS / Linux）
-curl -fsSL https://mimo.xiaomi.com/install | bash
-
-# 或通过 npm 安装（全平台）
+# 通过 npm 安装（全平台）
 # 镜像源（如 cnpm/淘宝源）平台包同步可能滞后，建议使用官方源
-npm install -g @mimo-ai/cli --registry https://registry.npmjs.org
+npm install -g @apex-arc/cli --registry https://registry.npmjs.org
 
 # 运行
-mimo
+apex-arc
 ```
-
-<details>
-<summary><strong>Windows 新安装方式 (beta)</strong></summary>
-
-PowerShell 一行式安装，安装到 `%USERPROFILE%\.mimocode\bin` 并自动添加到用户 PATH：
-
-```powershell
-powershell -ep Bypass -c "irm https://mimo.xiaomi.com/install.ps1 | iex"
-```
-
-**注意：** 使用此方式安装 0.1.5 之前的版本将导致 `mimo upgrade` 无法正常工作。如需使用旧版本，请通过 npm 安装。0.1.5 发布后此方式将成为 Windows 推荐安装方式。
-
-</details>
 
 首次启动自动引导配置。支持：
-- **MiMo Auto（限时免费）** — 匿名通道，零配置
-- **小米 MiMo 平台** — OAuth 登录
 - **从 Claude Code 导入** — 一键迁移已有认证
 - **自定义 Provider** — TUI 内添加任意 OpenAI 兼容 API
 
@@ -68,7 +40,7 @@ sudo apt install xsel
 <summary><strong>Windows：shell 输出中文（CJK）乱码</strong></summary>
 
 在系统区域为非 UTF-8 的 Windows 上（如简体中文，活动代码页为 936/GBK），命令输出里的
-中日韩字符可能显示为乱码。MiMoCode 已为 PowerShell/cmd 子进程强制开启 UTF-8 输出。
+中日韩字符可能显示为乱码。Apex Arc 已为 PowerShell/cmd 子进程强制开启 UTF-8 输出。
 如果在尚未覆盖的场景下仍遇到乱码，可以开启 Windows 的系统级 UTF-8 支持：
 
 **设置 → 时间和语言 → 语言和区域 → 管理语言设置 → 更改系统区域设置 →
@@ -77,14 +49,6 @@ sudo apt install xsel
 这会把活动代码页（ACP）切换为 UTF-8（65001），所有程序都生效，子进程不再继承旧代码页。
 注意这是系统级 Beta 开关，可能导致部分老的非 Unicode 程序显示异常，建议作为临时方案。
 </details>
-
----
-
-## MiMo 生态
-
-除了 MiMoCode，小米 MiMo 模型也能在 Cursor、Cline、Zed 等各种 Agent 和编程工具里使用。
-
-**[awesome-mimo-agent](https://github.com/XiaomiMiMo/awesome-mimo-agent)** 收集了这些工具接入 MiMo 模型的配置教程，想换个工具试试 MiMo 的话可以去看看。也欢迎把你自己的接入方式提 PR 分享出来。
 
 ---
 
@@ -133,79 +97,6 @@ sudo apt install xsel
 
 Compose 模式提供结构化的 specs-driven 开发流程，内置规划、执行、代码审查、TDD、调试、验证、合并等技能——编排从 spec 到交付的完整开发生命周期。
 
-### 语音输入
-
-基于 TenVAD 和 MiMo ASR 的实时流式语音输入。通过 `/voice` 激活，按停顿分片转写，文本逐段追加到输入框。仅对 MiMo 登录用户可用。需要安装 `sox`（macOS 上 `brew install sox`，其他平台类似）。
-
-<details>
-<summary><strong>WSLg 音频配置</strong></summary>
-
-```bash
-sudo apt install -y sox pulseaudio libasound2-plugins
-export PULSE_SERVER=unix:/mnt/wslg/PulseServer
-```
-</details>
-
-<details>
-<summary><strong>SSH 远程音频（Mac → 远程主机）</strong></summary>
-
-```bash
-# Mac（本地）
-brew install pulseaudio
-pulseaudio --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1" --exit-idle-time=-1 --daemonize
-# 在 ~/.ssh/config 中添加: RemoteForward 4713 127.0.0.1:4713
-
-# 远程主机
-apt install -y pulseaudio pulseaudio-utils sox
-export PULSE_SERVER=tcp:127.0.0.1:4713
-# 验证: pactl info
-```
-</details>
-
-<details>
-<summary><strong>非 MiMo 渠道语音输入（OpenRouter、内部 API 等）</strong></summary>
-
-语音输入可通过 `voice` 配置字段路由到其他 OpenAI 兼容 provider。ASR 模型（`mimo-v2.5-asr`）仅在 MiMo 平台可用；语音控制模式（`mimo-v2.5`）可通过 OpenRouter 等中转平台使用。
-
-**OpenRouter（仅语音控制）：**
-
-使用 `/connect` 连接 OpenRouter 后，只需在配置中添加：
-```jsonc
-{
-  "voice": {
-    "control_model": "openrouter/xiaomi/mimo-v2.5"
-  }
-}
-```
-
-**内部 / 自建中转平台（ASR + 语音控制）：**
-```jsonc
-{
-  "provider": {
-    "internal": {
-      "options": {
-        "baseURL": "https://your-api-gateway.example.com/v1",
-        "apiKey": "sk-..."
-      },
-      "models": {
-        "xiaomi/mimo-v2.5-asr": { "name": "MiMo-V2.5-ASR" },
-        "xiaomi/mimo-v2.5": { "name": "MiMo-V2.5" }
-      }
-    }
-  },
-  "voice": {
-    "asr_model": "internal/xiaomi/mimo-v2.5-asr",
-    "control_model": "internal/xiaomi/mimo-v2.5"
-  }
-}
-```
-
-自定义 provider 必须在 `models` 中注册至少一个模型才能被系统识别。`voice.*_model` 中的模型名直接传给 API，不必与注册的 key 完全一致。OpenRouter 等内置 provider 无需手动配置 models。
-
-> **注意**：自定义 provider 注册的模型会出现在主模型选择列表中。请勿将 ASR 专用模型（如 `mimo-v2.5-asr`）用作编程主模型。
-
-</details>
-
 ### Dream & Distill
 
 - **`/dream`** — 扫描近期会话轨迹，提取持久知识到项目记忆，清理过时条目
@@ -215,54 +106,30 @@ export PULSE_SERVER=tcp:127.0.0.1:4713
 
 ## 配置
 
-MiMoCode 使用 JSON/JSONC 配置文件，并提供 JSON Schema 以获得编辑器自动补全和校验。
+Apex Arc 使用 JSON/JSONC 配置文件，并提供 JSON Schema 以获得编辑器自动补全和校验。
 
 ### 文件位置
 
 | 文件 | 项目级 | 全局 |
 |------|--------|------|
-| 主配置 | `.mimocode/mimocode.jsonc` | `~/.config/mimocode/mimocode.json` |
-| TUI 配置 | `.mimocode/tui.json` | `~/.config/mimocode/tui.json` |
-| 认证凭据 | — | `~/.local/share/mimocode/auth.json` |
+| 主配置 | `.apex-arc/config.jsonc` | `~/.config/apex-arc/config.json` |
+| TUI 配置 | `.apex-arc/tui.json` | `~/.config/apex-arc/tui.json` |
+| 认证凭据 | — | `~/.local/share/apex-arc/auth.json` |
 
-> Windows 下 XDG 路径位于 `%LOCALAPPDATA%\mimocode\`。可通过 `MIMOCODE_HOME` 环境变量覆盖所有路径。
-
-### JSON Schema
-
-MiMoCode 在首次加载配置时会自动注入 `$schema` 字段，使编辑器开箱即获得补全和校验：
-
-| 配置文件 | Schema URL |
-|----------|-----------|
-| `mimocode.jsonc` / `mimocode.json` | `https://mimo.xiaomi.com/mimocode/config.json` |
-| `tui.json` | `https://mimo.xiaomi.com/mimocode/tui.json` |
-
-<details>
-<summary><strong>VS Code / Cursor：信任 Schema 域名</strong></summary>
-
-在 `settings.json` 中添加，使编辑器可以下载 Schema 以获得自动补全：
-
-```json
-{
-  "json.schemaDownload.trustedDomains": {
-    "https://mimo.xiaomi.com/": true
-  }
-}
-```
-
-</details>
+> Windows 下 XDG 路径位于 `%LOCALAPPDATA%\apex-arc\`。可通过 `ARC_HOME` 环境变量覆盖所有路径。
 
 <details>
 <summary><strong>数据目录</strong></summary>
 
-除配置文件外，MiMoCode 在 XDG 路径（或 `$MIMOCODE_HOME`）下存储运行时数据：
+除配置文件外，Apex Arc 在 XDG 路径（或 `$ARC_HOME`）下存储运行时数据：
 
 | 目录 | 默认路径（Linux） | 内容 |
 |------|------------------|------|
-| data | `~/.local/share/mimocode/` | SQLite 数据库、认证凭据（`auth.json`）、记忆、日志 |
-| state | `~/.local/state/mimocode/` | TUI 偏好设置（`kv.json`）、最近使用模型（`model.json`） |
-| cache | `~/.cache/mimocode/` | 语言服务器、缓存的模型目录、技能 |
+| data | `~/.local/share/apex-arc/` | SQLite 数据库、认证凭据（`auth.json`）、记忆、日志 |
+| state | `~/.local/state/apex-arc/` | TUI 偏好设置（`kv.json`）、最近使用模型（`model.json`） |
+| cache | `~/.cache/apex-arc/` | 语言服务器、缓存的模型目录、技能 |
 
-如需删除已存储的凭据，删除 data 目录下的 `auth.json` 即可。macOS 下 XDG data 默认为 `~/Library/Application Support/mimocode/`。
+如需删除已存储的凭据，删除 data 目录下的 `auth.json` 即可。macOS 下 XDG data 默认为 `~/Library/Application Support/apex-arc/`。
 
 </details>
 
@@ -280,14 +147,13 @@ Max Mode（并行 best-of-N 推理 + 裁判选优）可通过配置中的 `exper
 <summary><strong>允许访问系统临时目录（<code>/tmp</code>）</strong></summary>
 
 默认情况下，读写项目工作目录之外的文件会触发 `external_directory` 权限询问——系统临时目录也不例外。
-这是有意为之：MiMoCode 不会静默放宽权限，你始终掌控模型在项目之外能触碰什么。
+这是有意为之：Apex Arc 不会静默放宽权限，你始终掌控模型在项目之外能触碰什么。
 
 临时目录之所以经常被用到，是因为多数模型习惯把它当作临时工作空间（比如临时脚本、一次性数据文件）。
 如果你信任所处环境、不想每次都被询问，可以在配置中主动放行：
 
-```json title=".mimocode/mimocode.json"
+```json title=".apex-arc/config.json"
 {
-  "$schema": "https://mimo.xiaomi.com/mimocode/config.json",
   "permission": {
     "external_directory": {
       "/tmp/**": "allow"
@@ -296,7 +162,7 @@ Max Mode（并行 best-of-N 推理 + 裁判选优）可通过配置中的 `exper
 }
 ```
 
-**此设置存在已知风险——使用风险由你自行承担。** 临时目录对所有用户和进程可写，与机器上的其他进程
+**此设置存在已知风险——使用风险由你自行承担。** 临时目录对所有用户 and 进程可写，与机器上的其他进程
 共享。自动放行意味着模型无需确认即可在其中读写，这会扩大你对“可预测临时路径 / 软链替换”一类攻击的
 暴露面（例如其他进程提前把 `/tmp/foo` 创建为指向敏感文件的软链）。因此仅建议在单人、可控的环境或
 容器内使用。请尽量缩小放行范围。
@@ -317,19 +183,7 @@ bun turbo typecheck      # 类型检查
 
 ## 与 OpenCode 的关系
 
-MiMoCode 基于 [OpenCode](https://github.com/anomalyco/opencode) fork 构建，保留其全部核心能力（多 Provider、TUI、LSP、MCP、插件），并在此基础上构建了持久化记忆、智能上下文管理、子智能体编排、目标驱动的自主循环、Compose 工作流，以及通过 dream/distill 实现的自我进化。
-
----
-
-## 社区
-
-扫描二维码加入社区群聊：
-
-<p align="center">
-  <img src="assets/readme/community-qrcode-1.jpg" alt="社区群聊二维码 1" width="240">
-  &nbsp;&nbsp;
-  <img src="assets/readme/community-qrcode-2.jpg" alt="社区群聊二维码 2" width="240">
-</p>
+Apex Arc 基于 [OpenCode](https://github.com/anomalyco/opencode) fork 构建，保留其全部核心能力（多 Provider、TUI、LSP、MCP、插件），并在此基础上构建了持久化记忆、智能上下文管理、子智能体编排、目标驱动的自主循环、Compose 工作流，以及通过 dream/distill 实现的自我进化。
 
 ---
 
@@ -337,6 +191,4 @@ MiMoCode 基于 [OpenCode](https://github.com/anomalyco/opencode) fork 构建，
 
 源代码基于 [MIT 许可证](./LICENSE) 开源。
 
-使用 MiMoCode 还需遵守[使用限制](./USE_RESTRICTIONS.md)。
-使用小米 MiMo 托管服务须遵守 [MiMo 服务条款](https://platform.xiaomimimo.com/docs/terms/user-agreement)。
-使用 MiMo 名称、标志和商标须遵守 MiMo 商标政策。
+使用 Apex Arc 还需遵守[使用限制](./USE_RESTRICTIONS.md)。

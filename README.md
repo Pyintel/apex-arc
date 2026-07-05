@@ -1,57 +1,29 @@
-<h1 align="center">MiMoCode</h1>
+# Apex Arc
 
-<p align="center">
-  <img src="assets/readme/mimocode-banner.png" alt="MiMoCode" width="700">
-</p>
-
-<p align="center"><strong>MiMo Code: Where Models and Agents Co-Evolve</strong></p>
+<p align="center"><strong>Apex Arc: Where Models and Agents Co-Evolve</strong></p>
 
 <p align="center">
   <a href="README.zh.md">中文</a> | English
 </p>
 
-<p align="center">
-  <a href="https://mimo.xiaomi.com/coder">Website</a> | <a href="https://mimo.xiaomi.com/en/blog/mimo-code-long-horizon">Blog</a>
-</p>
-
 ---
 
-MiMoCode is a terminal-native AI coding assistant. It can read and write code, run commands, manage Git, and use a persistent memory system to keep a deep understanding of your project across sessions while continuously improving itself.
-
-MiMo Auto is built in as a free-for-limited-time channel, so you can start with zero configuration. MiMoCode also supports connecting to any mainstream LLM provider API.
+Apex Arc is a terminal-native AI coding assistant. It can read and write code, run commands, manage Git, and use a persistent memory system to keep a deep understanding of your project across sessions while continuously improving itself.
 
 ---
 
 ## Quick Start
 
 ```bash
-# One-line install (macOS / Linux)
-curl -fsSL https://mimo.xiaomi.com/install | bash
-
-# Or install via npm (all platforms)
+# Install via npm (all platforms)
 # Mirror registries (e.g. cnpm/taobao) may have delayed platform package sync
-npm install -g @mimo-ai/cli --registry https://registry.npmjs.org
+npm install -g @apex-arc/cli --registry https://registry.npmjs.org
 
 # Run
-mimo
+apex-arc
 ```
-
-<details>
-<summary><strong>Windows native install (beta)</strong></summary>
-
-PowerShell one-liner that installs to `%USERPROFILE%\.mimocode\bin` and adds to User PATH:
-
-```powershell
-powershell -ep Bypass -c "irm https://mimo.xiaomi.com/install.ps1 | iex"
-```
-
-**Note:** Installing versions prior to 0.1.5 with this method will cause `mimo upgrade` to not function. If you need to use an older version, please install via npm instead. Once 0.1.5+ is available, this becomes the recommended install method for Windows.
-
-</details>
 
 The first launch guides you through configuration automatically. Supported options:
-- **MiMo Auto (free for a limited time)** — anonymous channel, zero configuration
-- **Xiaomi MiMo Platform** — OAuth login
 - **Import from Claude Code** — migrate existing authentication in one step
 - **Custom Provider** — add any OpenAI-compatible API in the TUI
 
@@ -68,7 +40,7 @@ sudo apt install xsel
 <summary><strong>Windows: garbled CJK (Chinese/Japanese/Korean) output in the shell</strong></summary>
 
 On Windows with a non-UTF-8 system locale (e.g. zh-CN, whose active code page is 936/GBK),
-command output containing CJK characters may appear garbled (mojibake). MiMoCode forces
+command output containing CJK characters may appear garbled (mojibake). Apex Arc forces
 UTF-8 output for spawned PowerShell/cmd subprocesses. If you still encounter garbled output
 in cases this does not yet cover, enable Windows' system-wide UTF-8 support:
 
@@ -80,14 +52,6 @@ This switches the active code page (ACP) to UTF-8 (65001) for all programs, so s
 no longer inherit the legacy code page. Note it is a system-wide Beta toggle and may cause
 some older non-Unicode programs to display incorrectly, so treat it as a workaround.
 </details>
-
----
-
-## MiMo Ecosystem
-
-Beyond MiMoCode, Xiaomi MiMo models also work in other agents and coding tools like Cursor, Cline, and Zed.
-
-**[awesome-mimo-agent](https://github.com/XiaomiMiMo/awesome-mimo-agent)** collects setup guides for using MiMo in those tools — worth a look if you want to try MiMo elsewhere. Contributions welcome: open a PR to add your own setup.
 
 ---
 
@@ -136,79 +100,6 @@ The `/goal` command sets a stopping condition for a session. When the agent trie
 
 Compose mode provides a structured workflow for specs-driven development. It includes built-in skills for planning, execution, code review, TDD, debugging, verification, and merging — orchestrating the full lifecycle from spec to shipped code.
 
-### Voice Input
-
-Real-time streaming voice input powered by TenVAD and MiMo ASR. Activate with `/voice`, then speak — audio is segmented by pauses and transcribed incrementally into the input. Available for MiMo logged-in users. Requires `sox` (`brew install sox` on macOS, other platforms similar).
-
-<details>
-<summary><strong>WSLg audio setup</strong></summary>
-
-```bash
-sudo apt install -y sox pulseaudio libasound2-plugins
-export PULSE_SERVER=unix:/mnt/wslg/PulseServer
-```
-</details>
-
-<details>
-<summary><strong>SSH remote audio (Mac → remote host)</strong></summary>
-
-```bash
-# Mac (local)
-brew install pulseaudio
-pulseaudio --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1" --exit-idle-time=-1 --daemonize
-# Add to ~/.ssh/config: RemoteForward 4713 127.0.0.1:4713
-
-# Remote host
-apt install -y pulseaudio pulseaudio-utils sox
-export PULSE_SERVER=tcp:127.0.0.1:4713
-# Verify: pactl info
-```
-</details>
-
-<details>
-<summary><strong>Non-MiMo voice providers (OpenRouter, internal API, etc.)</strong></summary>
-
-Voice input can route through other OpenAI-compatible providers via the `voice` config field. The ASR model (`mimo-v2.5-asr`) is only available on MiMo's platform; voice control mode (`mimo-v2.5`) is available on OpenRouter and compatible relay platforms.
-
-**OpenRouter (voice control only):**
-
-Use `/connect` to sign in to OpenRouter, then add to your config:
-```jsonc
-{
-  "voice": {
-    "control_model": "openrouter/xiaomi/mimo-v2.5"
-  }
-}
-```
-
-**Internal / self-hosted relay (both ASR and voice control):**
-```jsonc
-{
-  "provider": {
-    "internal": {
-      "options": {
-        "baseURL": "https://your-api-gateway.example.com/v1",
-        "apiKey": "sk-..."
-      },
-      "models": {
-        "xiaomi/mimo-v2.5-asr": { "name": "MiMo-V2.5-ASR" },
-        "xiaomi/mimo-v2.5": { "name": "MiMo-V2.5" }
-      }
-    }
-  },
-  "voice": {
-    "asr_model": "internal/xiaomi/mimo-v2.5-asr",
-    "control_model": "internal/xiaomi/mimo-v2.5"
-  }
-}
-```
-
-Custom providers must register at least one model in their `models` field to be recognized. The model names in `voice.*_model` are sent directly to the API — they don't need to match the registered model keys exactly.
-
-> **Note:** Models registered under a custom provider will appear in the model selection list. Don't use ASR-only models (e.g. `mimo-v2.5-asr`) as your primary coding model.
-
-</details>
-
 ### Dream & Distill
 
 - **`/dream`** — scans recent session traces, extracts persistent knowledge into project memory, and removes outdated entries
@@ -218,54 +109,30 @@ Custom providers must register at least one model in their `models` field to be 
 
 ## Configuration
 
-MiMoCode uses JSON/JSONC config files with published JSON Schemas for autocompletion and validation.
+Apex Arc uses JSON/JSONC config files with published JSON Schemas for autocompletion and validation.
 
 ### File Locations
 
 | File | Project-level | Global |
 |------|--------------|--------|
-| Main config | `.mimocode/mimocode.jsonc` | `~/.config/mimocode/mimocode.json` |
-| TUI config | `.mimocode/tui.json` | `~/.config/mimocode/tui.json` |
-| Auth credentials | — | `~/.local/share/mimocode/auth.json` |
+| Main config | `.apex-arc/config.jsonc` | `~/.config/apex-arc/config.json` |
+| TUI config | `.apex-arc/tui.json` | `~/.config/apex-arc/tui.json` |
+| Auth credentials | — | `~/.local/share/apex-arc/auth.json` |
 
-> On Windows, XDG paths fall under `%LOCALAPPDATA%\mimocode\`. You can override all paths with `MIMOCODE_HOME`.
-
-### JSON Schemas
-
-MiMoCode auto-injects a `$schema` field when it first loads your config, so your editor gets completions and validation out of the box:
-
-| Config | Schema URL |
-|--------|-----------|
-| `mimocode.jsonc` / `mimocode.json` | `https://mimo.xiaomi.com/mimocode/config.json` |
-| `tui.json` | `https://mimo.xiaomi.com/mimocode/tui.json` |
-
-<details>
-<summary><strong>VS Code / Cursor: trust the schema domain</strong></summary>
-
-Add to your `settings.json` so the editor can download schemas for autocompletion:
-
-```json
-{
-  "json.schemaDownload.trustedDomains": {
-    "https://mimo.xiaomi.com/": true
-  }
-}
-```
-
-</details>
+> On Windows, XDG paths fall under `%LOCALAPPDATA%\apex-arc\`. You can override all paths with `ARC_HOME`.
 
 <details>
 <summary><strong>Data directories</strong></summary>
 
-Beyond config files, MiMoCode stores runtime data under XDG paths (or `$MIMOCODE_HOME`):
+Beyond config files, Apex Arc stores runtime data under XDG paths (or `$ARC_HOME`):
 
 | Directory | Default (Linux) | Contents |
 |-----------|----------------|----------|
-| data | `~/.local/share/mimocode/` | SQLite database, auth credentials (`auth.json`), memory, logs |
-| state | `~/.local/state/mimocode/` | TUI preferences (`kv.json`), recent models (`model.json`) |
-| cache | `~/.cache/mimocode/` | Language servers, cached model catalog, skills |
+| data | `~/.local/share/apex-arc/` | SQLite database, auth credentials (`auth.json`), memory, logs |
+| state | `~/.local/state/apex-arc/` | TUI preferences (`kv.json`), recent models (`model.json`) |
+| cache | `~/.cache/apex-arc/` | Language servers, cached model catalog, skills |
 
-To remove stored credentials, delete `auth.json` from the data directory. On macOS, XDG data defaults to `~/Library/Application Support/mimocode/`.
+To remove stored credentials, delete `auth.json` from the data directory. On macOS, XDG data defaults to `~/Library/Application Support/apex-arc/`.
 
 </details>
 
@@ -284,16 +151,15 @@ Max Mode (parallel best-of-N reasoning with judge selection) can be enabled via 
 
 By default, reading or writing files outside the project working directory triggers an
 `external_directory` permission prompt — including the system temp directory. This is
-intentional: MiMoCode does not silently widen permissions, so you stay in control of what
+intentional: Apex Arc does not silently widen permissions, so you stay in control of what
 the model can touch outside your project.
 
 The temp directory comes up often because most models reach for it as scratch space (e.g.
 a quick script, a throwaway data file). If you trust your environment and would rather not
 be prompted each time, you can opt in by allowing it in your config:
 
-```json title=".mimocode/mimocode.json"
+```json title=".apex-arc/config.json"
 {
-  "$schema": "https://mimo.xiaomi.com/mimocode/config.json",
   "permission": {
     "external_directory": {
       "/tmp/**": "allow"
@@ -325,19 +191,7 @@ bun turbo typecheck      # Type check
 
 ## Relationship to OpenCode
 
-MiMoCode is built as a fork of [OpenCode](https://github.com/anomalyco/opencode). It keeps all core OpenCode capabilities (multiple providers, TUI, LSP, MCP, plugins) and adds persistent memory, intelligent context management, subagent orchestration, goal-driven autonomous loops, compose workflows, and self-improvement via dream/distill.
-
----
-
-## Community
-
-Scan the QR code to join the community group chat:
-
-<p align="center">
-  <img src="assets/readme/community-qrcode-1.jpg" alt="Community group chat QR code 1" width="240">
-  &nbsp;&nbsp;
-  <img src="assets/readme/community-qrcode-2.jpg" alt="Community group chat QR code 2" width="240">
-</p>
+Apex Arc is built as a fork of [OpenCode](https://github.com/anomalyco/opencode). It keeps all core OpenCode capabilities (multiple providers, TUI, LSP, MCP, plugins) and adds persistent memory, intelligent context management, subagent orchestration, goal-driven autonomous loops, compose workflows, and self-improvement via dream/distill.
 
 ---
 
@@ -345,6 +199,4 @@ Scan the QR code to join the community group chat:
 
 Source code is licensed under the [MIT License](./LICENSE).
 
-Use of MiMoCode is also subject to the [Use Restrictions](./USE_RESTRICTIONS.md).
-Use of Xiaomi MiMo-hosted services is subject to the [MiMo Terms of Service](https://platform.xiaomimimo.com/docs/terms/user-agreement).
-Use of the MiMo name, logo, and trademarks is subject to the MiMo Trademark Policy.
+Use of Apex Arc is also subject to the [Use Restrictions](./USE_RESTRICTIONS.md).
