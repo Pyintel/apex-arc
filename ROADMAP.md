@@ -49,3 +49,52 @@ This document outlines the detailed breakdown, technical specifications, and pri
 ### 10. Local Preference Learning & Custom Code Style Linters
 *   **Why:** Aligns code conventions automatically.
 *   **Spec:** A vector-based local profile registry that tracks user instructions/corrections (e.g., "always use standard import order") and injects them as custom system directives.
+
+---
+
+## Phase 5: Advanced JARVIS Engineering Capabilities
+
+### 11. Live Debugger & Runtime State Attachment
+*   **Why:** Eliminates guesswork debugging by allowing runtime inspection.
+*   **Spec:** Ability to attach to a running process (Node, Python, Go, etc.) via inspector protocols, set dynamic breakpoints, inspect the live call stack, query variable states in memory, and hot-patch code in memory.
+
+### 12. Linter & Compiler Loop Stream (Auto-Fixer)
+*   **Why:** Keeps codebase clean and fixes warnings before they compile.
+*   **Spec:** Event-driven background process connected to tools like `eslint`, `tsc`, or `rustc`. Streams compiler warnings in real-time and prepares auto-fix patches.
+
+### 13. Autonomous Performance & Load Profiler
+*   **Why:** Catches performance regression and hot-spots before deployment.
+*   **Spec:** Run performance benchmarks, flame graphs, and load tests (like `k6` or `clinic.js`) on new endpoints or modified functions and flag latency issues.
+
+### 14. Self-Healing Test Suite & Flaky Test Detector
+*   **Why:** Assures high quality test suites and eliminates flaky test runs.
+*   **Spec:** Run tests repeatedly under different environment parameters/seeds to isolate race conditions and dynamically generate proposed fixes for tests or modules.
+
+### 15. Visual DOM Inspector & Design-Token Aligner
+*   **Why:** Verifies visual interface logic against strict design systems.
+*   **Spec:** Parse DOM trees, computed styles, and compare them against styling guidelines (Tailwind configs/tokens) to highlight responsive design bugs and layout bugs.
+
+---
+
+## Phase 6: Hardware Co-Pilot & Physical Computing
+
+### 16. Serial Port & Board Auto-Discovery (`hw_list_devices`)
+*   **Why:** Auto-configures flash/serial channels without user intervention.
+*   **Spec:** Interface with the host USB/Serial controller (using `serialport` or system binaries) to auto-detect Vendor/Product IDs and match connected microcontrollers (ESP32, Arduino, Pico).
+
+### 17. Native Compiler & Burner Tool (`hw_flash`)
+*   **Why:** Compiles and flashes code to target silicon natively.
+*   **Spec:** Direct wrappers for compilation and binary flashing tools (`arduino-cli compile --upload`, `esptool.py`, CircuitPython/MicroPython mass-storage code copy/sync).
+
+### 18. Interactive Serial Monitor & WebREPL (`hw_serial_monitor`)
+*   **Why:** Critical for diagnostics, runtime exceptions, and interacting with board-level CLI systems.
+*   **Spec:** Establish duplex serial connections at custom bauds (9600, 115200) to stream print statements and capture exceptions. Integrates with MicroPython/CircuitPython REPL to run commands on-the-fly.
+
+### 19. Wokwi Simulator Sandbox (Virtual Verification)
+*   **Why:** Acts as a safe verification suite, protecting microcontrollers from flash wear and bad pin configurations.
+*   **Spec:** Integration with local headless emulator setups (like Wokwi CLI) to verify pin layouts, logic flows, and hardware bus protocols (I2C, SPI) before writing code to physical chips.
+
+### 20. Multimodal Vision Feedback ("The Camera Hook")
+*   **Why:** Direct visual confirmation of physical board state.
+*   **Spec:** Pull webcam snaps from the developer's workstation to visually inspect LEDs, screens, or wiring configurations and troubleshoot hardware issues.
+

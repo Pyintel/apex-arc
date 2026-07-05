@@ -18,6 +18,31 @@ import { WriteTool } from "./write"
 import { NotebookEditTool } from "./notebook-edit"
 import { InvalidTool } from "./invalid"
 import { SkillTool } from "./skill"
+import { ClipboardCopyTool, ClipboardPasteTool } from "./clipboard"
+import {
+  PdfMergeTool,
+  PdfSplitTool,
+  PdfRotateTool,
+  PdfSearchTool,
+  MarkdownToPdfTool,
+  ReadPptxTool,
+  ReadDocxTool,
+  VideoTrimTool,
+  VideoMergeTool,
+  VideoSpeedTool,
+  VideoVolumeTool,
+  AudioTrimTool,
+  AudioMergeTool,
+  AudioSpeedTool,
+  AudioVolumeTool,
+  AudioReverseTool,
+  ConvertImageTool,
+  ConvertAudioTool,
+  ConvertVideoTool,
+  GithubListReposTool,
+  GithubRenameRepoTool,
+  BundleCodebaseTool,
+} from "./agent-tools-wrapper"
 import * as Tool from "./tool"
 import { Config } from "../config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@mimo-ai/plugin"
@@ -149,6 +174,30 @@ export const layer = Layer.effect(
     const crontool = yield* CronTool
     const sessiontool = yield* SessionTool
     const workflowtool = yield* WorkflowTool
+    const clipboardcopytool = yield* ClipboardCopyTool
+    const clipboardpastetool = yield* ClipboardPasteTool
+    const pdfmergetool = yield* PdfMergeTool
+    const pdfsplittool = yield* PdfSplitTool
+    const pdfrotatetool = yield* PdfRotateTool
+    const pdfsearchtool = yield* PdfSearchTool
+    const markdowntopdftool = yield* MarkdownToPdfTool
+    const readpptxtool = yield* ReadPptxTool
+    const readdoxtool = yield* ReadDocxTool
+    const videotrimtool = yield* VideoTrimTool
+    const videomergetool = yield* VideoMergeTool
+    const videospeedtool = yield* VideoSpeedTool
+    const videovolumetool = yield* VideoVolumeTool
+    const audiotrimtool = yield* AudioTrimTool
+    const audiomergetool = yield* AudioMergeTool
+    const audiospeedtool = yield* AudioSpeedTool
+    const audiovolumetool = yield* AudioVolumeTool
+    const audioreversetool = yield* AudioReverseTool
+    const convertimagetool = yield* ConvertImageTool
+    const convertaudiotool = yield* ConvertAudioTool
+    const convertvideotool = yield* ConvertVideoTool
+    const githublistrepostool = yield* GithubListReposTool
+    const githubrenamerepotool = yield* GithubRenameRepoTool
+    const bundlecodebasetool = yield* BundleCodebaseTool
     const agent = yield* Agent.Service
 
     const state = yield* InstanceState.make<State>(
@@ -238,6 +287,30 @@ export const layer = Layer.effect(
           cron: Tool.init(crontool),
           session: Tool.init(sessiontool),
           workflow: Tool.init(workflowtool),
+          clipboardcopy: Tool.init(clipboardcopytool),
+          clipboardpaste: Tool.init(clipboardpastetool),
+          pdfmerge: Tool.init(pdfmergetool),
+          pdfsplit: Tool.init(pdfsplittool),
+          pdfrotate: Tool.init(pdfrotatetool),
+          pdfsearch: Tool.init(pdfsearchtool),
+          markdowntopdf: Tool.init(markdowntopdftool),
+          readpptx: Tool.init(readpptxtool),
+          readdocx: Tool.init(readdoxtool),
+          videotrim: Tool.init(videotrimtool),
+          videomerge: Tool.init(videomergetool),
+          videospeed: Tool.init(videospeedtool),
+          videovolume: Tool.init(videovolumetool),
+          audiotrim: Tool.init(audiotrimtool),
+          audiomerge: Tool.init(audiomergetool),
+          audiospeed: Tool.init(audiospeedtool),
+          audiovolume: Tool.init(audiovolumetool),
+          audioreverse: Tool.init(audioreversetool),
+          convertimage: Tool.init(convertimagetool),
+          convertaudio: Tool.init(convertaudiotool),
+          convertvideo: Tool.init(convertvideotool),
+          githublistrepos: Tool.init(githublistrepostool),
+          githubrenamerepo: Tool.init(githubrenamerepotool),
+          bundlecodebase: Tool.init(bundlecodebasetool),
         })
 
         return {
@@ -265,6 +338,30 @@ export const layer = Layer.effect(
             tool.memory,
             tool.history,
             tool.task,
+            tool.clipboardcopy,
+            tool.clipboardpaste,
+            tool.pdfmerge,
+            tool.pdfsplit,
+            tool.pdfrotate,
+            tool.pdfsearch,
+            tool.markdowntopdf,
+            tool.readpptx,
+            tool.readdocx,
+            tool.videotrim,
+            tool.videomerge,
+            tool.videospeed,
+            tool.videovolume,
+            tool.audiotrim,
+            tool.audiomerge,
+            tool.audiospeed,
+            tool.audiovolume,
+            tool.audioreverse,
+            tool.convertimage,
+            tool.convertaudio,
+            tool.convertvideo,
+            tool.githublistrepos,
+            tool.githubrenamerepo,
+            tool.bundlecodebase,
             ...(Flag.ARC_EXPERIMENTAL_CRON ? [tool.cron] : []),
             ...(Flag.ARC_EXPERIMENTAL_ORCHESTRATOR ? [tool.session] : []),
             ...(Flag.ARC_EXPERIMENTAL_WORKFLOW_TOOL ? [tool.workflow] : []),
