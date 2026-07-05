@@ -2,9 +2,7 @@
 
 <p align="center"><strong>Apex Arc: Where Models and Agents Co-Evolve</strong></p>
 
-<p align="center">
-  <a href="README.zh.md">中文</a> | English
-</p>
+
 
 ---
 
