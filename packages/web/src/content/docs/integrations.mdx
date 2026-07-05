@@ -1,0 +1,24 @@
+---
+title: Integrations Archive
+description: Removed connectors and server integrations for the 9Router-only build.
+---
+
+This build keeps a single bundled connector, **9Router**. Everything else that used to be connected from the app is archived here for reference.
+
+## Archived connector families
+
+### Model providers
+
+Previously bundled provider integrations included Anthropic, OpenAI, Azure OpenAI, Amazon Bedrock, OpenRouter, GitHub Copilot, GitLab, Cloudflare, Vercel, Google, Mistral, Cohere, Perplexity, xAI, and other third-party provider adapters.
+
+### MCP servers
+
+The app previously supported local and remote MCP servers, including OAuth-enabled servers and Claude Code compatibility imports.
+
+### Custom connectors
+
+There were also custom provider/login flows for adding third-party connectors at runtime.
+
+## Re-enabling a connector
+
+For a custom build, re-add the provider or MCP configuration in your local config and restore the relevant plugin/auth wiring in the app. The Helix-only build keeps those surfaces out of the UI by default.
