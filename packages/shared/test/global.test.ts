@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import path from "path"
-import { resolveApexArcHome } from "@apex-arc/shared/global"
+import { resolveApexArcHome } from "@mimo-ai/shared/global"
 
 describe("resolveApexArcHome", () => {
   test("with ARC_HOME set, resolves 4 subdirs under root", () => {
