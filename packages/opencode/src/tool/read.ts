@@ -1,3 +1,4 @@
+import { treeshake } from "../util/treeshake"
 import z from "zod"
 import { Effect, Option, Scope } from "effect"
 import { createReadStream } from "fs"
@@ -24,6 +25,7 @@ const SAMPLE_BYTES = 4096
 const parameters = z.object({
   file_path: z.string().describe("The absolute path to the file or directory to read"),
   offset: z.coerce.number().describe("The line number to start reading from (1-indexed)").optional(),
+  treeshake: z.boolean().describe("Whether to treeshake the file (elide function bodies for context efficiency)").optional(),
   limit: z.coerce.number().describe("The maximum number of lines to read (defaults to 2000)").optional(),
 })
 
@@ -290,9 +292,31 @@ export const ReadTool = Tool.define(
         return yield* Effect.fail(new Error(`Cannot read binary file: ${filepath}`))
       }
 
-      const file = yield* Effect.promise(() =>
+      let file = yield* Effect.promise(() =>
         lines(filepath, { limit: params.limit ?? DEFAULT_READ_LIMIT, offset: params.offset ?? 1 }),
       )
+
+      if (params.treeshake) {
+        // To treeshake properly, we need the whole file, but lines() might have cut it.
+        // If we want a treeshaked skeleton, it's usually small enough to fit.
+        // Let's read the full file, treeshake it, and replace `file.raw` with the lines of the skeleton.
+        const fullBytes = yield* fs.readFile(filepath)
+        const fullText = Buffer.from(fullBytes).toString("utf-8")
+        const shakedText = treeshake(filepath, fullText)
+        const shakedLines = shakedText.split("\n")
+
+        const offset = params.offset ?? 1
+        const start = offset - 1
+        const limit = params.limit ?? DEFAULT_READ_LIMIT
+
+        file = {
+          raw: shakedLines.slice(start, start + limit),
+          count: shakedLines.length,
+          cut: false, // We're not doing byte-length cutting on the skeleton for simplicity here
+          more: start + limit < shakedLines.length,
+          offset: offset
+        }
+      }
       if (file.count < file.offset && !(file.count === 0 && file.offset === 1)) {
         return yield* Effect.fail(
           new Error(`Offset ${file.offset} is out of range for this file (${file.count} lines)`),
