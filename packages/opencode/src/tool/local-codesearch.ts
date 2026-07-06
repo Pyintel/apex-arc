@@ -98,3 +98,23 @@ export const execute = Effect.fn("LocalCodeSearchTool")(function* (input: z.infe
 
   return output
 })
+
+export const LocalCodeSearchTool = Tool.define(
+  "local_codesearch",
+  Effect.gen(function* () {
+    return {
+      description,
+      parameters,
+      execute: (params: z.infer<typeof parameters>, ctx: Tool.Context) =>
+        Effect.gen(function* () {
+          const output = yield* execute(params)
+          return {
+            title: "local_codesearch",
+            metadata: {},
+            output,
+          }
+        }),
+    }
+  })
+)
+

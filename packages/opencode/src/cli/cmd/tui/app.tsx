@@ -42,6 +42,7 @@ import { DialogAgent } from "@tui/component/dialog-agent"
 import { DialogSessionList } from "@tui/component/dialog-session-list"
 import { DialogWorkflows } from "@tui/component/dialog-workflows"
 import { DialogConsoleOrg } from "@tui/component/dialog-console-org"
+import { DialogModules } from "@tui/component/dialog-modules"
 import { KeybindProvider, useKeybind } from "@tui/context/keybind"
 import { ThemeProvider, useTheme } from "@tui/context/theme"
 import { Home } from "@tui/routes/home"
@@ -807,6 +808,17 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       onSelect: () => {
         dialog.replace(() => <DialogHelp />)
+      },
+      category: "system",
+    },
+    {
+      title: "Install and manage modules",
+      value: "modules.list",
+      slash: {
+        name: "modules",
+      },
+      onSelect: () => {
+        dialog.replace(() => <DialogModules />)
       },
       category: "system",
     },

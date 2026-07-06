@@ -12,7 +12,7 @@ import { ActorTool } from "./actor"
 import { TaskTool } from "./task"
 import { CronTool } from "./cron"
 import { SessionTool } from "./session"
-import * as localcodesearchtool from "./local-codesearch"
+import { LocalCodeSearchTool } from "./local-codesearch"
 import { WorkflowTool } from "./workflow"
 import { WebFetchTool } from "./webfetch"
 import { WriteTool } from "./write"
@@ -57,6 +57,14 @@ import { CodeSearchTool } from "./codesearch"
 import { Flag } from "@/flag/flag"
 import { Log } from "@/util"
 import { LspTool } from "./lsp"
+import { HwListDevicesTool } from "./hw-list-devices"
+import { HwFlashTool } from "./hw-flash"
+import { HwSerialMonitorTool } from "./hw-serial-monitor"
+import { HwInspectDeviceTool } from "./hw-inspect-device"
+import { HwBoardRegistryTool } from "./hw-board-registry"
+import { WebFetchMarkdownTool } from "./web-fetch-markdown"
+import { HwReplInteractTool } from "./hw-repl-interact"
+import { HwPinoutDatasheetTool } from "./hw-pinout-datasheet"
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
 import { ChangeDirectoryTool } from "./change-directory"
@@ -161,6 +169,7 @@ export const layer = Layer.effect(
     const websearch = yield* WebSearchTool
     const bash = yield* BashTool
     const codesearch = yield* CodeSearchTool
+    const localcodesearchtool = yield* LocalCodeSearchTool
     const globtool = yield* GlobTool
     const writetool = yield* WriteTool
     const notebookedit = yield* NotebookEditTool
@@ -199,6 +208,14 @@ export const layer = Layer.effect(
     const githublistrepostool = yield* GithubListReposTool
     const githubrenamerepotool = yield* GithubRenameRepoTool
     const bundlecodebasetool = yield* BundleCodebaseTool
+    const hwlistdevicestool = yield* HwListDevicesTool
+    const hwflashtool = yield* HwFlashTool
+    const hwserialmonitortool = yield* HwSerialMonitorTool
+    const hwinspectdevicetool = yield* HwInspectDeviceTool
+    const hwboardregistrytool = yield* HwBoardRegistryTool
+    const webfetchmarkdowntool = yield* WebFetchMarkdownTool
+    const hwreplinteracttool = yield* HwReplInteractTool
+    const hwpinoutdatasheettool = yield* HwPinoutDatasheetTool
     const agent = yield* Agent.Service
 
     const state = yield* InstanceState.make<State>(
@@ -313,6 +330,14 @@ export const layer = Layer.effect(
           githublistrepos: Tool.init(githublistrepostool),
           githubrenamerepo: Tool.init(githubrenamerepotool),
           bundlecodebase: Tool.init(bundlecodebasetool),
+          hwlistdevices: Tool.init(hwlistdevicestool),
+          hwflash: Tool.init(hwflashtool),
+          hwserialmonitor: Tool.init(hwserialmonitortool),
+          hwinspectdevice: Tool.init(hwinspectdevicetool),
+          hwboardregistry: Tool.init(hwboardregistrytool),
+          webfetchmarkdown: Tool.init(webfetchmarkdowntool),
+          hwreplinteract: Tool.init(hwreplinteracttool),
+          hwpinoutdatasheet: Tool.init(hwpinoutdatasheettool),
         })
 
         return {
@@ -365,6 +390,14 @@ export const layer = Layer.effect(
             tool.githublistrepos,
             tool.githubrenamerepo,
             tool.bundlecodebase,
+            tool.hwlistdevices,
+            tool.hwflash,
+            tool.hwserialmonitor,
+            tool.hwinspectdevice,
+            tool.hwboardregistry,
+            tool.webfetchmarkdown,
+            tool.hwreplinteract,
+            tool.hwpinoutdatasheet,
             ...(Flag.ARC_EXPERIMENTAL_CRON ? [tool.cron] : []),
             ...(Flag.ARC_EXPERIMENTAL_ORCHESTRATOR ? [tool.session] : []),
             ...(Flag.ARC_EXPERIMENTAL_WORKFLOW_TOOL ? [tool.workflow] : []),
