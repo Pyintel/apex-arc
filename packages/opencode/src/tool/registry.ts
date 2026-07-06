@@ -12,6 +12,7 @@ import { ActorTool } from "./actor"
 import { TaskTool } from "./task"
 import { CronTool } from "./cron"
 import { SessionTool } from "./session"
+import * as localcodesearchtool from "./local-codesearch"
 import { WorkflowTool } from "./workflow"
 import { WebFetchTool } from "./webfetch"
 import { WriteTool } from "./write"
@@ -274,6 +275,7 @@ export const layer = Layer.effect(
           fetch: Tool.init(webfetch),
           search: Tool.init(websearch),
           code: Tool.init(codesearch),
+          local_codesearch: Tool.init(localcodesearchtool),
           skill: Tool.init(skilltool),
           patch: Tool.init(patchtool),
           changedir: Tool.init(changedirtool),
@@ -328,6 +330,7 @@ export const layer = Layer.effect(
             tool.actor,
             tool.fetch,
             tool.search,
+            tool.local_codesearch,
             tool.code,
             tool.skill,
             tool.patch,
