@@ -369,7 +369,7 @@ export function Autocomplete(props: {
     const results: AutocompleteOption[] = [...command.slashes()]
 
     for (const serverCommand of sync.data.command) {
-      if (serverCommand.source === "skill" && !Flag.MIMOCODE_ENABLE_SLASH_SKILLS) continue
+      if (serverCommand.source === "skill" && !Flag.ARC_ENABLE_SLASH_SKILLS) continue
       const label = serverCommand.source === "mcp" ? ":mcp" : ""
       results.push({
         display: "/" + serverCommand.name + label,

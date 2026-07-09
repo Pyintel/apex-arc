@@ -1852,7 +1852,7 @@ function TextPart(props: { last: boolean; part: TextPart; message: AssistantMess
     <Show when={props.part.text.trim()}>
       <box id={"text-" + props.part.id} paddingLeft={3} marginTop={1} flexShrink={0}>
         <Switch>
-          <Match when={Flag.MIMOCODE_EXPERIMENTAL_MARKDOWN}>
+          <Match when={Flag.ARC_EXPERIMENTAL_MARKDOWN}>
             <markdown
               syntaxStyle={syntax()}
               streaming={true}
@@ -1862,7 +1862,7 @@ function TextPart(props: { last: boolean; part: TextPart; message: AssistantMess
               bg={theme.background}
             />
           </Match>
-          <Match when={!Flag.MIMOCODE_EXPERIMENTAL_MARKDOWN}>
+          <Match when={!Flag.ARC_EXPERIMENTAL_MARKDOWN}>
             <code
               filetype="markdown"
               drawUnstyledText={false}

@@ -4,7 +4,7 @@ const BASE_URL = process.env.NINE_ROUTER_BASE_URL ?? process.env.PYINTEL_HELIX_B
 
 export async function HelixOnlyPlugin(_input: PluginInput): Promise<Hooks> {
   return {
-    config: (input) => {
+    config: async (input) => {
       input.enabled_providers ??= ["pyintel-helix"]
       input.provider ??= {}
       input.provider["pyintel-helix"] ??= {

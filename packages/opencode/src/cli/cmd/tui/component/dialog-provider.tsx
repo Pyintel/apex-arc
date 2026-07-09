@@ -41,11 +41,6 @@ export function createDialogProviderOptions() {
           footer: consoleManaged ? sync.data.console_state.activeOrgName : undefined,
           category: isPopularProvider(provider.id) ? "Popular" : "Other",
           gutter: connected ? <text fg={theme.success}>✓</text> : undefined,
-          description: provider.id === "pyintel-helix" ? "(API key)" : {
-            anthropic: "(API key)",
-            openai: "(ChatGPT Plus/Pro or API key)",
-            "opencode-go": "Low cost subscription for everyone",
-          }[provider.id],
           async onSelect() {
             if (consoleManaged) return
 

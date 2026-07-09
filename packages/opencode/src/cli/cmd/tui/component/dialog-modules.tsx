@@ -58,6 +58,7 @@ export function DialogModules() {
         } catch (err) {
           toast.show({
             message: `Failed to uninstall module: ${err instanceof Error ? err.message : String(err)}`,
+            variant: "error",
           })
         } finally {
           batch(() => {
