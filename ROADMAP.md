@@ -144,6 +144,90 @@ To make your CLI the definitive agentic tool for electronics development, you ne
 
 ### 27. `hw_pinout_datasheet` (Component Lookup)
 
+## Phase 8: Full‑Stack Robotics \u0026 Mechatronics Assistant (Professional Engineer Focus)
+
+### 1️⃣ Vision \u0026 Image Understanding
+- **Tool:** Vision‑capable model (e.g., CLIP‑Vision, Gemini‑Pro‑Vision, or local Ollama `llava`).
+- **Wrapper:** `process_image(path)` → JSON with OCR, diagram detection, component symbols.
+- **Why:** Read schematics, datasheet pin‑out diagrams, PCB photos, robot‑camera frames, and verify LED/wiring states.
+
+### 2️⃣ CAD / 3‑D Geometry
+- **OpenSCAD / CadQuery CLI wrapper** – script‑driven solid modeling, parametric part generation.
+- **FreeCAD Python API wrapper** – open/modify STEP, IGES, URDF, SDF; export meshes.
+- **Mesh analysis utility** – compute bounds, volume, triangle count, watertight check.
+- **Why:** Generate mechanical parts, inspect robot geometry, produce URDF meshes, and obtain mass properties for dynamics.
+
+### 3️⃣ URDF / SDF Handling
+- **URDF/SDF parser \u0026 validator** – output clean JSON, report missing tags, validate syntax.
+- **URDF → mesh exporter** – auto‑convert robot links to STL/OBJ for simulation.
+- **Why:** Core robot description format for ROS‑based kinematics, collision checking, and simulation.
+
+### 4️⃣ Electronic Design Automation (EDA)
+- **KiCad Python API wrapper** – open, edit, and run DRC/ERC on `.kicad_pro`, `.sch`, `.pcb`.
+- **SPICE runner** (ngspice) with waveform parser.
+- **Component‑lookup service** – Digi‑Key / Mouser / LCSC API client for part specs, pricing, stock.
+- **PDF → text/table extractor** (already have `pdf_official`).
+- **Why:** Automate schematic creation, simulate circuits, and fetch precise component data.
+
+### 5️⃣ Control Theory \u0026 Math
+- **Python runtime** with `numpy`, `scipy`, `control` (or `mathjs` fallback).
+- **Plotting tool** – matplotlib → PNG/SVG or Plotly server‑less.
+- **Why:** Design/verify state‑space models, PID tuning, Bode/step plots, and visualize control responses.
+
+### 6️⃣ Motor \u0026 Actuator Interfaces
+- **ODrive / VESC Python SDK wrapper** – flash, configure, read telemetry.
+- **CAN‑bus wrapper** (`python‑can`).
+- **PWM / Encoder I/O helpers** via `hw_repl_interact`.
+- **Why:** Tune high‑performance drives, capture real‑time motor data, and debug CAN networks.
+
+### 7️⃣ Sensor \u0026 DAQ Pipelines
+- **I2C / SPI helper** (REPL‑based commands).
+- **Serial‑sensor streaming** → CSV → plot.
+- **USB‑DAQ API** (e.g., `pydaqmx` or vendor SDKs).
+- **Why:** Acquire IMU, lidar, encoder, temperature, and custom sensor streams for analysis.
+
+### 8️⃣ Robotics Software Stack
+- **ROS 2 CLI wrapper** – `ros2 launch`, `ros2 topic echo`, `colcon build`.
+- **ROS 2 bag parser** – SQLite → CSV/JSON.
+- **MoveIt! / OMPL planner wrapper** – request trajectories, retrieve waypoints.
+- **Gazebo / Ignition headless launch** – run physics sims, export sensor data.
+- **Why:** Full end‑to‑end robot software development, simulation, and motion planning.
+
+### 9️⃣ Simulation \u0026 Verification
+- **Wokwi / QEMU MCU emulator** – run firmware virtually, verify pin‑mux and bus logic.
+- **PyBullet / MuJoCo headless physics engine** – test kinematics, dynamics, collision.
+- **Why:** Safe verification without flashing hardware, catch bugs early.
+
+### 🔟 Data Handling \u0026 Reporting
+- **CSV / Excel (`xlsx_official`) import/export** – BOMs, calibration tables, experiment logs.
+- **SQLite query tool** – fast reads from ROS bags or component DB.
+- **Docx / PPTX (`docx_official`, `pptx_official`) + `markdown_to_pdf`** – auto‑generate spec sheets, test reports, presentations.
+- **Why:** Produce professional engineering deliverables automatically.
+
+### 📦 Infrastructure \u0026 Convenience
+- **Python 3 confirmed on host** (invoked via `python` / `py`).
+- **Automated pip/uv installer** – ensures required libs (`numpy`, `scipy`, `control`, `matplotlib`, `python‑can`, `odrive`, etc.) are present before tool execution.
+- **Task‑level memory** – store long‑running simulation results in `tasks/<id>/progress.md` for later retrieval.
+- **Existing hardware tools** (`hw_list_devices`, `hw_inspect_device`, `hw_board_registry`, `hw_pinout_datasheet`, `hw_flash`, `hw_serial_monitor`, `hw_repl_interact`) become the foundation for the higher‑level wrappers above.
+
+---
+
+**Implementation path**
+1. Wire a vision model and expose `process_image`.
+2. Add CAD wrappers (OpenSCAD, FreeCAD) and mesh analysis.
+3. Build URDF/SDF parser \u0026 exporter.
+4. Implement KiCad \u0026 SPICE wrappers.
+5. Install Python math stack + matplotlib.
+6. Add motor/CAN SDK wrappers.
+7. Provide sensor‑stream helpers.
+8. Wrap ROS 2 CLI \u0026 MoveIt!.
+9. Integrate Wokwi \u0026 PyBullet simulators.
+10. Hook up reporting generators.
+11. Create installer script that checks for required Python packages and installs them automatically.
+
+This new Phase 8 completes the roadmap from low‑level hardware interaction (Phase 6‑7) up through full‑stack robotics software, simulation, and professional documentation, targeting **professional engineers in industry**.
+
+
 **The Problem:** When circuiting, developers need immediate access to pin diagrams and electrical tolerances.
 **The Solution:** A tool specifically designed to fetch component pinouts or link to PDF datasheets for specific chips, sensors, or dev boards. If the AI is going to write code or tell you how to wire something, it needs a direct line to the electrical specs, not a generic web search.
 
