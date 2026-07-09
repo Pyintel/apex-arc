@@ -12,9 +12,9 @@ const { Plugin } = await import("../../src/plugin/index")
 const { Workspace } = await import("../../src/control-plane/workspace")
 const { Instance } = await import("../../src/project/instance")
 
-const experimental = Flag.MIMOCODE_EXPERIMENTAL_WORKSPACES
+const experimental = Flag.ARC_EXPERIMENTAL_WORKSPACES
 
-Flag.MIMOCODE_EXPERIMENTAL_WORKSPACES = true
+Flag.ARC_EXPERIMENTAL_WORKSPACES = true
 
 afterEach(async () => {
   await Instance.disposeAll()
@@ -27,7 +27,7 @@ afterAll(() => {
     process.env.MIMOCODE_DISABLE_DEFAULT_PLUGINS = disableDefault
   }
 
-  Flag.MIMOCODE_EXPERIMENTAL_WORKSPACES = experimental
+  Flag.ARC_EXPERIMENTAL_WORKSPACES = experimental
 })
 
 describe("plugin.workspace", () => {

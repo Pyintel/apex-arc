@@ -33,9 +33,9 @@ import { testEffect } from "../lib/effect"
 // The bridge's own wiring to Scheduler.start (isKilled / onFire / onArmLoop)
 // is covered by cron-bridge.integration.test.ts and keepalive.integration.test.ts.
 
-const originalCronFlag = Flag.MIMOCODE_EXPERIMENTAL_CRON
+const originalCronFlag = Flag.ARC_EXPERIMENTAL_CRON
 afterEach(async () => {
-  ;(Flag as { MIMOCODE_EXPERIMENTAL_CRON: boolean }).MIMOCODE_EXPERIMENTAL_CRON = originalCronFlag
+  ;(Flag as { ARC_EXPERIMENTAL_CRON: boolean }).ARC_EXPERIMENTAL_CRON = originalCronFlag
   await Instance.disposeAll()
 })
 
@@ -94,7 +94,7 @@ beforeEach(() => {
   clearAllLoopStates()
   removeSessionCronTasks(getSessionCronTasks().map((t) => t.id))
   delete process.env.MIMOCODE_DISABLE_CRON
-  ;(Flag as { MIMOCODE_EXPERIMENTAL_CRON: boolean }).MIMOCODE_EXPERIMENTAL_CRON = true
+  ;(Flag as { ARC_EXPERIMENTAL_CRON: boolean }).ARC_EXPERIMENTAL_CRON = true
 })
 
 const sid = SessionID.make("ses_e2e_test")

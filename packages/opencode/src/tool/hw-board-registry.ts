@@ -108,12 +108,14 @@ export const HwBoardRegistryTool = Tool.define(
             }
           }
 
-          // 2. Try semantic vector search if vector DB exists and no direct matches found
+          // 2. Semantic vector search. The vector DB is self-contained: each row
+          //    stores the full rendered board spec in its `text` column, so matches
+          //    can be returned directly even when boards.db is not installed.
           const vectorDbPath = path.join(GlobalPath.data, "modules", "modules_vector.db")
           if (existsSync(vectorDbPath) && results.length === 0) {
             const queryEmbedding = yield* embedEffect(q)
             const vecDb = new SqliteDb(vectorDbPath, { readonly: true })
-            
+
             try {
               const vectors = vecDb.query(`
                 SELECT item_id, text, embedding FROM module_embeddings WHERE module_id = 'open-board-registry'
@@ -123,23 +125,40 @@ export const HwBoardRegistryTool = Tool.define(
                 const vec = new Float32Array(v.embedding.buffer, v.embedding.byteOffset, v.embedding.byteLength / Float32Array.BYTES_PER_ELEMENT)
                 return {
                   id: v.item_id,
+                  text: v.text,
                   score: cosineSimilarity(queryEmbedding, vec)
                 }
               })
 
               scored.sort((a, b) => b.score - a.score)
-              const top = scored.slice(0, 5).filter(s => s.score > 0.6)
+              const top = scored.filter(s => s.score > 0.6).slice(0, 5)
 
-              if (top.length > 0 && existsSync(boardDbPath)) {
-                const db = new SqliteDb(boardDbPath, { readonly: true })
-                try {
-                  const placeHolders = top.map(() => "?").join(",")
-                  const ids = top.map(t => t.id)
-                  results = db.query(`
-                    SELECT * FROM boards WHERE id IN (${placeHolders})
-                  `).all(...ids)
-                } finally {
-                  db.close()
+              if (top.length > 0) {
+                // Prefer the typed rows in boards.db when available, preserving
+                // semantic rank order. Fall back to the embedded text payload so
+                // the vector DB still works standalone.
+                if (existsSync(boardDbPath)) {
+                  const db = new SqliteDb(boardDbPath, { readonly: true })
+                  try {
+                    const placeHolders = top.map(() => "?").join(",")
+                    const ids = top.map(t => t.id)
+                    const rows = db.query(`
+                      SELECT * FROM boards WHERE id IN (${placeHolders})
+                    `).all(...ids)
+
+                    const byId = new Map(rows.map(r => [(r as { id: string }).id, r]))
+                    results = top
+                      .map(t => byId.get(t.id))
+                      .filter((r): r is NonNullable<typeof r> => r !== undefined)
+                  } finally {
+                    db.close()
+                  }
+                } else {
+                  results = top.map(t => ({
+                    id: t.id,
+                    source: "vector-db",
+                    text: t.text,
+                  }))
                 }
               }
             } catch (err) {

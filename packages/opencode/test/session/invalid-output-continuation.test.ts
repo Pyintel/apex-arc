@@ -135,7 +135,7 @@ describe("invalid-output continuation — integration", () => {
                 parts: [{ type: "text", text: "Answer my question." }],
               })
               // limit nudges + 1 final attempt that trips the terminal error.
-              expect(stub.captures.length).toBe(Flag.MIMOCODE_INVALID_OUTPUT_CONTINUATION_LIMIT + 1)
+              expect(stub.captures.length).toBe(Flag.ARC_INVALID_OUTPUT_CONTINUATION_LIMIT + 1)
               expect(result.info.role).toBe("assistant")
               if (result.info.role === "assistant") {
                 expect(result.info.error?.name).toBe("InvalidOutputError")
