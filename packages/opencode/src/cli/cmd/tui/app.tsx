@@ -846,6 +846,65 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       category: "system",
     },
     {
+      title: "Factory Reset Opencode (Memory & Config)",
+      value: "app.factory_reset",
+      category: "system",
+      slash: {
+        name: "reset",
+        aliases: ["clearall", "factoryreset"],
+      },
+      onSelect: async () => {
+        dialog.replace(() => (
+          <DialogSelect
+            title="WARNING: Factory Reset"
+            hint="This will permanently delete ALL sessions, memory, config, cache, and history across all workspaces. Are you absolutely sure?"
+            options={[
+              {
+                title: "No, cancel",
+                value: "cancel",
+                onSelect: (d) => d.clear(),
+              },
+              {
+                title: "Yes, delete everything",
+                value: "confirm",
+                description: "Irreversible action",
+                onSelect: async (d) => {
+                  d.clear();
+                  toast.show({ variant: "info", message: "Shutting down for factory reset..." });
+                  
+                  setTimeout(async () => {
+                    const os = await import("os");
+                    const path = await import("path");
+                    const fs = await import("fs/promises");
+                    
+                    try {
+                      const rootPaths = [
+                        path.join(os.homedir(), ".arc"),
+                        path.join(os.homedir(), ".config", "arc"),
+                        path.join(os.homedir(), ".config", "mimo"),
+                        path.join(os.homedir(), ".mimo"),
+                        path.join(process.cwd(), ".dev-home", "data"),
+                      ];
+                      
+                      for (const root of rootPaths) {
+                        try {
+                          await fs.rm(root, { recursive: true, force: true });
+                        } catch (e) {}
+                      }
+                      
+                      exit(new Error("FACTORY_RESET"));
+                    } catch (e) {
+                      toast.show({ variant: "error", message: "Failed to reset completely. Check logs." });
+                    }
+                  }, 500);
+                },
+              }
+            ]}
+          />
+        ))
+      },
+    },
+    {
       title: t("tui.command.app.debug.title"),
       category: "system",
       value: "app.debug",

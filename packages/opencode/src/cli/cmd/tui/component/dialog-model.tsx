@@ -263,6 +263,14 @@ export function DialogModel(props: { providerID?: string }) {
       options={options()}
       keybind={[
         {
+          keybind: keybind.all.model_refresh?.[0],
+          title: "Refresh",
+          side: "left",
+          onTrigger: () => {
+            void refreshModelsFromProviders({ sdk, sync, toast, dialog })
+          },
+        },
+        {
           keybind: keybind.all.model_provider_list?.[0],
           title: "Connect provider",
           onTrigger() {
@@ -332,4 +340,48 @@ async function runAddModelWizard(opts: {
   await sdk.client.instance.dispose()
   await sync.bootstrap()
   dialog.replace(() => <DialogModel providerID={providerID} />)
+}
+
+async function refreshModelsFromProviders(opts: {
+  sdk: ReturnType<typeof useSDK>
+  sync: ReturnType<typeof useSync>
+  toast: ToastContext
+  dialog: DialogContext
+}) {
+  const { sdk, sync, toast, dialog } = opts
+  const providers = sync.data.provider
+  let refreshed = false
+
+  for (const provider of providers) {
+    if (provider.id === "opencode") continue
+    if (!provider.api) continue
+
+    try {
+      const url = `${sdk.url}/${provider.id}/models/refresh`
+      const res = await sdk.fetch(url, {
+        method: "POST",
+      })
+
+      if (!res.ok) {
+        continue
+      }
+
+      const data = await res.json()
+      if (data && data.refreshed) {
+        refreshed = true
+      }
+    } catch (err) {
+      toast.show({ variant: "error", message: `Error refreshing ${provider.id}: ${err}` })
+    }
+  }
+
+  if (refreshed) {
+    toast.show({ variant: "success", message: "Models refreshed" })
+  } else {
+    toast.show({ variant: "info", message: "No models to refresh. Reconnect provider to update." })
+  }
+
+  await sdk.client.instance.dispose()
+  await sync.bootstrap()
+  dialog.replace(() => <DialogModel />)
 }

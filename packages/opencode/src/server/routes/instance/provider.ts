@@ -5,6 +5,7 @@ import { Config } from "@/config"
 import { Provider } from "@/provider"
 import { ModelsDev } from "@/provider"
 import { ProviderAuth } from "@/provider"
+import { Auth } from "@/auth"
 import { ProviderID } from "@/provider/schema"
 import { mapValues } from "remeda"
 import { errors } from "../../error"
@@ -78,6 +79,93 @@ export const ProviderRoutes = lazy(() =>
         jsonRequest("ProviderRoutes.auth", c, function* () {
           const svc = yield* ProviderAuth.Service
           return yield* svc.methods()
+        }),
+    )
+    .post(
+      "/:providerID/models/refresh",
+      describeRoute({
+        summary: "Refresh provider models",
+        description: "Fetch and update the list of models for a specific provider by querying its upstream API.",
+        operationId: "provider.models.refresh",
+        responses: {
+          200: {
+            description: "Number of models refreshed",
+            content: {
+              "application/json": {
+                schema: resolver(z.object({
+                  refreshed: z.boolean(),
+                  count: z.number(),
+                })),
+              },
+            },
+          },
+          ...errors(400),
+        },
+      }),
+      validator(
+        "param",
+        z.object({
+          providerID: ProviderID.zod.meta({ description: "Provider ID" }),
+        }),
+      ),
+      async (c) =>
+        jsonRequest("ProviderRoutes.models.refresh", c, function* () {
+          const providerID = c.req.valid("param").providerID
+          const svc = yield* Provider.Service
+          const configSvc = yield* Config.Service
+          const auth = yield* Auth.Service
+
+          const connected = yield* svc.list()
+          const provider = connected[providerID]
+
+          if (!provider || !provider.api) {
+            return { refreshed: false, count: 0 }
+          }
+
+          const baseURL = provider.api
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+          }
+
+          // Fetch credentials securely using the backend auth service
+          const authInfo = yield* Effect.catchAll(auth.get(providerID), () => Effect.succeed(undefined))
+          if (authInfo && authInfo.type === "api" && authInfo.key) {
+            headers["Authorization"] = `Bearer ${authInfo.key}`
+          }
+
+          let modelsUrl = `${baseURL.replace(/\/+$/, "")}/models`
+          let res = yield* Effect.tryPromise(() => fetch(modelsUrl, { headers }))
+
+          if (!res.ok && !baseURL.endsWith("/v1")) {
+            modelsUrl = `${baseURL.replace(/\/+$/, "")}/v1/models`
+            res = yield* Effect.tryPromise(() => fetch(modelsUrl, { headers }))
+          }
+
+          if (!res.ok) {
+            return { refreshed: false, count: 0 }
+          }
+
+          const data = yield* Effect.tryPromise(() => res.json())
+          if (!data || !Array.isArray(data.data) || data.data.length === 0) {
+            return { refreshed: false, count: 0 }
+          }
+
+          const fetchedModels: Record<string, { name: string }> = {}
+          for (const model of data.data) {
+            fetchedModels[model.id] = { name: model.name || model.id }
+          }
+
+          const patch = {
+            provider: {
+              [providerID]: {
+                models: fetchedModels,
+              },
+            },
+          }
+
+          yield* configSvc.update(patch as any)
+          
+          return { refreshed: true, count: data.data.length }
         }),
     )
     .post(

@@ -54,6 +54,7 @@ const KeybindsSchema = Schema.Struct({
   messages_toggle_conceal: keybind("<leader>h", "Toggle code block concealment in messages"),
   tool_details: keybind("none", "Toggle tool details visibility"),
   model_list: keybind("<leader>m", "List available models"),
+  model_refresh: keybind("ctrl+r", "Refresh models from provider APIs"),
   model_cycle_recent: keybind("f2", "Next recently used model"),
   model_cycle_recent_reverse: keybind("shift+f2", "Previous recently used model"),
   model_cycle_favorite: keybind("none", "Next favorite model"),
