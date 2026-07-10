@@ -65,6 +65,18 @@ import { HwBoardRegistryTool } from "./hw-board-registry"
 import { WebFetchMarkdownTool } from "./web-fetch-markdown"
 import { HwReplInteractTool } from "./hw-repl-interact"
 import { HwPinoutDatasheetTool } from "./hw-pinout-datasheet"
+import { ProcessImageTool } from "./process-image"
+import { AstEditTool } from "./ast-edit"
+import { ShellRunTool } from "./shell-run"
+import { SandboxRunTool } from "./sandbox"
+import { TddLoopTool } from "./tdd-loop"
+import { Ros2Tool } from "./ros2"
+import { UrdfParseTool } from "./urdf-parse"
+import { SdfParseTool } from "./sdf-parse"
+import { UrdfToMeshTool } from "./urdf-to-mesh"
+import { MoveitPlanTool } from "./moveit-plan"
+import { WokwiSimulateTool, MujocoStepTool, PybulletStepTool, SimToRealCheckTool } from "./simulators"
+import { LintStreamTool } from "./lint-stream"
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
 import { ChangeDirectoryTool } from "./change-directory"
@@ -216,6 +228,21 @@ export const layer = Layer.effect(
     const webfetchmarkdowntool = yield* WebFetchMarkdownTool
     const hwreplinteracttool = yield* HwReplInteractTool
     const hwpinoutdatasheettool = yield* HwPinoutDatasheetTool
+    const processimagetool = yield* ProcessImageTool
+    const astedittool = yield* AstEditTool
+    const shellruntool = yield* ShellRunTool
+    const sandboxruntool = yield* SandboxRunTool
+    const tddlooptool = yield* TddLoopTool
+    const ros2tool = yield* Ros2Tool
+    const urdfparsetool = yield* UrdfParseTool
+    const sdfparsetool = yield* SdfParseTool
+    const urdftomeshtool = yield* UrdfToMeshTool
+    const moveitplantool = yield* MoveitPlanTool
+    const wokwisimulatetool = yield* WokwiSimulateTool
+    const mujocosteptool = yield* MujocoStepTool
+    const pybulletsteptool = yield* PybulletStepTool
+    const simtorealchecktool = yield* SimToRealCheckTool
+    const lintstreamtool = yield* LintStreamTool
     const agent = yield* Agent.Service
 
     const state = yield* InstanceState.make<State>(
@@ -338,6 +365,21 @@ export const layer = Layer.effect(
           webfetchmarkdown: Tool.init(webfetchmarkdowntool),
           hwreplinteract: Tool.init(hwreplinteracttool),
           hwpinoutdatasheet: Tool.init(hwpinoutdatasheettool),
+          processimage: Tool.init(processimagetool),
+          astedit: Tool.init(astedittool),
+          shellrun: Tool.init(shellruntool),
+          sandboxrun: Tool.init(sandboxruntool),
+          tddloop: Tool.init(tddlooptool),
+          ros2: Tool.init(ros2tool),
+          urdfparse: Tool.init(urdfparsetool),
+          sdfparse: Tool.init(sdfparsetool),
+          urdftomesh: Tool.init(urdftomeshtool),
+          moveitplan: Tool.init(moveitplantool),
+          wokwisimulate: Tool.init(wokwisimulatetool),
+          mujocostep: Tool.init(mujocosteptool),
+          pybulletstep: Tool.init(pybulletsteptool),
+          simtorealcheck: Tool.init(simtorealchecktool),
+          lintstream: Tool.init(lintstreamtool),
         })
 
         return {
@@ -398,6 +440,21 @@ export const layer = Layer.effect(
             tool.webfetchmarkdown,
             tool.hwreplinteract,
             tool.hwpinoutdatasheet,
+            tool.processimage,
+            tool.astedit,
+            tool.shellrun,
+            tool.sandboxrun,
+            tool.tddloop,
+            tool.ros2,
+            tool.urdfparse,
+            tool.sdfparse,
+            tool.urdftomesh,
+            tool.moveitplan,
+            tool.wokwisimulate,
+            tool.mujocostep,
+            tool.pybulletstep,
+            tool.simtorealcheck,
+            tool.lintstream,
             ...(Flag.ARC_EXPERIMENTAL_CRON ? [tool.cron] : []),
             ...(Flag.ARC_EXPERIMENTAL_ORCHESTRATOR ? [tool.session] : []),
             ...(Flag.ARC_EXPERIMENTAL_WORKFLOW_TOOL ? [tool.workflow] : []),
