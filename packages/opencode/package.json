@@ -22,7 +22,7 @@
     "db": "bun drizzle-kit"
   },
   "bin": {
-    "apex-arc": "./bin/apex-arc"
+    "arc": "./bin/apex-arc"
   },
   "exports": {
     "./*": "./src/*.ts"

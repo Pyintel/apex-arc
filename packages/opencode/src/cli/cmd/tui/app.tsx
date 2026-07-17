@@ -40,6 +40,7 @@ import { DialogHelp } from "./ui/dialog-help"
 import { CommandProvider, useCommandDialog } from "@tui/component/dialog-command"
 import { DialogAgent } from "@tui/component/dialog-agent"
 import { DialogSessionList } from "@tui/component/dialog-session-list"
+import { DialogTree } from "@tui/component/dialog-tree"
 import { DialogWorkflows } from "@tui/component/dialog-workflows"
 import { DialogConsoleOrg } from "@tui/component/dialog-console-org"
 import { DialogModules } from "@tui/component/dialog-modules"
@@ -485,6 +486,18 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       onSelect: () => {
         dialog.replace(() => <DialogSessionList />)
+      },
+    },
+    {
+      title: t("tui.command.worktree.explore.title"),
+      value: "worktree.explore",
+      category: "session",
+      slash: {
+        name: "tree",
+        aliases: ["explore"],
+      },
+      onSelect: () => {
+        dialog.replace(() => <DialogTree />)
       },
     },
     {

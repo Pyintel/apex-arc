@@ -87,6 +87,7 @@ import { LLM } from "./llm"
 import { MaxMode } from "./max-mode"
 import { Shell } from "@/shell/shell"
 import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { SessionCwd } from "../tool/session-cwd"
 import { Truncate } from "@/tool"
 import { decodeDataUrl } from "@/util/data-url"
 import { Process } from "@/util"
@@ -108,6 +109,26 @@ import { shouldAutoDream, shouldAutoDistill, DREAM_TASK, DISTILL_TASK, AUTO_DREA
 
 // @ts-ignore
 globalThis.AI_SDK_LOG_WARNINGS = false
+
+async function pickWindowsFolder(initialPath: string): Promise<string | undefined> {
+  const script = [
+    "Add-Type -AssemblyName System.Windows.Forms;",
+    "$dialog = New-Object System.Windows.Forms.FolderBrowserDialog;",
+    "$dialog.Description = 'Choose a working directory';",
+    "$dialog.UseDescriptionForTitle = $true;",
+    "$dialog.ShowNewFolderButton = $true;",
+    `$dialog.SelectedPath = '${initialPath.replace(/'/g, "''")}';`,
+    "if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { [Console]::Out.WriteLine($dialog.SelectedPath) } else { exit 1 }",
+  ].join(" ")
+
+  const result = await Process.text(["powershell.exe", "-Sta", "-NonInteractive", "-NoProfile", "-Command", script], {
+    nothrow: true,
+  })
+
+  if (result.code !== 0) return undefined
+  const picked = result.text.trim()
+  return picked || undefined
+}
 
 // Recall-reminder hints, rendered in each tool's configured invocation style so
 // shell-mode sessions never see a JSON-shaped example (which primes models to
@@ -3615,6 +3636,66 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           })
         }
         yield* goal.set(input.sessionID, condition)
+      }
+
+      if (input.command === Command.Default.CD) {
+        let targetPath = input.arguments.trim()
+        const ins = yield* InstanceState.context
+        const fs = yield* AppFileSystem.Service
+        const currentCwd = SessionCwd.get(input.sessionID)
+
+        if (targetPath === "" && (process.platform === "win32" || os.release().includes("WSL"))) {
+          const selectedPath = yield* Effect.promise(() => pickWindowsFolder(currentCwd))
+          if (!selectedPath) {
+            return yield* prompt({
+              sessionID: input.sessionID,
+              messageID: input.messageID,
+              agent: agentName,
+              parts: [{ type: "text", text: "Working directory unchanged.", synthetic: true }],
+              noReply: true,
+            })
+          }
+          targetPath = selectedPath
+        }
+
+        if (targetPath === "~" || targetPath === "") {
+          SessionCwd.clear(input.sessionID)
+          yield* bus.publish(SessionCwd.Event.Changed, { sessionID: input.sessionID, cwd: ins.directory })
+          return yield* prompt({
+            sessionID: input.sessionID,
+            messageID: input.messageID,
+            agent: agentName,
+            parts: [{ type: "text", text: `Working directory reset to project root: ${ins.directory}`, synthetic: true }],
+            noReply: true,
+          })
+        }
+
+        const resolved = path.isAbsolute(targetPath) ? targetPath : path.resolve(currentCwd, targetPath)
+        const normalized = path.normalize(resolved)
+        const stat = yield* fs.stat(normalized).pipe(Effect.catch(() => Effect.succeed(undefined)))
+        if (!stat) {
+          const errorMsg = `Directory does not exist: ${normalized}`
+          const error = new NamedError.Unknown({ message: errorMsg })
+          yield* bus.publish(Session.Event.Error, { sessionID: input.sessionID, error: error.toObject() })
+          throw error
+        }
+        if (stat.type !== "Directory") {
+          const errorMsg = `Path is not a directory: ${normalized}`
+          const error = new NamedError.Unknown({ message: errorMsg })
+          yield* bus.publish(Session.Event.Error, { sessionID: input.sessionID, error: error.toObject() })
+          throw error
+        }
+
+        SessionCwd.set(input.sessionID, normalized)
+        yield* bus.publish(SessionCwd.Event.Changed, { sessionID: input.sessionID, cwd: normalized })
+
+        return yield* prompt({
+          sessionID: input.sessionID,
+          messageID: input.messageID,
+          agent: agentName,
+          parts: [{ type: "text", text: `Working directory changed: ${currentCwd} → ${normalized}`, synthetic: true }],
+          noReply: true,
+        })
       }
 
       const raw = input.arguments.match(argsRegex) ?? []

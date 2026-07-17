@@ -284,7 +284,7 @@
       "name": "@apex-arc/cli",
       "version": "0.1.4",
       "bin": {
-        "apex-arc": "./bin/apex-arc",
+        "arc": "./bin/apex-arc",
       },
       "dependencies": {
         "@actions/core": "1.11.1",

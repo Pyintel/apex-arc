@@ -193,6 +193,8 @@ export const dict: Record<string, string> = {
     "find repeated workflows in recent work and package them into skills, subagents, or commands",
   "tui.slash.goal.description":
     "set a stop-condition goal; runs until a judge says it's met. /goal clear to abort",
+  "tui.slash.cd.description":
+    "change the working directory for this session. Use '~' to reset.",
   "tui.slash.deep-research.description":
     "deep multi-source, fact-checked research report (runs the deep-research workflow)",
 
@@ -229,6 +231,7 @@ export const dict: Record<string, string> = {
   "tui.command.console.org.switch.title": "Switch org",
   "tui.command.opencode.status.title": "View status",
   "tui.command.worktree.list.title": "Worktrees",
+  "tui.command.worktree.explore.title": "Explore Worktree (Tree)",
   "tui.command.theme.switch.title": "Switch theme",
   "tui.command.image.switch.title": "Switch background image",
   "tui.dialog.image.title": "Background images",
