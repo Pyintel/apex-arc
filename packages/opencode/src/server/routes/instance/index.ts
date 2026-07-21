@@ -109,9 +109,7 @@ export const InstanceRoutes = (upgrade: UpgradeWebSocket): Hono => {
                       worktree: z.string(),
                       directory: z.string(),
                     })
-                    .meta({
-                      ref: "Path",
-                    }),
+                    ,
                 ),
               },
             },

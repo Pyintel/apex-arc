@@ -28,7 +28,7 @@ The three core constraints and where they sit in the diagram:
 
 - **Never-worse gate** — unified rollback at the pipeline tail: any stage that makes the output larger is discarded, falling back to the Raw path.
 
-- **Single flag, off by default** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` is the only switch that enters the cleanup pipeline, and it's disabled by default; otherwise output goes straight through Raw.
+- **Single flag, off by default** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` is the only switch that enters the cleanup pipeline, and it's disabled by default; otherwise output goes straight through Raw.
 
 
 
@@ -197,5 +197,5 @@ const SHAPES = [S_gitdiff, S_pytest, S_npm, S_make, S_stacktrace,
 
 **TUI preview untouched** — `metadata.output` is the TUI live-preview field, kept as the raw streaming snapshot; only the final `output` goes through cleanup. This avoids cleanup side effects interfering with a human reading the original terminal output.
 
-**Single flag, off by default** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` is a standalone flag controlling the switch, off by default, not derived from `MIMOCODE_EXPERIMENTAL=1`. Explicit opt-in avoids silently changing the default output.
+**Single flag, off by default** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` is a standalone flag controlling the switch, off by default, not derived from `Arc_EXPERIMENTAL=1`. Explicit opt-in avoids silently changing the default output.
 

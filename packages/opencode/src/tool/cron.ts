@@ -82,7 +82,7 @@ const renameOperation = z.strictObject({
 })
 
 const parameters = z.strictObject({
-  // .meta({ type: "object" }) is REQUIRED — without it, the emitted JSON
+  //  is REQUIRED — without it, the emitted JSON
   // schema's `operation` node has only `anyOf`, no `type`. Some models
   // then stringify the entire envelope; see task.ts:117 for full context.
   operation: z
@@ -94,7 +94,7 @@ const parameters = z.strictObject({
       deleteOperation,
       renameOperation,
     ])
-    .meta({ type: "object" }),
+    ,
 })
 
 type CronInput = z.infer<typeof parameters>

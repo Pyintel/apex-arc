@@ -2,7 +2,7 @@
 
 ## Problem
 
-After an interactive command (e.g. `git push` triggering `bun turbo typecheck` via pre-push hook), the MiMoCode TUI resumes with visual artifacts: cells that only contain background color show the terminal's native background (VSCode theme color) instead of the TUI's dark theme background.
+After an interactive command (e.g. `git push` triggering `bun turbo typecheck` via pre-push hook), the Arc TUI resumes with visual artifacts: cells that only contain background color show the terminal's native background (VSCode theme color) instead of the TUI's dark theme background.
 
 ## Root Cause
 

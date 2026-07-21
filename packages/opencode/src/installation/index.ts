@@ -52,9 +52,7 @@ export const Info = z
     version: z.string(),
     latest: z.string(),
   })
-  .meta({
-    ref: "InstallationInfo",
-  })
+  
 export type Info = z.infer<typeof Info>
 
 export const USER_AGENT = `apex-arc/${InstallationChannel}/${InstallationVersion}/${Flag.ARC_CLIENT}`

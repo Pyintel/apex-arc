@@ -105,7 +105,7 @@ export const ProviderRoutes = lazy(() =>
       validator(
         "param",
         z.object({
-          providerID: ProviderID.zod.meta({ description: "Provider ID" }),
+          providerID: ProviderID.zod,
         }),
       ),
       async (c) =>
@@ -189,7 +189,7 @@ export const ProviderRoutes = lazy(() =>
       validator(
         "param",
         z.object({
-          providerID: ProviderID.zod.meta({ description: "Provider ID" }),
+          providerID: ProviderID.zod,
         }),
       ),
       validator("json", ProviderAuth.AuthorizeInput.zod),
@@ -226,7 +226,7 @@ export const ProviderRoutes = lazy(() =>
       validator(
         "param",
         z.object({
-          providerID: ProviderID.zod.meta({ description: "Provider ID" }),
+          providerID: ProviderID.zod,
         }),
       ),
       validator("json", ProviderAuth.CallbackInput.zod),

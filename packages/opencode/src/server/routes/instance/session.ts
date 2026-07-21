@@ -94,14 +94,14 @@ export const SessionRoutes = lazy(() =>
       validator(
         "query",
         z.object({
-          directory: z.string().optional().meta({ description: "Filter sessions by project directory" }),
-          roots: z.coerce.boolean().optional().meta({ description: "Only return root sessions (no parentID)" }),
+          directory: z.string().optional(),
+          roots: z.coerce.boolean().optional(),
           start: z.coerce
             .number()
             .optional()
-            .meta({ description: "Filter sessions updated on or after this timestamp (milliseconds since epoch)" }),
-          search: z.string().optional().meta({ description: "Filter sessions by title (case-insensitive)" }),
-          limit: z.coerce.number().optional().meta({ description: "Maximum number of sessions to return" }),
+            ,
+          search: z.string().optional(),
+          limit: z.coerce.number().optional(),
         }),
       ),
       async (c) => {
@@ -760,11 +760,11 @@ export const SessionRoutes = lazy(() =>
               .min(0)
               .max(1000)
               .optional()
-              .meta({ description: "Maximum number of messages to return (max 1000)" }),
+              ,
             before: z
               .string()
               .optional()
-              .meta({ description: "Opaque cursor for loading older messages" })
+              
               .refine(
                 (value) => {
                   if (!value) return true
@@ -780,10 +780,7 @@ export const SessionRoutes = lazy(() =>
             agent_id: z
               .string()
               .optional()
-              .meta({
-                description:
-                  "Filter by message slice. Omitted = main-agent slice only (default). Pass a subagent's actor id to fetch its slice. Pass `*` to return every message regardless of slice.",
-              }),
+              ,
           })
           .refine((value) => !value.before || value.limit !== undefined, {
             message: "before requires limit",

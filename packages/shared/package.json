@@ -1,13 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "0.1.4",
-  "name": "@mimo-ai/shared",
+  "version": "0.1.5",
+  "name": "@pyintel/shared",
   "type": "module",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "private": true,
+  "private": false,
   "scripts": {
     "test": "bun test",
     "typecheck": "tsgo --noEmit"

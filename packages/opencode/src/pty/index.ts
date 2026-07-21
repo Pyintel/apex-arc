@@ -63,7 +63,7 @@ export const Info = z
     status: z.enum(["running", "exited"]),
     pid: z.number(),
   })
-  .meta({ ref: "Pty" })
+  
 
 export type Info = z.infer<typeof Info>
 

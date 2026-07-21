@@ -31,9 +31,7 @@ export const Range = z
       character: z.number(),
     }),
   })
-  .meta({
-    ref: "Range",
-  })
+  
 export type Range = z.infer<typeof Range>
 
 export const Symbol = z
@@ -45,9 +43,7 @@ export const Symbol = z
       range: Range,
     }),
   })
-  .meta({
-    ref: "Symbol",
-  })
+  
 export type Symbol = z.infer<typeof Symbol>
 
 export const DocumentSymbol = z
@@ -58,9 +54,7 @@ export const DocumentSymbol = z
     range: Range,
     selectionRange: Range,
   })
-  .meta({
-    ref: "DocumentSymbol",
-  })
+  
 export type DocumentSymbol = z.infer<typeof DocumentSymbol>
 
 export const Status = z
@@ -70,9 +64,7 @@ export const Status = z
     root: z.string(),
     status: z.union([z.literal("connected"), z.literal("error")]),
   })
-  .meta({
-    ref: "LSPStatus",
-  })
+  
 export type Status = z.infer<typeof Status>
 
 enum SymbolKind {

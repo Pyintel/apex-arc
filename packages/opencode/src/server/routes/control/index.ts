@@ -126,13 +126,13 @@ export function ControlPlaneRoutes(): Hono {
       validator(
         "json",
         z.object({
-          service: z.string().meta({ description: "Service name for the log entry" }),
-          level: z.enum(["debug", "info", "error", "warn"]).meta({ description: "Log level" }),
-          message: z.string().meta({ description: "Log message" }),
+          service: z.string(),
+          level: z.enum(["debug", "info", "error", "warn"]),
+          message: z.string(),
           extra: z
             .record(z.string(), z.any())
             .optional()
-            .meta({ description: "Additional metadata for the log entry" }),
+            ,
         }),
       ),
       async (c) => {

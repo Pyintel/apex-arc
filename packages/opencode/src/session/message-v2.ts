@@ -69,23 +69,17 @@ export const OutputFormatText = z
   .object({
     type: z.literal("text"),
   })
-  .meta({
-    ref: "OutputFormatText",
-  })
+  
 
 export const OutputFormatJsonSchema = z
   .object({
     type: z.literal("json_schema"),
-    schema: z.record(z.string(), z.any()).meta({ ref: "JSONSchema" }),
+    schema: z.record(z.string(), z.any()),
     retryCount: z.number().int().min(0).default(2),
   })
-  .meta({
-    ref: "OutputFormatJsonSchema",
-  })
+  
 
-export const Format = z.discriminatedUnion("type", [OutputFormatText, OutputFormatJsonSchema]).meta({
-  ref: "OutputFormat",
-})
+export const Format = z.discriminatedUnion("type", [OutputFormatText, OutputFormatJsonSchema])
 export type OutputFormat = z.infer<typeof Format>
 
 const PartBase = z.object({
@@ -97,8 +91,6 @@ const PartBase = z.object({
 export const SnapshotPart = PartBase.extend({
   type: z.literal("snapshot"),
   snapshot: z.string(),
-}).meta({
-  ref: "SnapshotPart",
 })
 export type SnapshotPart = z.infer<typeof SnapshotPart>
 
@@ -106,8 +98,6 @@ export const PatchPart = PartBase.extend({
   type: z.literal("patch"),
   hash: z.string(),
   files: z.string().array(),
-}).meta({
-  ref: "PatchPart",
 })
 export type PatchPart = z.infer<typeof PatchPart>
 
@@ -123,8 +113,6 @@ export const TextPart = PartBase.extend({
     })
     .optional(),
   metadata: z.record(z.string(), z.any()).optional(),
-}).meta({
-  ref: "TextPart",
 })
 export type TextPart = z.infer<typeof TextPart>
 
@@ -136,8 +124,6 @@ export const ReasoningPart = PartBase.extend({
     start: z.number(),
     end: z.number().optional(),
   }),
-}).meta({
-  ref: "ReasoningPart",
 })
 export type ReasoningPart = z.infer<typeof ReasoningPart>
 
@@ -148,16 +134,12 @@ const FilePartSourceBase = z.object({
       start: z.number().int(),
       end: z.number().int(),
     })
-    .meta({
-      ref: "FilePartSourceText",
-    }),
+    ,
 })
 
 export const FileSource = FilePartSourceBase.extend({
   type: z.literal("file"),
   path: z.string(),
-}).meta({
-  ref: "FileSource",
 })
 
 export const SymbolSource = FilePartSourceBase.extend({
@@ -166,21 +148,15 @@ export const SymbolSource = FilePartSourceBase.extend({
   range: LSP.Range,
   name: z.string(),
   kind: z.number().int(),
-}).meta({
-  ref: "SymbolSource",
 })
 
 export const ResourceSource = FilePartSourceBase.extend({
   type: z.literal("resource"),
   clientName: z.string(),
   uri: z.string(),
-}).meta({
-  ref: "ResourceSource",
 })
 
-export const FilePartSource = z.discriminatedUnion("type", [FileSource, SymbolSource, ResourceSource]).meta({
-  ref: "FilePartSource",
-})
+export const FilePartSource = z.discriminatedUnion("type", [FileSource, SymbolSource, ResourceSource])
 
 export const FilePart = PartBase.extend({
   type: z.literal("file"),
@@ -188,8 +164,6 @@ export const FilePart = PartBase.extend({
   filename: z.string().optional(),
   url: z.string(),
   source: FilePartSource.optional(),
-}).meta({
-  ref: "FilePart",
 })
 export type FilePart = z.infer<typeof FilePart>
 
@@ -203,8 +177,6 @@ export const AgentPart = PartBase.extend({
       end: z.number().int(),
     })
     .optional(),
-}).meta({
-  ref: "AgentPart",
 })
 export type AgentPart = z.infer<typeof AgentPart>
 
@@ -213,8 +185,6 @@ export const CheckpointPart = PartBase.extend({
   checkpointDir: z.string(),
   checkpointNumber: z.number(),
   coveredUpTo: MessageID.zod,
-}).meta({
-  ref: "CheckpointPart",
 })
 export type CheckpointPart = z.infer<typeof CheckpointPart>
 
@@ -230,8 +200,6 @@ export const SubtaskPart = PartBase.extend({
     })
     .optional(),
   command: z.string().optional(),
-}).meta({
-  ref: "SubtaskPart",
 })
 export type SubtaskPart = z.infer<typeof SubtaskPart>
 
@@ -243,8 +211,6 @@ export const CompactionPart = PartBase.extend({
   // recent-turns kept after summarization). Optional: when undefined, no tail
   // was preserved (entire history was summarized).
   tail_start_id: MessageID.zod.optional(),
-}).meta({
-  ref: "CompactionPart",
 })
 export type CompactionPart = z.infer<typeof CompactionPart>
 
@@ -255,16 +221,12 @@ export const RetryPart = PartBase.extend({
   time: z.object({
     created: z.number(),
   }),
-}).meta({
-  ref: "RetryPart",
 })
 export type RetryPart = z.infer<typeof RetryPart>
 
 export const StepStartPart = PartBase.extend({
   type: z.literal("step-start"),
   snapshot: z.string().optional(),
-}).meta({
-  ref: "StepStartPart",
 })
 export type StepStartPart = z.infer<typeof StepStartPart>
 
@@ -283,8 +245,6 @@ export const StepFinishPart = PartBase.extend({
       write: z.number(),
     }),
   }),
-}).meta({
-  ref: "StepFinishPart",
 })
 export type StepFinishPart = z.infer<typeof StepFinishPart>
 
@@ -294,9 +254,7 @@ export const ToolStatePending = z
     input: z.record(z.string(), z.any()),
     raw: z.string(),
   })
-  .meta({
-    ref: "ToolStatePending",
-  })
+  
 
 export type ToolStatePending = z.infer<typeof ToolStatePending>
 
@@ -310,9 +268,7 @@ export const ToolStateRunning = z
       start: z.number(),
     }),
   })
-  .meta({
-    ref: "ToolStateRunning",
-  })
+  
 export type ToolStateRunning = z.infer<typeof ToolStateRunning>
 
 export const ToolStateCompleted = z
@@ -329,9 +285,7 @@ export const ToolStateCompleted = z
     }),
     attachments: FilePart.array().optional(),
   })
-  .meta({
-    ref: "ToolStateCompleted",
-  })
+  
 export type ToolStateCompleted = z.infer<typeof ToolStateCompleted>
 
 export const ToolStateError = z
@@ -345,16 +299,12 @@ export const ToolStateError = z
       end: z.number(),
     }),
   })
-  .meta({
-    ref: "ToolStateError",
-  })
+  
 export type ToolStateError = z.infer<typeof ToolStateError>
 
 export const ToolState = z
   .discriminatedUnion("status", [ToolStatePending, ToolStateRunning, ToolStateCompleted, ToolStateError])
-  .meta({
-    ref: "ToolState",
-  })
+  
 
 export const ToolPart = PartBase.extend({
   type: z.literal("tool"),
@@ -362,8 +312,6 @@ export const ToolPart = PartBase.extend({
   tool: z.string(),
   state: ToolState,
   metadata: z.record(z.string(), z.any()).optional(),
-}).meta({
-  ref: "ToolPart",
 })
 export type ToolPart = z.infer<typeof ToolPart>
 
@@ -380,7 +328,7 @@ export const Provenance = z
     pluginNames: z.array(z.string()),
     hookIDs: z.array(z.string()),
   })
-  .meta({ ref: "Provenance" })
+  
 export type Provenance = z.infer<typeof Provenance>
 
 export const User = Base.extend({
@@ -405,8 +353,6 @@ export const User = Base.extend({
   system: z.string().optional(),
   tools: z.record(z.string(), z.boolean()).optional(),
   provenance: Provenance.optional(),
-}).meta({
-  ref: "UserMessage",
 })
 export type User = z.infer<typeof User>
 
@@ -426,9 +372,7 @@ export const Part = z
     CheckpointPart,
     CompactionPart,
   ])
-  .meta({
-    ref: "Part",
-  })
+  
 export type Part = z.infer<typeof Part>
 
 export const Assistant = Base.extend({
@@ -438,7 +382,7 @@ export const Assistant = Base.extend({
     completed: z.number().optional(),
   }),
   error: z
-    .discriminatedUnion("name", [
+    .union([
       AuthError.Schema,
       NamedError.Unknown.Schema,
       OutputLengthError.Schema,
@@ -479,14 +423,10 @@ export const Assistant = Base.extend({
   structured: z.any().optional(),
   variant: z.string().optional(),
   finish: z.string().optional(),
-}).meta({
-  ref: "AssistantMessage",
 })
 export type Assistant = z.infer<typeof Assistant>
 
-export const Info = z.discriminatedUnion("role", [User, Assistant]).meta({
-  ref: "Message",
-})
+export const Info = z.discriminatedUnion("role", [User, Assistant])
 export type Info = z.infer<typeof Info>
 
 export const Event = {

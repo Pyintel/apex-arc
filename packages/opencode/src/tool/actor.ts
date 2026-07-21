@@ -467,7 +467,7 @@ export const ActorTool = Tool.define(
       })
 
       const parameters = z.strictObject({
-        // .meta({ type: "object" }) is REQUIRED — without it the emitted JSON
+        //  is REQUIRED — without it the emitted JSON
         // schema's `operation` node has only `anyOf`, no `type`, and some models
         // (notably mimo-v2.5-pro) stringify the whole envelope
         // ({"operation":"{\"action\":\"run\",...}"}) which fails zod validation.
@@ -484,7 +484,7 @@ export const ActorTool = Tool.define(
             sendSchema,
             modelsSchema,
           ])
-          .meta({ type: "object" }),
+          ,
       })
 
       const run = Effect.fn("ActorTool.execute")(function* (input: z.infer<typeof parameters>, ctx: Tool.Context) {

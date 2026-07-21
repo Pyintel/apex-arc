@@ -143,7 +143,7 @@ export const ExperimentalRoutes = lazy(() =>
             description: "Tool IDs",
             content: {
               "application/json": {
-                schema: resolver(z.array(z.string()).meta({ ref: "ToolIDs" })),
+                schema: resolver(z.array(z.string())),
               },
             },
           },
@@ -177,9 +177,9 @@ export const ExperimentalRoutes = lazy(() =>
                           description: z.string(),
                           parameters: z.any(),
                         })
-                        .meta({ ref: "ToolListItem" }),
+                        ,
                     )
-                    .meta({ ref: "ToolList" }),
+                    ,
                 ),
               },
             },
@@ -344,19 +344,19 @@ export const ExperimentalRoutes = lazy(() =>
       validator(
         "query",
         z.object({
-          directory: z.string().optional().meta({ description: "Filter sessions by project directory" }),
-          roots: z.coerce.boolean().optional().meta({ description: "Only return root sessions (no parentID)" }),
+          directory: z.string().optional(),
+          roots: z.coerce.boolean().optional(),
           start: z.coerce
             .number()
             .optional()
-            .meta({ description: "Filter sessions updated on or after this timestamp (milliseconds since epoch)" }),
+            ,
           cursor: z.coerce
             .number()
             .optional()
-            .meta({ description: "Return sessions updated before this timestamp (milliseconds since epoch)" }),
-          search: z.string().optional().meta({ description: "Filter sessions by title (case-insensitive)" }),
-          limit: z.coerce.number().optional().meta({ description: "Maximum number of sessions to return" }),
-          archived: z.coerce.boolean().optional().meta({ description: "Include archived sessions (default false)" }),
+            ,
+          search: z.string().optional(),
+          limit: z.coerce.number().optional(),
+          archived: z.coerce.boolean().optional(),
         }),
       ),
       async (c) => {

@@ -160,9 +160,7 @@ export const Info = z
       })
       .optional(),
   })
-  .meta({
-    ref: "Session",
-  })
+  
 export type Info = z.output<typeof Info>
 
 export const ProjectInfo = z
@@ -171,15 +169,11 @@ export const ProjectInfo = z
     name: z.string().optional(),
     worktree: z.string(),
   })
-  .meta({
-    ref: "ProjectSummary",
-  })
+  
 export type ProjectInfo = z.output<typeof ProjectInfo>
 
 export const GlobalInfo = Info.extend({
   project: ProjectInfo.nullable(),
-}).meta({
-  ref: "GlobalSession",
 })
 export type GlobalInfo = z.output<typeof GlobalInfo>
 

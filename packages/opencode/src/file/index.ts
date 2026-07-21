@@ -23,9 +23,7 @@ export const Info = z
     removed: z.number().int(),
     status: z.enum(["added", "deleted", "modified"]),
   })
-  .meta({
-    ref: "File",
-  })
+  
 
 export type Info = z.infer<typeof Info>
 
@@ -37,9 +35,7 @@ export const Node = z
     type: z.enum(["file", "directory"]),
     ignored: z.boolean(),
   })
-  .meta({
-    ref: "FileNode",
-  })
+  
 export type Node = z.infer<typeof Node>
 
 export const Content = z
@@ -68,9 +64,7 @@ export const Content = z
     encoding: z.literal("base64").optional(),
     mimeType: z.string().optional(),
   })
-  .meta({
-    ref: "FileContent",
-  })
+  
 export type Content = z.infer<typeof Content>
 
 export const Event = {

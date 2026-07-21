@@ -43,5 +43,5 @@ export const Actor = z
       completed: z.number().optional(),
     }),
   })
-  .meta({ ref: "Actor" })
+  
 export type Actor = z.infer<typeof Actor>

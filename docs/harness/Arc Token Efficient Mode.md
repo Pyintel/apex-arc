@@ -28,7 +28,7 @@ bash 工具的 stdout/stderr 经常被以下噪音"撑爆"上下文：
 
 - **never\-worse 守门** — 管线尾部统一回吐：任何阶段使输出变大都被丢弃，回到 Raw 路径。
 
-- **单 flag、默认关** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` 是进入清理管线的唯一开关，且默认关闭，否则走 Raw 直出。
+- **单 flag、默认关** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` 是进入清理管线的唯一开关，且默认关闭，否则走 Raw 直出。
 
 
 
@@ -198,5 +198,5 @@ const SHAPES = [S_gitdiff, S_pytest, S_npm, S_make, S_stacktrace,
 
 **TUI 预览不动** — `metadata.output` 是 TUI 实时预览字段，保持原始流式快照；只有最终 `output` 经过清理。避免清理副作用打断人对原始终端输出的判读。
 
-**单 flag、默认关** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` 一个独立 flag 控制开关，默认关闭，不被 `MIMOCODE_EXPERIMENTAL=1` 派生。显式 opt\-in，避免静默改变默认输出。
+**单 flag、默认关** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` 一个独立 flag 控制开关，默认关闭，不被 `Arc_EXPERIMENTAL=1` 派生。显式 opt\-in，避免静默改变默认输出。
 

@@ -16,9 +16,6 @@ export abstract class NamedError extends Error {
         name: z.literal(name),
         data,
       })
-      .meta({
-        ref: name,
-      })
     const result = class extends NamedError {
       public static readonly Schema = schema
 

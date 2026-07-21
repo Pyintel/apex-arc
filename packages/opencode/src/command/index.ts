@@ -42,9 +42,7 @@ export const Info = z
     subtask: z.boolean().optional(),
     hints: z.array(z.string()),
   })
-  .meta({
-    ref: "Command",
-  })
+  
 
 // for some reason zod is inferring `string` for z.promise(z.string()).or(z.string()) so we have to manually override it
 export type Info = Omit<z.infer<typeof Info>, "template"> & { template: Promise<string> | string }

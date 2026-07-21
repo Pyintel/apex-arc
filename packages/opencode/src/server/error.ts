@@ -14,9 +14,7 @@ export const ERRORS = {
               errors: z.array(z.record(z.string(), z.any())),
               success: z.literal(false),
             })
-            .meta({
-              ref: "BadRequestError",
-            }),
+            ,
         ),
       },
     },
@@ -39,9 +37,7 @@ export const ERRORS = {
               name: z.literal("UnknownError"),
               data: z.object({ message: z.string() }),
             })
-            .meta({
-              ref: "ConflictError",
-            }),
+            ,
         ),
       },
     },

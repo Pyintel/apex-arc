@@ -25,9 +25,7 @@ export const FileDiff = z
     deletions: z.number(),
     status: z.enum(["added", "deleted", "modified"]).optional(),
   })
-  .meta({
-    ref: "SnapshotFileDiff",
-  })
+  
 export type FileDiff = z.infer<typeof FileDiff>
 
 const log = Log.create({ service: "snapshot" })

@@ -50,7 +50,7 @@ let arch = archMap[os.arch()]
 if (!arch) {
   arch = os.arch()
 }
-const scope = "@mimo-ai/"
+const scope = "@pyintel/"
 const base = scope + "mimocode-" + platform + "-" + arch
 const binary = platform === "windows" ? "arc.exe" : "arc"
 

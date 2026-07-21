@@ -5,7 +5,7 @@ import { Global } from "../global"
 import { Flag } from "../flag/flag"
 import z from "zod"
 
-export const Level = z.enum(["DEBUG", "INFO", "WARN", "ERROR"]).meta({ ref: "LogLevel", description: "Log level" })
+export const Level = z.enum(["DEBUG", "INFO", "WARN", "ERROR"])
 export type Level = z.infer<typeof Level>
 
 const levelPriority: Record<Level, number> = {

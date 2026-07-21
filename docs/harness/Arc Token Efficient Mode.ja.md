@@ -28,7 +28,7 @@ bash ツールの stdout/stderr は、以下のノイズによってコンテキ
 
 - **never-worse ガード** — パイプライン末尾で統一的にロールバック：いずれかの段階で出力が大きくなった場合は破棄し、Raw 経路に戻す。
 
-- **単一フラグ、デフォルト無効** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` がクリーンアップパイプラインに入る唯一のスイッチで、デフォルト無効。そうでなければ Raw で直通する。
+- **単一フラグ、デフォルト無効** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` がクリーンアップパイプラインに入る唯一のスイッチで、デフォルト無効。そうでなければ Raw で直通する。
 
 
 
@@ -197,5 +197,5 @@ const SHAPES = [S_gitdiff, S_pytest, S_npm, S_make, S_stacktrace,
 
 **TUI プレビューは触らない** — `metadata.output` は TUI のリアルタイムプレビューフィールドで、元のストリーミングスナップショットのまま保持する。最終的な `output` のみがクリーンアップを通る。クリーンアップの副作用が、人が元の端末出力を読み取る判断を妨げるのを避ける。
 
-**単一フラグ、デフォルト無効** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` は独立したフラグで、デフォルトは無効。`MIMOCODE_EXPERIMENTAL=1` から派生しない。明示的オプトインで、デフォルト出力を静かに変更するのを避ける。
+**単一フラグ、デフォルト無効** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` は独立したフラグで、デフォルトは無効。`Arc_EXPERIMENTAL=1` から派生しない。明示的オプトインで、デフォルト出力を静かに変更するのを避ける。
 

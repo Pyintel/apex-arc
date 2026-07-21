@@ -28,7 +28,7 @@ Les trois contraintes principales et leur position dans le diagramme :
 
 - **Garde-fou never-worse** — rollback unifié en queue de pipeline : toute étape qui augmenterait la taille est rejetée, retour au chemin Raw.
 
-- **Un seul flag, désactivé par défaut** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` est le seul interrupteur pour entrer dans le pipeline de nettoyage, désactivé par défaut ; sinon la sortie passe directement en Raw.
+- **Un seul flag, désactivé par défaut** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` est le seul interrupteur pour entrer dans le pipeline de nettoyage, désactivé par défaut ; sinon la sortie passe directement en Raw.
 
 
 
@@ -197,5 +197,5 @@ const SHAPES = [S_gitdiff, S_pytest, S_npm, S_make, S_stacktrace,
 
 **Aperçu TUI intact** — `metadata.output` est le champ d'aperçu live du TUI, conservé comme snapshot streaming brut ; seul le `output` final passe par le nettoyage. Cela évite que les effets de bord du nettoyage n'interfèrent avec la lecture humaine de la sortie terminal originale.
 
-**Un seul flag, désactivé par défaut** — `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY` est un flag autonome qui contrôle l'interrupteur, désactivé par défaut, non dérivé de `MIMOCODE_EXPERIMENTAL=1`. L'opt-in explicite évite de modifier silencieusement la sortie par défaut.
+**Un seul flag, désactivé par défaut** — `Arc_EXPERIMENTAL_TOKEN_EFFICIENCY` est un flag autonome qui contrôle l'interrupteur, désactivé par défaut, non dérivé de `Arc_EXPERIMENTAL=1`. L'opt-in explicite évite de modifier silencieusement la sortie par défaut.
 

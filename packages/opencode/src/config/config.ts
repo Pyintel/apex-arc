@@ -455,8 +455,7 @@ type DeepMutable<T> = T extends readonly [unknown, ...unknown[]]
 // so layer that on after derivation.  Re-apply the Config ref afterward
 // since `.strict()` strips the walker's meta annotation.
 export const Info = (zod(InfoSchema) as unknown as z.ZodObject<any>)
-  .strict()
-  .meta({ ref: "Config" }) as unknown as z.ZodType<DeepMutable<Schema.Schema.Type<typeof InfoSchema>>>
+  .strict() as unknown as z.ZodType<DeepMutable<Schema.Schema.Type<typeof InfoSchema>>>
 
 export type Info = z.output<typeof Info> & {
   // plugin_origins is derived state, not a persisted config field. It keeps each winning plugin spec together

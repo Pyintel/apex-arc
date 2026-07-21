@@ -18,7 +18,7 @@ The normal coding modes (build / plan / compose) are "executors": one session in
 
 **Core boundary**: the Orchestrator does **no substantive work itself** — no writing code, no concrete implementation planning, no quality review. Those are all delegated: a unit that needs planning goes to `plan` (or `compose`, whose workflow has plan/review phases built in); code goes to `build`. "Decomposing into dispatchable units" is its job; "how a given unit is implemented" and "reviewing the result" are jobs it delegates.
 
-**Off by default**: the whole capability is gated behind a single flag `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR` (see §6). When off, MiMoCode behaves exactly as before — no Orchestrator mode, no `session` tool, no approval routing, no workspace switching.
+**Off by default**: the whole capability is gated behind a single flag `Arc_EXPERIMENTAL_ORCHESTRATOR` (see §6). When off, Arc behaves exactly as before — no Orchestrator mode, no `session` tool, no approval routing, no workspace switching.
 
 ## 2. Overall Model
 
@@ -33,7 +33,7 @@ Orchestrator session (globally unique, see §5)
    │
    │  child finishes → actor_notification back to inbox → wakes the Orchestrator
    ▼
-coordinate / integrate (git merge each child's mimocode/* branch) / report to user
+coordinate / integrate (git merge each child's Arc/* branch) / report to user
 ```
 
 - Each child is an **independent session** (its own session id, task panel, memory), running in the **background** with `mode: "peer"`.
@@ -62,13 +62,13 @@ Implementation: `packages/opencode/src/tool/session.ts` (verb list `KNOWN_VERBS`
 The Orchestrator is a **general** coordinator that can work across different projects, so each child's directory and isolation are **decided per task**, not assumed from the current project:
 
 - `dir` — the directory the child runs in. Point it at the project/subproject/scratch dir the task belongs to; omit to use the Orchestrator's own directory.
-- `isolate` — when on, the child runs in **its own git worktree** of `dir`'s repo (branch `mimocode/<task>`), so multiple children editing the same repo don't collide with each other or with the Orchestrator. Use it for "will edit files, possibly concurrently"; leave it off for read-only/single-writer work, or a non-git dir (which degrades to running directly in `dir`).
+- `isolate` — when on, the child runs in **its own git worktree** of `dir`'s repo (branch `Arc/<task>`), so multiple children editing the same repo don't collide with each other or with the Orchestrator. Use it for "will edit files, possibly concurrently"; leave it off for read-only/single-writer work, or a non-git dir (which degrades to running directly in `dir`).
 
-The worktree is created/removed in `dir`'s own repo Instance (cross-project correct); a child worktree lives at `<data>/worktree/<projID>/<task-slug>`, on branch `mimocode/<task-slug>`.
+The worktree is created/removed in `dir`'s own repo Instance (cross-project correct); a child worktree lives at `<data>/worktree/<projID>/<task-slug>`, on branch `Arc/<task-slug>`.
 
 ### 3.2 Integration & cleanup
 
-- An isolated child's commits live on its own `mimocode/<...>` branch. The Orchestrator integrates them itself with git (it has `bash`): `git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` to preview conflicts → `git merge <branch>` (or cherry-pick). Find a child's branch via `git worktree list` / `git branch --list 'mimocode/*'`.
+- An isolated child's commits live on its own `Arc/<...>` branch. The Orchestrator integrates them itself with git (it has `bash`): `git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` to preview conflicts → `git merge <branch>` (or cherry-pick). Find a child's branch via `git worktree list` / `git branch --list 'Arc/*'`.
 - **Only `cancel` an isolated child after its work is merged, or the task is abandoned** — `cancel` deletes the worktree and branch, so doing it on **unmerged** work permanently loses that work. Don't `cancel` a child just because it "finished" (finishing produces commits on its branch that still need merging).
 
 ### 3.3 Lifecycle (no-poll / interrupt / resume)
@@ -97,7 +97,7 @@ An Orchestrator child does have a path to a human — its parent session and the
 
 Orchestrator mode uses a **fixed global working directory** (`<data>/orchestrator`, via `orchestratorDir()` in `src/global/index.ts`):
 
-- No matter which directory you launch MiMoCode from, **switching into Orchestrator mode** switches the TUI's working directory to this global directory and lands on the **single** root Orchestrator session there (find-or-create).
+- No matter which directory you launch Arc from, **switching into Orchestrator mode** switches the TUI's working directory to this global directory and lands on the **single** root Orchestrator session there (find-or-create).
 - So it's always the same Orchestrator session regardless of where you launched — previously-created child sessions are always visible and reachable. Otherwise, launching from different directories would give different Orchestrator sessions, and you couldn't find the children you created before.
 
 The switch reuses the worktree dialog's sequence: `instance.dispose → switchDirectory → sync.bootstrap →` find/create the root session and navigate. The server's cwd-containment check allows this app-owned global directory (only when the feature is enabled).
@@ -107,10 +107,10 @@ The switch reuses the worktree dialog's sequence: `instance.dispose → switchDi
 A single flag gates the whole capability, **off by default**, explicit opt-in:
 
 ```
-MIMOCODE_EXPERIMENTAL_ORCHESTRATOR: MIMOCODE_EXPERIMENTAL || truthy("MIMOCODE_EXPERIMENTAL_ORCHESTRATOR")
+Arc_EXPERIMENTAL_ORCHESTRATOR: Arc_EXPERIMENTAL || truthy("Arc_EXPERIMENTAL_ORCHESTRATOR")
 ```
 
-- Default **OFF**; set `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true` to enable (the umbrella `MIMOCODE_EXPERIMENTAL=1` enables it too).
+- Default **OFF**; set `Arc_EXPERIMENTAL_ORCHESTRATOR=true` to enable (the umbrella `Arc_EXPERIMENTAL=1` enables it too).
 - **Two load-bearing gates** make the feature fully disappear when off:
   1. **Agent registration** (`src/agent/agent.ts`) — the orchestrator agent is registered only when the flag is on, via a conditional spread (matching how `max` mode is done). When off it's not in the agent set, so it doesn't appear in the TUI mode-cycle (Tab), the agent dialog, or `defaultAgent`, and no peer can be dispatched.
   2. **Tool registration** (`src/tool/registry.ts`) — the `session` tool is registered only when the flag is on. When off, no agent can get it.
@@ -120,12 +120,12 @@ The flag is evaluated once at import (reads `process.env`). Tests set it to `tru
 
 ## 7. Quick start
 
-1. Enable the feature: `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true` (or `MIMOCODE_EXPERIMENTAL=1`).
-2. Launch MiMoCode and press **Tab** to cycle to **Orchestrator** mode — the working directory switches automatically to the global Orchestrator workspace and lands on the single Orchestrator session.
+1. Enable the feature: `Arc_EXPERIMENTAL_ORCHESTRATOR=true` (or `Arc_EXPERIMENTAL=1`).
+2. Launch Arc and press **Tab** to cycle to **Orchestrator** mode — the working directory switches automatically to the global Orchestrator workspace and lands on the single Orchestrator session.
 3. Give it work, e.g.: *"Create a build-mode child to add a login page to repo1, dir set to /path/to/repo1, with isolate on; and a compose child to design the billing schema in repo2."*
 4. Use `/sessions` (or have the Orchestrator `session list`) to see the `↳`-labeled children; select one to fully attach in to view/take over, and return with the session-parent keybind.
 5. A child's completion wakes the Orchestrator and toasts you; operations needing approval are forwarded to you (or auto-approved per your `grant-approval`).
-6. When satisfied, have the Orchestrator merge/integrate each isolated child's `mimocode/*` branch.
+6. When satisfied, have the Orchestrator merge/integrate each isolated child's `Arc/*` branch.
 
 ## 8. Related source
 
@@ -138,4 +138,4 @@ The flag is evaluated once at import (reads `process.env`). Tests set it to `tru
 | Permission approval-routing decision | `packages/opencode/src/agent/config.ts` (`decideAskRouting`) |
 | Forward/grant ref + dedup | `packages/opencode/src/permission/permission-forward-ref.ts`, `src/permission/index.ts` |
 | Global Orchestrator workspace | `packages/opencode/src/global/index.ts` (`orchestratorDir`), `src/cli/cmd/tui/app.tsx` |
-| flag definition | `packages/opencode/src/flag/flag.ts` (`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR`) |
+| flag definition | `packages/opencode/src/flag/flag.ts` (`Arc_EXPERIMENTAL_ORCHESTRATOR`) |

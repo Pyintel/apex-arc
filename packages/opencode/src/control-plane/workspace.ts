@@ -26,9 +26,7 @@ import { AppRuntime } from "@/effect/app-runtime"
 import { waitEvent } from "./util"
 import { WorkspaceContext } from "./workspace-context"
 
-export const Info = WorkspaceInfo.meta({
-  ref: "Workspace",
-})
+export const Info = WorkspaceInfo
 export type Info = z.infer<typeof Info>
 
 export const ConnectionStatus = z.object({

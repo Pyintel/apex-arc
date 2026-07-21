@@ -21,9 +21,7 @@ export const Info = z
       message: z.string().optional(),
     }),
   ])
-  .meta({
-    ref: "SessionStatus",
-  })
+  
 export type Info = z.infer<typeof Info>
 
 export const Event = {

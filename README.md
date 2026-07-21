@@ -15,7 +15,7 @@ Apex Arc is a terminal-native AI coding assistant. It can read and write code, r
 ```bash
 # Install via npm (all platforms)
 # Mirror registries (e.g. cnpm/taobao) may have delayed platform package sync
-npm install -g @apex-arc/cli --registry https://registry.npmjs.org
+npm install -g @pyintel/arc --registry https://registry.npmjs.org
 
 # Run
 apex-arc

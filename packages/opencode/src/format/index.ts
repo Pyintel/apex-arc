@@ -17,9 +17,7 @@ export const Status = z
     extensions: z.string().array(),
     enabled: z.boolean(),
   })
-  .meta({
-    ref: "FormatterStatus",
-  })
+  
 export type Status = z.infer<typeof Status>
 
 export interface Interface {

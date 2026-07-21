@@ -210,14 +210,14 @@ const grantApprovalOperation = z.strictObject({
 })
 
 const parameters = z.strictObject({
-  // .meta({ type: "object" }) is REQUIRED — without it, the emitted JSON
+  //  is REQUIRED — without it, the emitted JSON
   // schema's `operation` node has only `anyOf`, no `type`. Some models
   // (notably mimo-v2.5-pro) then stringify the entire envelope, producing
   // {"operation":"{\"action\":\"create\",...}"} which fails zod validation.
   // See research-tool-call-schema/REPORT.md §2.5 "success-nested" warning.
   operation: z
     .discriminatedUnion("action", [createOperation, switchOperation, listOperation, cancelOperation, askOperation, setmodeOperation, approveOperation, grantApprovalOperation])
-    .meta({ type: "object" }),
+    ,
 })
 
 type SessionInput = z.infer<typeof parameters>

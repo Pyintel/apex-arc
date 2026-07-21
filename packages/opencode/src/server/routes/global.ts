@@ -123,9 +123,7 @@ export const GlobalRoutes = lazy(() =>
                       workspace: z.string().optional(),
                       payload: z.union([...BusEvent.payloads(), ...SyncEvent.payloads()]),
                     })
-                    .meta({
-                      ref: "GlobalEvent",
-                    }),
+                    ,
                 ),
               },
             },

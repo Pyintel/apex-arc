@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@mimo-ai/sdk",
+  "name": "@pyintel/sdk",
   "version": "0.1.4",
   "description": "TypeScript SDK for the MiMoCode API",
   "keywords": ["mimo", "mimocode", "ai", "sdk", "coding-assistant"],

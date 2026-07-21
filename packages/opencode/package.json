@@ -1,13 +1,13 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "0.1.4",
-  "name": "@apex-arc/cli",
+  "version": "0.2.9",
+  "name": "@pyintel/arc",
   "type": "module",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "private": true,
+  "private": false,
   "scripts": {
     "prepare": "effect-language-service patch || true",
     "typecheck": "tsgo --noEmit",
@@ -22,7 +22,7 @@
     "db": "bun drizzle-kit"
   },
   "bin": {
-    "arc": "./bin/apex-arc"
+    "arc": "./bin/apex-arc.cjs"
   },
   "exports": {
     "./*": "./src/*.ts"
@@ -53,8 +53,8 @@
     "@babel/core": "7.28.4",
     "@effect/language-service": "0.84.2",
     "@octokit/webhooks-types": "7.6.1",
-    "@mimo-ai/script": "workspace:*",
-    "@mimo-ai/shared": "workspace:*",
+    "@pyintel/script": "^0.1.4",
+    "@pyintel/shared": "^0.1.5",
     "@parcel/watcher-darwin-arm64": "2.5.1",
     "@parcel/watcher-darwin-x64": "2.5.1",
     "@parcel/watcher-linux-arm64-glibc": "2.5.1",
@@ -77,7 +77,7 @@
     "@types/turndown": "5.0.5",
     "@types/which": "3.0.4",
     "@types/yargs": "17.0.33",
-    "@typescript/native-preview": "catalog:",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "drizzle-kit": "catalog:",
     "drizzle-orm": "catalog:",
     "typescript": "catalog:",
@@ -119,11 +119,7 @@
     "@hono/standard-validator": "0.1.5",
     "@hono/zod-validator": "catalog:",
     "@jitl/quickjs-singlefile-mjs-release-sync": "0.32.0",
-    "@lydell/node-pty": "catalog:",
-    "@mimo-ai/plugin": "workspace:*",
-    "@mimo-ai/script": "workspace:*",
-    "@mimo-ai/sdk": "workspace:*",
-    "@mimo-ai/ui": "workspace:*",
+    "@lydell/node-pty": "1.2.0-beta.14",
     "@modelcontextprotocol/sdk": "1.27.1",
     "@npmcli/arborist": "9.4.0",
     "@npmcli/config": "10.8.1",
@@ -140,6 +136,10 @@
     "@opentui/solid": "0.1.101",
     "@parcel/watcher": "2.5.1",
     "@pierre/diffs": "catalog:",
+    "@pyintel/plugin": "^0.1.6",
+    "@pyintel/script": "^0.1.4",
+    "@pyintel/sdk": "^0.1.5",
+    "@pyintel/ui": "^0.1.5",
     "@solid-primitives/event-bus": "1.1.2",
     "@solid-primitives/i18n": "2.2.1",
     "@solid-primitives/scheduled": "1.5.2",

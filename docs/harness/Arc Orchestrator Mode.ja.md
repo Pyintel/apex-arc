@@ -18,7 +18,7 @@ Orchestrator モードが解決するのはまさにこの問題だ：**ひと�
 
 **中核の境界**：Orchestrator は**実質的な作業を自分では行わない**——コードを書かず、具体的な実装計画も、品質レビューもしない。それらはすべて委譲する：計画が要る単位は `plan`（あるいは `compose`。そのワークフローに plan/review フェーズが内蔵されている）へ、コードは `build` へ。「委譲単位への分解」がその仕事であり、「ある単位をどう実装するか」と「結果のレビュー」は委譲する仕事だ。
 
-**デフォルト無効**：機能全体は単一のフラグ `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR` で制御される（§6 参照）。無効時、MiMoCode は従来どおり——Orchestrator モードも、`session` ツールも、承認ルーティングも、ワークスペース切替もない。
+**デフォルト無効**：機能全体は単一のフラグ `Arc_EXPERIMENTAL_ORCHESTRATOR` で制御される（§6 参照）。無効時、Arc は従来どおり——Orchestrator モードも、`session` ツールも、承認ルーティングも、ワークスペース切替もない。
 
 ## 2. 全体モデル
 
@@ -33,7 +33,7 @@ Orchestrator セッション（グローバルに一意、§5 参照）
    │
    │  子が完了 → actor_notification が inbox に戻る → Orchestrator を起こす
    ▼
-調整 / 統合（各 child の mimocode/* ブランチを git merge）/ ユーザーへ報告
+調整 / 統合（各 child の Arc/* ブランチを git merge）/ ユーザーへ報告
 ```
 
 - 各 child は**独立したセッション**（固有の session id・タスクパネル・メモリを持つ）で、`mode: "peer"` として**バックグラウンド**で動く。
@@ -62,13 +62,13 @@ Orchestrator セッション（グローバルに一意、§5 参照）
 Orchestrator は**汎用**の調整役で、異なるプロジェクトをまたいで作業できる。よって各 child のディレクトリと隔離は**タスクごとに決める**——現在のプロジェクトを前提にしない：
 
 - `dir` —— child が動くディレクトリ。タスクが属するプロジェクト／サブプロジェクト／作業用ディレクトリを指す。省略すれば Orchestrator 自身のディレクトリ。
-- `isolate` —— 有効時、child は `dir` のリポジトリ内の**専用 git worktree**（ブランチ `mimocode/<task>`）で走る。これにより複数の child が同じリポジトリを編集しても互いに、また Orchestrator と衝突しない。「ファイルを編集し、並行の可能性がある」場面向け。読み取り専用／単一書き込み、あるいは非 git ディレクトリでは無効に（非 git 時は `dir` で直接走るよう自動フォールバック）。
+- `isolate` —— 有効時、child は `dir` のリポジトリ内の**専用 git worktree**（ブランチ `Arc/<task>`）で走る。これにより複数の child が同じリポジトリを編集しても互いに、また Orchestrator と衝突しない。「ファイルを編集し、並行の可能性がある」場面向け。読み取り専用／単一書き込み、あるいは非 git ディレクトリでは無効に（非 git 時は `dir` で直接走るよう自動フォールバック）。
 
-worktree は `dir` のリポジトリ自身の Instance 上で作成／削除される（プロジェクト横断で正しい）。child worktree は `<data>/worktree/<projID>/<task-slug>` に置かれ、ブランチは `mimocode/<task-slug>`。
+worktree は `dir` のリポジトリ自身の Instance 上で作成／削除される（プロジェクト横断で正しい）。child worktree は `<data>/worktree/<projID>/<task-slug>` に置かれ、ブランチは `Arc/<task-slug>`。
 
 ### 3.2 統合とクリーンアップ
 
-- isolated child のコミットは自身の `mimocode/<...>` ブランチ上にある。Orchestrator が自ら git で統合する（`bash` を持つ）：`git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` で衝突を予見 → `git merge <branch>`（または cherry-pick）。child のブランチは `git worktree list` / `git branch --list 'mimocode/*'` で探す。
+- isolated child のコミットは自身の `Arc/<...>` ブランチ上にある。Orchestrator が自ら git で統合する（`bash` を持つ）：`git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` で衝突を予見 → `git merge <branch>`（または cherry-pick）。child のブランチは `git worktree list` / `git branch --list 'Arc/*'` で探す。
 - **作業がマージ済み、またはタスク放棄後にのみ** isolated child を `cancel` する——`cancel` は worktree とブランチを削除するので、**未マージ**の作業に対して行うとその作業を永久に失う。child が「完了した」からといって `cancel` してはいけない（完了はブランチ上のマージ待ちコミットを生む）。
 
 ### 3.3 ライフサイクル（no-poll / interrupt / resume）
@@ -97,7 +97,7 @@ Orchestrator の child には人へ至る経路がある——その親セッシ
 
 Orchestrator モードは**固定のグローバル作業ディレクトリ**（`<data>/orchestrator`、`src/global/index.ts` の `orchestratorDir()`）を使う：
 
-- どのディレクトリから MiMoCode を起動しても、**Orchestrator モードへ切り替える**と TUI の作業ディレクトリがこのグローバルディレクトリに切り替わり、そこにある**唯一の**ルート Orchestrator セッションに着地する（find-or-create）。
+- どのディレクトリから Arc を起動しても、**Orchestrator モードへ切り替える**と TUI の作業ディレクトリがこのグローバルディレクトリに切り替わり、そこにある**唯一の**ルート Orchestrator セッションに着地する（find-or-create）。
 - したがって、どこで起動しても常に同じ Orchestrator セッションになる——以前作った child セッションが常に見え、アクセスできる。さもなくば、異なるディレクトリでの起動が異なる Orchestrator セッションになり、以前作った子が見つからなくなる。
 
 切替は worktree ダイアログの手順を再利用する：`instance.dispose → switchDirectory → sync.bootstrap →` ルートセッションを探す／作って遷移。サーバーの cwd 包含チェックは、この app 所有のグローバルディレクトリを許可する（機能が有効なときのみ）。
@@ -107,10 +107,10 @@ Orchestrator モードは**固定のグローバル作業ディレクトリ**（
 単一フラグが機能全体を制御し、**デフォルト無効**、明示的なオプトイン：
 
 ```
-MIMOCODE_EXPERIMENTAL_ORCHESTRATOR: MIMOCODE_EXPERIMENTAL || truthy("MIMOCODE_EXPERIMENTAL_ORCHESTRATOR")
+Arc_EXPERIMENTAL_ORCHESTRATOR: Arc_EXPERIMENTAL || truthy("Arc_EXPERIMENTAL_ORCHESTRATOR")
 ```
 
-- 既定 **OFF**；`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true` で有効化（傘となる `MIMOCODE_EXPERIMENTAL=1` でも同時に有効になる）。
+- 既定 **OFF**；`Arc_EXPERIMENTAL_ORCHESTRATOR=true` で有効化（傘となる `Arc_EXPERIMENTAL=1` でも同時に有効になる）。
 - **二つの要となるゲート**が、無効時に機能を完全に消す：
   1. **エージェント登録**（`src/agent/agent.ts`）—— orchestrator エージェントはフラグ有効時にのみ条件付き展開で登録される（`max` モードのやり方に合わせる）。無効時はエージェント集合に入らず、TUI のモード巡回（Tab）、エージェントダイアログ、`defaultAgent` に現れず、peer も割り当てられない。
   2. **ツール登録**（`src/tool/registry.ts`）—— `session` ツールはフラグ有効時にのみ登録される。無効時はどのエージェントも取得できない。
@@ -120,12 +120,12 @@ MIMOCODE_EXPERIMENTAL_ORCHESTRATOR: MIMOCODE_EXPERIMENTAL || truthy("MIMOCODE_EX
 
 ## 7. クイックスタート
 
-1. 機能を有効化：`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true`（または `MIMOCODE_EXPERIMENTAL=1`）。
-2. MiMoCode を起動し、**Tab** で **Orchestrator** モードに巡回する——作業ディレクトリは自動でグローバル Orchestrator ワークスペースに切り替わり、唯一の Orchestrator セッションに着地する。
+1. 機能を有効化：`Arc_EXPERIMENTAL_ORCHESTRATOR=true`（または `Arc_EXPERIMENTAL=1`）。
+2. Arc を起動し、**Tab** で **Orchestrator** モードに巡回する——作業ディレクトリは自動でグローバル Orchestrator ワークスペースに切り替わり、唯一の Orchestrator セッションに着地する。
 3. 作業を任せる。例：*「build モードの子を作り、repo1 にログインページを追加。dir は /path/to/repo1、isolate を有効に。さらに compose の子を作り repo2 の課金スキーマを設計。」*
 4. `/sessions`（または Orchestrator に `session list` させる）で `↳` 付きの子を確認；選べば完全に attach して閲覧／引き継ぎでき、session-parent キーバインドで戻れる。
 5. 子の完了は Orchestrator を起こしあなたに toast する；承認が要る操作はあなたに転送される（または `grant-approval` の授権により自動承認）。
-6. 満足したら、各 isolated child の `mimocode/*` ブランチを Orchestrator にマージ／統合させる。
+6. 満足したら、各 isolated child の `Arc/*` ブランチを Orchestrator にマージ／統合させる。
 
 ## 8. 関連ソース
 
@@ -138,4 +138,4 @@ MIMOCODE_EXPERIMENTAL_ORCHESTRATOR: MIMOCODE_EXPERIMENTAL || truthy("MIMOCODE_EX
 | 権限承認ルーティング判定 | `packages/opencode/src/agent/config.ts`（`decideAskRouting`） |
 | 転送／授権 ref + 重複排除 | `packages/opencode/src/permission/permission-forward-ref.ts`、`src/permission/index.ts` |
 | グローバル Orchestrator ワークスペース | `packages/opencode/src/global/index.ts`（`orchestratorDir`）、`src/cli/cmd/tui/app.tsx` |
-| フラグ定義 | `packages/opencode/src/flag/flag.ts`（`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR`） |
+| フラグ定義 | `packages/opencode/src/flag/flag.ts`（`Arc_EXPERIMENTAL_ORCHESTRATOR`） |

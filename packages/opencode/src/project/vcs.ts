@@ -118,9 +118,7 @@ export const Info = z
     branch: z.string().optional(),
     default_branch: z.string().optional(),
   })
-  .meta({
-    ref: "VcsInfo",
-  })
+  
 export type Info = z.infer<typeof Info>
 
 export const FileDiff = z
@@ -131,9 +129,7 @@ export const FileDiff = z
     deletions: z.number(),
     status: z.enum(["added", "deleted", "modified"]).optional(),
   })
-  .meta({
-    ref: "VcsFileDiff",
-  })
+  
 export type FileDiff = z.infer<typeof FileDiff>
 
 export interface Interface {

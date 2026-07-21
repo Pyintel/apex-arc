@@ -1,5 +1,5 @@
 {
-  "name": "@mimo-ai/enterprise",
+  "name": "@pyintel/enterprise",
   "version": "0.1.4",
   "private": true,
   "type": "module",
@@ -13,8 +13,8 @@
     "shell-prod": "sst shell --target Teams --stage production"
   },
   "dependencies": {
-    "@mimo-ai/shared": "workspace:*",
-    "@mimo-ai/ui": "workspace:*",
+    "@pyintel/shared": "workspace:*",
+    "@pyintel/ui": "workspace:*",
     "aws4fetch": "^1.0.20",
     "@pierre/diffs": "catalog:",
     "@solidjs/router": "catalog:",

@@ -50,3 +50,8 @@ experiment/last-outcome.json
 temp/
 __pycache__
 Thumbs.db
+
+# .arc runtime state (regenerated locally, not source)
+.arc/.cron-lock
+.arc/plans/
+packages/opencode/.arc/.cron-lock

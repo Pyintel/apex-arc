@@ -90,7 +90,7 @@ function walkUncached(ast: SchemaAST.AST): z.ZodTypeAny {
   const desc = SchemaAST.resolveDescription(ast)
   const ref = SchemaAST.resolveIdentifier(ast)
   const described = desc ? out.describe(desc) : out
-  return ref ? described.meta({ ref }) : described
+  return ref ? described : described
 }
 
 // Walk the encoded side and apply each link's decode to produce the decoded

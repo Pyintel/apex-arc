@@ -109,7 +109,7 @@ const renameOperation = z.strictObject({
 })
 
 const parameters = z.strictObject({
-  // .meta({ type: "object" }) is REQUIRED — without it, the emitted JSON
+  //  is REQUIRED — without it, the emitted JSON
   // schema's `operation` node has only `anyOf`, no `type`. Some models
   // (notably mimo-v2.5-pro) then stringify the entire envelope, producing
   // {"operation":"{\"action\":\"create\",...}"} which fails zod validation.
@@ -126,7 +126,7 @@ const parameters = z.strictObject({
       abandonOperation,
       renameOperation,
     ])
-    .meta({ type: "object" }),
+    ,
 })
 
 type TaskInput = z.infer<typeof parameters>

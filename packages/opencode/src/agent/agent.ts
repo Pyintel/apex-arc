@@ -56,9 +56,7 @@ export const Info = z
     steps: z.number().int().positive().optional(),
     toolAllowlist: z.array(z.string()).optional(),
   })
-  .meta({
-    ref: "Agent",
-  })
+  
 export type Info = z.infer<typeof Info>
 
 export interface Interface {

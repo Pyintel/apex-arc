@@ -36,9 +36,7 @@ export const EventRoutes = () =>
           content: {
             "text/event-stream": {
               schema: resolver(
-                z.union(BusEvent.payloads()).meta({
-                  ref: "Event",
-                }),
+                z.union(BusEvent.payloads()),
               ),
             },
           },

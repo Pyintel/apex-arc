@@ -21,7 +21,7 @@ plan mode by routing `bash`/`change_directory`/`workflow` to `"ask"` and forcing
 plan-spawned subagents to a read-only allowlist, on top of the edit/write block.
 In review it was sound, but a design discussion concluded it overreached:
 
-- **opencode/mimocode favors trusting the model and minimizing user prompts.**
+- **opencode/Arc favors trusting the model and minimizing user prompts.**
   The permission layer is a **backstop**, not an active gate.
 - Gating `bash` via `"ask"` causes **repeated confirmation prompts** for plainly
   read-only shell use (`git status`, `ls`, `cat`, running tests), because the
@@ -83,7 +83,7 @@ permission mechanism).
 
 Plan's `hardPermission`:
 ```
-edit: { "*": "deny", ".mimocode/plans/*.md": "allow", <data>/plans/*.md: "allow" }
+edit: { "*": "deny", ".Arc/plans/*.md": "allow", <data>/plans/*.md: "allow" }
 ```
 The `"*":"deny"` carries a non-`"*"` allow exception, so `Permission.disabled()`
 does **not** strip the edit tool from the schema — entering plan mode does not

@@ -18,7 +18,7 @@ Orchestrator 模式要解决的正是这个问题：**让你只用一个窗口�
 
 **核心边界**：Orchestrator 自己**不做实质工作**——不写代码、不做具体实现规划、不做质量评审。这些都委派出去：需要规划的单元派 `plan`（或 `compose`，其工作流内含 plan/review 阶段）；写代码派 `build`。"拆分成派发单元"是它的活；"某个单元怎么实现"和"评审结果"是它委派的活。
 
-**默认关闭**：整套能力由单一 flag `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR` 门控（见第 6 章）。关闭时 MiMoCode 与从前完全一致——没有 Orchestrator 模式、没有 `session` 工具、没有审批路由、没有工作区切换。
+**默认关闭**：整套能力由单一 flag `Arc_EXPERIMENTAL_ORCHESTRATOR` 门控（见第 6 章）。关闭时 Arc 与从前完全一致——没有 Orchestrator 模式、没有 `session` 工具、没有审批路由、没有工作区切换。
 
 ## 2. 整体模型
 
@@ -33,7 +33,7 @@ Orchestrator 会话（全局唯一，见 §5）
    │
    │  子会话完成 → actor_notification 回到 inbox → 唤醒 Orchestrator
    ▼
-协调 / 集成（git merge 各 child 的 mimocode/* 分支）/ 汇报给用户
+协调 / 集成（git merge 各 child 的 Arc/* 分支）/ 汇报给用户
 ```
 
 - 每个 child 是一个**独立会话**（有自己的 session id、任务面板、记忆），以 `mode: "peer"` 在**后台**运行。
@@ -62,13 +62,13 @@ Orchestrator 会话（全局唯一，见 §5）
 Orchestrator 是**通用**协调者，可跨不同项目干活，所以每个 child 的目录与隔离**按任务逐个决定**，不假设当前项目：
 
 - `dir` —— child 运行的目录。指向任务所属的项目/子项目/临时目录；省略则用 Orchestrator 自己的目录。
-- `isolate` —— 打开后，child 在 `dir` 所属仓库里跑在**它自己的 git worktree**（分支 `mimocode/<任务>`），这样多个 child 编辑同一仓库时互不冲突、也不与 Orchestrator 冲突。适合"会改文件、且可能并发"的场景；只读/单写、或非 git 目录则关闭（非 git 时自动降级为直接在 `dir` 里跑）。
+- `isolate` —— 打开后，child 在 `dir` 所属仓库里跑在**它自己的 git worktree**（分支 `Arc/<任务>`），这样多个 child 编辑同一仓库时互不冲突、也不与 Orchestrator 冲突。适合"会改文件、且可能并发"的场景；只读/单写、或非 git 目录则关闭（非 git 时自动降级为直接在 `dir` 里跑）。
 
-worktree 在 `dir` 所属仓库自己的 Instance 上创建/删除（跨项目正确）；child worktree 位于 `<data>/worktree/<projID>/<task-slug>`，分支为 `mimocode/<task-slug>`。
+worktree 在 `dir` 所属仓库自己的 Instance 上创建/删除（跨项目正确）；child worktree 位于 `<data>/worktree/<projID>/<task-slug>`，分支为 `Arc/<task-slug>`。
 
 ### 3.2 集成与清理
 
-- 一个 isolated child 的提交在它自己的 `mimocode/<...>` 分支上。Orchestrator 自己用 git 集成（它有 `bash`）：`git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` 预览冲突 → `git merge <branch>`（或 cherry-pick）。用 `git worktree list` / `git branch --list 'mimocode/*'` 找 child 分支。
+- 一个 isolated child 的提交在它自己的 `Arc/<...>` 分支上。Orchestrator 自己用 git 集成（它有 `bash`）：`git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` 预览冲突 → `git merge <branch>`（或 cherry-pick）。用 `git worktree list` / `git branch --list 'Arc/*'` 找 child 分支。
 - **只在工作已合并、或任务被放弃后才 `cancel`** 一个 isolated child —— `cancel` 会删 worktree 和分支，对**未合并**的工作执行会永久丢失该工作。不要因为 child "完成了"就 cancel（完成产生的是它分支上待合并的提交）。
 
 ### 3.3 生命周期（no-poll / interrupt / resume）
@@ -97,7 +97,7 @@ Orchestrator 的 child 有一条通往人的路径——它的父会话与看 TU
 
 Orchestrator 模式使用一个**固定的全局工作目录**（`<data>/orchestrator`，`src/global/index.ts` 的 `orchestratorDir()`）：
 
-- 无论从哪个目录启动 MiMoCode，**切到 Orchestrator 模式**都会把 TUI 的工作目录切到这个全局目录，并落到那里**唯一的**根 Orchestrator 会话（find-or-create）。
+- 无论从哪个目录启动 Arc，**切到 Orchestrator 模式**都会把 TUI 的工作目录切到这个全局目录，并落到那里**唯一的**根 Orchestrator 会话（find-or-create）。
 - 因此不管在哪启动，永远是同一个 Orchestrator 会话——之前建过的 child 会话始终可见、可访问。否则在不同目录启动会得到不同的 Orchestrator 会话，用户就找不到之前创建的子会话了。
 
 切换序列复用 worktree 对话框的模式：`instance.dispose → switchDirectory → sync.bootstrap →` 找到/新建根会话并导航。服务器的目录 cwd 包含性校验对这个 app 自有的全局目录放行（仅在功能开启时）。
@@ -107,10 +107,10 @@ Orchestrator 模式使用一个**固定的全局工作目录**（`<data>/orchest
 单一 flag 门控整套能力，**默认关闭**、显式 opt-in：
 
 ```
-MIMOCODE_EXPERIMENTAL_ORCHESTRATOR: MIMOCODE_EXPERIMENTAL || truthy("MIMOCODE_EXPERIMENTAL_ORCHESTRATOR")
+Arc_EXPERIMENTAL_ORCHESTRATOR: Arc_EXPERIMENTAL || truthy("Arc_EXPERIMENTAL_ORCHESTRATOR")
 ```
 
-- 默认 **OFF**；设 `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true` 开启（伞形 `MIMOCODE_EXPERIMENTAL=1` 也会一并开启）。
+- 默认 **OFF**；设 `Arc_EXPERIMENTAL_ORCHESTRATOR=true` 开启（伞形 `Arc_EXPERIMENTAL=1` 也会一并开启）。
 - **两个承重门控**让功能在关闭时彻底消失：
   1. **agent 注册**（`src/agent/agent.ts`）—— orchestrator agent 仅在 flag 开启时以条件展开注册（对齐 `max` 模式的写法）。关闭时它不进 agent 集合，因而不出现在 TUI 模式循环（Tab）、agent 对话框、`defaultAgent`，也无从派发 peer。
   2. **工具注册**（`src/tool/registry.ts`）—— `session` 工具仅在 flag 开启时注册。关闭时任何 agent 都拿不到它。
@@ -120,12 +120,12 @@ Flag 在 import 时求值一次（读 `process.env`）。测试里在 `test/prel
 
 ## 7. 快速上手
 
-1. 开启功能：`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true`（或 `MIMOCODE_EXPERIMENTAL=1`）。
-2. 启动 MiMoCode，按 **Tab** 循环到 **Orchestrator** 模式——工作目录会自动切到全局 Orchestrator 工作区，落到唯一的 Orchestrator 会话。
+1. 开启功能：`Arc_EXPERIMENTAL_ORCHESTRATOR=true`（或 `Arc_EXPERIMENTAL=1`）。
+2. 启动 Arc，按 **Tab** 循环到 **Orchestrator** 模式——工作目录会自动切到全局 Orchestrator 工作区，落到唯一的 Orchestrator 会话。
 3. 让它派活，例如：*"创建一个 build 模式的子会话，任务是给 repo1 加登录页，目录设为 /path/to/repo1，启用 isolate；再创建一个 compose 子会话去 repo2 设计计费 schema。"*
 4. 用 `/sessions`（或让 Orchestrator `session list`）查看带 `↳` 的子会话；选中即可完整 attach 进去查看/接管，用 session-parent 快捷键返回。
 5. 子会话完成会唤醒 Orchestrator 并给你 toast；需要审批的操作会转发给你（或按你的 `grant-approval` 授权自动批）。
-6. 满意后让 Orchestrator 把各 isolated child 的 `mimocode/*` 分支合并集成。
+6. 满意后让 Orchestrator 把各 isolated child 的 `Arc/*` 分支合并集成。
 
 ## 8. 相关源码
 
@@ -138,4 +138,4 @@ Flag 在 import 时求值一次（读 `process.env`）。测试里在 `test/prel
 | 权限审批路由决策 | `packages/opencode/src/agent/config.ts`（`decideAskRouting`） |
 | 转发/授权 ref + 去重 | `packages/opencode/src/permission/permission-forward-ref.ts`、`src/permission/index.ts` |
 | 全局 Orchestrator 工作区 | `packages/opencode/src/global/index.ts`（`orchestratorDir`）、`src/cli/cmd/tui/app.tsx` |
-| flag 定义 | `packages/opencode/src/flag/flag.ts`（`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR`） |
+| flag 定义 | `packages/opencode/src/flag/flag.ts`（`Arc_EXPERIMENTAL_ORCHESTRATOR`） |

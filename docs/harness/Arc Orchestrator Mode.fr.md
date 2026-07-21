@@ -18,7 +18,7 @@ Les modes de codage normaux (build / plan / compose) sont des « exécutants » 
 
 **Frontière fondamentale** : l'Orchestrator ne fait **aucun travail substantiel lui-même** — pas d'écriture de code, pas de planification d'implémentation concrète, pas de revue de qualité. Tout cela est délégué : une unité nécessitant de la planification va à `plan` (ou `compose`, dont le flux intègre des phases plan/review) ; le code va à `build`. « Décomposer en unités à distribuer » est son travail ; « comment une unité donnée est implémentée » et « la revue du résultat » sont des travaux qu'il délègue.
 
-**Désactivé par défaut** : toute la capacité est protégée par un unique drapeau `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR` (voir §6). Désactivé, MiMoCode se comporte comme avant — pas de mode Orchestrator, pas d'outil `session`, pas de routage d'approbation, pas de changement d'espace de travail.
+**Désactivé par défaut** : toute la capacité est protégée par un unique drapeau `Arc_EXPERIMENTAL_ORCHESTRATOR` (voir §6). Désactivé, Arc se comporte comme avant — pas de mode Orchestrator, pas d'outil `session`, pas de routage d'approbation, pas de changement d'espace de travail.
 
 ## 2. Modèle global
 
@@ -33,7 +33,7 @@ session Orchestrator (globalement unique, voir §5)
    │
    │  l'enfant finit → actor_notification revient à l'inbox → réveille l'Orchestrator
    ▼
-coordonner / intégrer (git merge la branche mimocode/* de chaque enfant) / rendre compte
+coordonner / intégrer (git merge la branche Arc/* de chaque enfant) / rendre compte
 ```
 
 - Chaque enfant est une **session indépendante** (son propre session id, panneau de tâches, mémoire), tournant en **arrière-plan** avec `mode: "peer"`.
@@ -62,13 +62,13 @@ Implémentation : `packages/opencode/src/tool/session.ts` (liste des verbes `KNO
 L'Orchestrator est un coordinateur **généraliste** pouvant travailler à travers différents projets ; le répertoire et l'isolation de chaque enfant sont donc **décidés par tâche**, sans présumer du projet courant :
 
 - `dir` — le répertoire où tourne l'enfant. Pointez-le vers le projet/sous-projet/répertoire de travail auquel appartient la tâche ; omettez-le pour utiliser celui de l'Orchestrator.
-- `isolate` — activé, l'enfant tourne dans **son propre git worktree** du dépôt de `dir` (branche `mimocode/<tâche>`), afin que plusieurs enfants éditant le même dépôt n'entrent pas en collision entre eux ni avec l'Orchestrator. À utiliser pour « va éditer des fichiers, possiblement en concurrence » ; laissez désactivé pour le lecture seule/écrivain unique, ou un `dir` non-git (qui bascule alors sur une exécution directe dans `dir`).
+- `isolate` — activé, l'enfant tourne dans **son propre git worktree** du dépôt de `dir` (branche `Arc/<tâche>`), afin que plusieurs enfants éditant le même dépôt n'entrent pas en collision entre eux ni avec l'Orchestrator. À utiliser pour « va éditer des fichiers, possiblement en concurrence » ; laissez désactivé pour le lecture seule/écrivain unique, ou un `dir` non-git (qui bascule alors sur une exécution directe dans `dir`).
 
-Le worktree est créé/supprimé dans l'Instance du dépôt de `dir` (correct entre projets) ; un worktree enfant se trouve à `<data>/worktree/<projID>/<task-slug>`, sur la branche `mimocode/<task-slug>`.
+Le worktree est créé/supprimé dans l'Instance du dépôt de `dir` (correct entre projets) ; un worktree enfant se trouve à `<data>/worktree/<projID>/<task-slug>`, sur la branche `Arc/<task-slug>`.
 
 ### 3.2 Intégration et nettoyage
 
-- Les commits d'un enfant isolé vivent sur sa propre branche `mimocode/<...>`. L'Orchestrator les intègre lui-même avec git (il a `bash`) : `git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` pour prévisualiser les conflits → `git merge <branch>` (ou cherry-pick). Trouvez la branche d'un enfant via `git worktree list` / `git branch --list 'mimocode/*'`.
+- Les commits d'un enfant isolé vivent sur sa propre branche `Arc/<...>`. L'Orchestrator les intègre lui-même avec git (il a `bash`) : `git log <branch>` / `git diff <base>...<branch>` / `git merge-tree` pour prévisualiser les conflits → `git merge <branch>` (ou cherry-pick). Trouvez la branche d'un enfant via `git worktree list` / `git branch --list 'Arc/*'`.
 - **Ne `cancel` un enfant isolé qu'une fois son travail fusionné, ou la tâche abandonnée** — `cancel` supprime le worktree et la branche, donc le faire sur du travail **non fusionné** perd ce travail définitivement. Ne `cancel` pas un enfant simplement parce qu'il a « fini » (finir produit des commits sur sa branche encore à fusionner).
 
 ### 3.3 Cycle de vie (no-poll / interrupt / resume)
@@ -97,7 +97,7 @@ Un enfant d'Orchestrator a bien un chemin vers un humain — sa session parente 
 
 Le mode Orchestrator utilise un **répertoire de travail global fixe** (`<data>/orchestrator`, via `orchestratorDir()` dans `src/global/index.ts`) :
 
-- Peu importe le répertoire depuis lequel vous lancez MiMoCode, **basculer en mode Orchestrator** bascule le répertoire de travail de la TUI vers ce répertoire global et atterrit sur l'**unique** session Orchestrator racine (find-or-create).
+- Peu importe le répertoire depuis lequel vous lancez Arc, **basculer en mode Orchestrator** bascule le répertoire de travail de la TUI vers ce répertoire global et atterrit sur l'**unique** session Orchestrator racine (find-or-create).
 - C'est donc toujours la même session Orchestrator quel que soit le point de lancement — les sessions enfants créées auparavant sont toujours visibles et accessibles. Sinon, un lancement depuis des répertoires différents donnerait des sessions Orchestrator différentes, et vous ne retrouveriez pas les enfants créés avant.
 
 Le basculement réutilise la séquence de la boîte de dialogue worktree : `instance.dispose → switchDirectory → sync.bootstrap →` trouver/créer la session racine et naviguer. Le contrôle de confinement au cwd du serveur autorise ce répertoire global appartenant à l'app (uniquement quand la fonctionnalité est activée).
@@ -107,10 +107,10 @@ Le basculement réutilise la séquence de la boîte de dialogue worktree : `inst
 Un unique drapeau protège toute la capacité, **désactivé par défaut**, opt-in explicite :
 
 ```
-MIMOCODE_EXPERIMENTAL_ORCHESTRATOR: MIMOCODE_EXPERIMENTAL || truthy("MIMOCODE_EXPERIMENTAL_ORCHESTRATOR")
+Arc_EXPERIMENTAL_ORCHESTRATOR: Arc_EXPERIMENTAL || truthy("Arc_EXPERIMENTAL_ORCHESTRATOR")
 ```
 
-- Défaut **OFF** ; mettez `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true` pour activer (le parapluie `MIMOCODE_EXPERIMENTAL=1` l'active aussi).
+- Défaut **OFF** ; mettez `Arc_EXPERIMENTAL_ORCHESTRATOR=true` pour activer (le parapluie `Arc_EXPERIMENTAL=1` l'active aussi).
 - **Deux portes porteuses** font disparaître complètement la fonctionnalité désactivée :
   1. **Enregistrement de l'agent** (`src/agent/agent.ts`) — l'agent orchestrator n'est enregistré que lorsque le drapeau est activé, via un spread conditionnel (comme pour le mode `max`). Désactivé, il n'est pas dans l'ensemble des agents, donc n'apparaît pas dans le cycle de modes de la TUI (Tab), la boîte de dialogue des agents, ni `defaultAgent`, et aucun peer ne peut être distribué.
   2. **Enregistrement de l'outil** (`src/tool/registry.ts`) — l'outil `session` n'est enregistré que lorsque le drapeau est activé. Désactivé, aucun agent ne peut l'obtenir.
@@ -120,12 +120,12 @@ Le drapeau est évalué une fois à l'import (lit `process.env`). Les tests le m
 
 ## 7. Démarrage rapide
 
-1. Activez la fonctionnalité : `MIMOCODE_EXPERIMENTAL_ORCHESTRATOR=true` (ou `MIMOCODE_EXPERIMENTAL=1`).
-2. Lancez MiMoCode et appuyez sur **Tab** pour cycler jusqu'au mode **Orchestrator** — le répertoire de travail bascule automatiquement vers l'espace de travail Orchestrator global et atterrit sur l'unique session Orchestrator.
+1. Activez la fonctionnalité : `Arc_EXPERIMENTAL_ORCHESTRATOR=true` (ou `Arc_EXPERIMENTAL=1`).
+2. Lancez Arc et appuyez sur **Tab** pour cycler jusqu'au mode **Orchestrator** — le répertoire de travail bascule automatiquement vers l'espace de travail Orchestrator global et atterrit sur l'unique session Orchestrator.
 3. Confiez-lui du travail, ex. : *« Crée un enfant en mode build pour ajouter une page de connexion à repo1, dir réglé sur /path/to/repo1, avec isolate activé ; et un enfant compose pour concevoir le schéma de facturation dans repo2. »*
 4. Utilisez `/sessions` (ou faites faire `session list` à l'Orchestrator) pour voir les enfants étiquetés `↳` ; sélectionnez-en un pour vous y attacher entièrement afin de consulter/reprendre, et revenez avec le raccourci session-parent.
 5. La fin d'un enfant réveille l'Orchestrator et vous affiche un toast ; les opérations nécessitant une approbation vous sont transférées (ou auto-approuvées selon votre `grant-approval`).
-6. Une fois satisfait, faites fusionner/intégrer par l'Orchestrator la branche `mimocode/*` de chaque enfant isolé.
+6. Une fois satisfait, faites fusionner/intégrer par l'Orchestrator la branche `Arc/*` de chaque enfant isolé.
 
 ## 8. Sources associées
 
@@ -138,4 +138,4 @@ Le drapeau est évalué une fois à l'import (lit `process.env`). Les tests le m
 | Décision de routage d'approbation des permissions | `packages/opencode/src/agent/config.ts` (`decideAskRouting`) |
 | Ref de transfert/autorisation + déduplication | `packages/opencode/src/permission/permission-forward-ref.ts`, `src/permission/index.ts` |
 | Espace de travail Orchestrator global | `packages/opencode/src/global/index.ts` (`orchestratorDir`), `src/cli/cmd/tui/app.tsx` |
-| Définition du drapeau | `packages/opencode/src/flag/flag.ts` (`MIMOCODE_EXPERIMENTAL_ORCHESTRATOR`) |
+| Définition du drapeau | `packages/opencode/src/flag/flag.ts` (`Arc_EXPERIMENTAL_ORCHESTRATOR`) |

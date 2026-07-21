@@ -1,5 +1,5 @@
 {
-  "name": "@mimo-ai/slack",
+  "name": "@pyintel/slack",
   "version": "0.1.4",
   "type": "module",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@mimo-ai/sdk": "workspace:*",
+    "@pyintel/sdk": "workspace:*",
     "@slack/bolt": "^3.17.1"
   },
   "devDependencies": {

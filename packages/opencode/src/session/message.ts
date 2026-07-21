@@ -20,9 +20,7 @@ export const ToolCall = z
     toolName: z.string(),
     args: z.custom<Required<unknown>>(),
   })
-  .meta({
-    ref: "ToolCall",
-  })
+  
 export type ToolCall = z.infer<typeof ToolCall>
 
 export const ToolPartialCall = z
@@ -33,9 +31,7 @@ export const ToolPartialCall = z
     toolName: z.string(),
     args: z.custom<Required<unknown>>(),
   })
-  .meta({
-    ref: "ToolPartialCall",
-  })
+  
 export type ToolPartialCall = z.infer<typeof ToolPartialCall>
 
 export const ToolResult = z
@@ -47,14 +43,10 @@ export const ToolResult = z
     args: z.custom<Required<unknown>>(),
     result: z.string(),
   })
-  .meta({
-    ref: "ToolResult",
-  })
+  
 export type ToolResult = z.infer<typeof ToolResult>
 
-export const ToolInvocation = z.discriminatedUnion("state", [ToolCall, ToolPartialCall, ToolResult]).meta({
-  ref: "ToolInvocation",
-})
+export const ToolInvocation = z.discriminatedUnion("state", [ToolCall, ToolPartialCall, ToolResult])
 export type ToolInvocation = z.infer<typeof ToolInvocation>
 
 export const TextPart = z
@@ -62,9 +54,7 @@ export const TextPart = z
     type: z.literal("text"),
     text: z.string(),
   })
-  .meta({
-    ref: "TextPart",
-  })
+  
 export type TextPart = z.infer<typeof TextPart>
 
 export const ReasoningPart = z
@@ -73,9 +63,7 @@ export const ReasoningPart = z
     text: z.string(),
     providerMetadata: z.record(z.string(), z.any()).optional(),
   })
-  .meta({
-    ref: "ReasoningPart",
-  })
+  
 export type ReasoningPart = z.infer<typeof ReasoningPart>
 
 export const ToolInvocationPart = z
@@ -83,9 +71,7 @@ export const ToolInvocationPart = z
     type: z.literal("tool-invocation"),
     toolInvocation: ToolInvocation,
   })
-  .meta({
-    ref: "ToolInvocationPart",
-  })
+  
 export type ToolInvocationPart = z.infer<typeof ToolInvocationPart>
 
 export const SourceUrlPart = z
@@ -96,9 +82,7 @@ export const SourceUrlPart = z
     title: z.string().optional(),
     providerMetadata: z.record(z.string(), z.any()).optional(),
   })
-  .meta({
-    ref: "SourceUrlPart",
-  })
+  
 export type SourceUrlPart = z.infer<typeof SourceUrlPart>
 
 export const FilePart = z
@@ -108,25 +92,19 @@ export const FilePart = z
     filename: z.string().optional(),
     url: z.string(),
   })
-  .meta({
-    ref: "FilePart",
-  })
+  
 export type FilePart = z.infer<typeof FilePart>
 
 export const StepStartPart = z
   .object({
     type: z.literal("step-start"),
   })
-  .meta({
-    ref: "StepStartPart",
-  })
+  
 export type StepStartPart = z.infer<typeof StepStartPart>
 
 export const MessagePart = z
   .discriminatedUnion("type", [TextPart, ReasoningPart, ToolInvocationPart, SourceUrlPart, FilePart, StepStartPart])
-  .meta({
-    ref: "MessagePart",
-  })
+  
 export type MessagePart = z.infer<typeof MessagePart>
 
 export const Info = z
@@ -141,7 +119,7 @@ export const Info = z
           completed: z.number().optional(),
         }),
         error: z
-          .discriminatedUnion("name", [AuthError.Schema, NamedError.Unknown.Schema, OutputLengthError.Schema])
+          .union([AuthError.Schema, NamedError.Unknown.Schema, OutputLengthError.Schema])
           .optional(),
         sessionID: SessionID.zod,
         tool: z.record(
@@ -181,11 +159,9 @@ export const Info = z
           .optional(),
         snapshot: z.string().optional(),
       })
-      .meta({ ref: "MessageMetadata" }),
+      ,
   })
-  .meta({
-    ref: "Message",
-  })
+  
 export type Info = z.infer<typeof Info>
 
 export * as Message from "./message"

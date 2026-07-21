@@ -11,7 +11,7 @@ export const Info = z
     content: z.string().describe("Brief description of the task"),
     status: z.string().describe("Current status of the task: pending, in_progress, completed, cancelled"),
   })
-  .meta({ ref: "Todo" })
+  
 export type Info = z.infer<typeof Info>
 
 export const Event = {

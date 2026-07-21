@@ -3922,9 +3922,7 @@ export const PromptInput = z.object({
         .partial({
           id: true,
         })
-        .meta({
-          ref: "TextPartInput",
-        }),
+        ,
       MessageV2.FilePart.omit({
         messageID: true,
         sessionID: true,
@@ -3932,9 +3930,7 @@ export const PromptInput = z.object({
         .partial({
           id: true,
         })
-        .meta({
-          ref: "FilePartInput",
-        }),
+        ,
       MessageV2.AgentPart.omit({
         messageID: true,
         sessionID: true,
@@ -3942,9 +3938,7 @@ export const PromptInput = z.object({
         .partial({
           id: true,
         })
-        .meta({
-          ref: "AgentPartInput",
-        }),
+        ,
       MessageV2.SubtaskPart.omit({
         messageID: true,
         sessionID: true,
@@ -3952,9 +3946,7 @@ export const PromptInput = z.object({
         .partial({
           id: true,
         })
-        .meta({
-          ref: "SubtaskPartInput",
-        }),
+        ,
     ]),
   ),
 })
