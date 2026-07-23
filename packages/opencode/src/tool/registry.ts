@@ -44,6 +44,7 @@ import {
   GithubRenameRepoTool,
   BundleCodebaseTool,
 } from "./agent-tools-wrapper"
+import { CalendarCreateTool, CalendarListTool } from "./google-calendar"
 import * as Tool from "./tool"
 import { Config } from "../config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@mimo-ai/plugin"
@@ -357,6 +358,8 @@ export const layer = Layer.effect(
           githublistrepos: Tool.init(githublistrepostool),
           githubrenamerepo: Tool.init(githubrenamerepotool),
           bundlecodebase: Tool.init(bundlecodebasetool),
+          calendarcreate: Tool.init(CalendarCreateTool),
+          calendarlist: Tool.init(CalendarListTool),
           hwlistdevices: Tool.init(hwlistdevicestool),
           hwflash: Tool.init(hwflashtool),
           hwserialmonitor: Tool.init(hwserialmonitortool),
@@ -432,6 +435,8 @@ export const layer = Layer.effect(
             tool.githublistrepos,
             tool.githubrenamerepo,
             tool.bundlecodebase,
+            tool.calendarcreate,
+            tool.calendarlist,
             tool.hwlistdevices,
             tool.hwflash,
             tool.hwserialmonitor,
