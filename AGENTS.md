@@ -106,3 +106,11 @@ const table = sqliteTable("session", {
 ## Type Checking
 
 - Always run `bun typecheck` from package directories (e.g., `packages/opencode`), never `tsc` directly.
+
+## Google Workspace Integrations
+
+Apex Arc has 10 built-in Google Workspace tools for your productivity (`gmail_send`, `gmail_draft`, `calendar_create`, `calendar_list`, `sheets_append`, `sheets_read`, `docs_get`, `docs_create`, `drive_upload`, `drive_list`). 
+When the user asks to manage emails, calendar events, or documents against `docs/tasks.md`:
+1. Use the tools directly. They take an `account` parameter (an email address like `rites@oakland.edu`).
+2. **Safety first**: Use `gmail_draft` by default unless the user explicitly tells you to send. `gmail_send` requires `confirm: true` to bypass the draft safety gate.
+3. For calendar events, timezone is America/Detroit (EDT is `-04:00`, EST is `-05:00`). Use `sendUpdates: "all"` only if explicitly requested.

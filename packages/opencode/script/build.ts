@@ -17,7 +17,7 @@ await import("./generate.ts")
 import { Script } from "@mimo-ai/script"
 import pkg from "../package.json"
 
-const BINARY_PREFIX = "mimocode"
+const BINARY_PREFIX = "apex-arc"
 
 // Load migrations from migration directories
 const migrationDirs = (
@@ -244,7 +244,7 @@ for (const item of targets) {
       autoloadTsconfig: true,
       autoloadPackageJson: true,
       target: name.replace(BINARY_PREFIX, "bun") as any,
-      outfile: `dist/${name}/bin/arc`,
+      outfile: `dist/${name}/bin/apex-arc`,
       execArgv: [`--user-agent=mimocode/${Script.version}`, "--use-system-ca", "--"],
       windows: {},
     },
@@ -262,7 +262,7 @@ for (const item of targets) {
 
   // Smoke test: only run if binary is for current platform
   if (item.os === process.platform && item.arch === process.arch && !item.abi) {
-    const binaryPath = `dist/${name}/bin/arc`
+    const binaryPath = `dist/${name}/bin/apex-arc`
     console.log(`Running smoke test: ${binaryPath} --version`)
     try {
       const versionOutput = await $`${binaryPath} --version`.text()

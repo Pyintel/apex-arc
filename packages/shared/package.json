@@ -28,7 +28,7 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@npmcli/arborist": "catalog:",
-    "effect": "catalog:",
+    "effect": "4.0.0-beta.66",
     "glob": "13.0.5",
     "mime-types": "3.0.2",
     "minimatch": "10.2.5",

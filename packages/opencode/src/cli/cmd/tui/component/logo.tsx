@@ -904,7 +904,7 @@ export function Logo(props: { shape?: LogoShape; ink?: RGBA; idle?: boolean; swe
     }
   }
 
-  const MIMO_ORANGE = RGBA.fromInts(251, 129, 71)
+  const MIMO_GREEN = RGBA.fromInts(34, 197, 94)
   const MIMO_GRAY = RGBA.fromInts(160, 160, 160)
 
   return (
@@ -923,7 +923,7 @@ export function Logo(props: { shape?: LogoShape; ink?: RGBA; idle?: boolean; swe
           return (
             <box flexDirection="row" gap={1}>
               <box flexDirection="row">
-                {renderLine(line, index(), props.ink ?? MIMO_ORANGE, true, 0, frame(), dusk(), idleState())}
+                {renderLine(line, index(), props.ink ?? MIMO_GREEN, true, 0, frame(), dusk(), idleState())}
               </box>
               <box flexDirection="row">
                 {renderLine(

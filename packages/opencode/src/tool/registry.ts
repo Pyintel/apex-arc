@@ -45,6 +45,10 @@ import {
   BundleCodebaseTool,
 } from "./agent-tools-wrapper"
 import { CalendarCreateTool, CalendarListTool } from "./google-calendar"
+import { DocsCreateTool, DocsGetTool } from "./google-docs"
+import { DriveListTool, DriveUploadTool } from "./google-drive"
+import { GmailDraftTool, GmailSendTool } from "./google-gmail"
+import { SheetsAppendTool, SheetsReadTool } from "./google-sheets"
 import * as Tool from "./tool"
 import { Config } from "../config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@mimo-ai/plugin"
@@ -221,6 +225,16 @@ export const layer = Layer.effect(
     const githublistrepostool = yield* GithubListReposTool
     const githubrenamerepotool = yield* GithubRenameRepoTool
     const bundlecodebasetool = yield* BundleCodebaseTool
+    const calendarcreatetool = yield* CalendarCreateTool
+    const calendallisttool = yield* CalendarListTool
+    const docscreatetool = yield* DocsCreateTool
+    const docsgettool = yield* DocsGetTool
+    const drivelisttool = yield* DriveListTool
+    const driveuploadtool = yield* DriveUploadTool
+    const gmaildrafttool = yield* GmailDraftTool
+    const gmailsendtool = yield* GmailSendTool
+    const sheetsappendtool = yield* SheetsAppendTool
+    const sheetsreadtool = yield* SheetsReadTool
     const hwlistdevicestool = yield* HwListDevicesTool
     const hwflashtool = yield* HwFlashTool
     const hwserialmonitortool = yield* HwSerialMonitorTool
@@ -358,8 +372,16 @@ export const layer = Layer.effect(
           githublistrepos: Tool.init(githublistrepostool),
           githubrenamerepo: Tool.init(githubrenamerepotool),
           bundlecodebase: Tool.init(bundlecodebasetool),
-          calendarcreate: Tool.init(CalendarCreateTool),
-          calendarlist: Tool.init(CalendarListTool),
+          calendarcreate: Tool.init(calendarcreatetool),
+          calendarlist: Tool.init(calendallisttool),
+          docscreate: Tool.init(docscreatetool),
+          docsget: Tool.init(docsgettool),
+          drivelist: Tool.init(drivelisttool),
+          driveupload: Tool.init(driveuploadtool),
+          gmaildraft: Tool.init(gmaildrafttool),
+          gmailsend: Tool.init(gmailsendtool),
+          sheetsappend: Tool.init(sheetsappendtool),
+          sheetsread: Tool.init(sheetsreadtool),
           hwlistdevices: Tool.init(hwlistdevicestool),
           hwflash: Tool.init(hwflashtool),
           hwserialmonitor: Tool.init(hwserialmonitortool),
@@ -437,6 +459,14 @@ export const layer = Layer.effect(
             tool.bundlecodebase,
             tool.calendarcreate,
             tool.calendarlist,
+            tool.docscreate,
+            tool.docsget,
+            tool.drivelist,
+            tool.driveupload,
+            tool.gmaildraft,
+            tool.gmailsend,
+            tool.sheetsappend,
+            tool.sheetsread,
             tool.hwlistdevices,
             tool.hwflash,
             tool.hwserialmonitor,

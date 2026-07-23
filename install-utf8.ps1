@@ -1,9 +1,9 @@
 #@build-remove Run `bun script/build-install-ps1.ts` to convert install-utf8.ps1 -> install.ps1 (ASCII-safe)
 <#
 .SYNOPSIS
-    MiMoCode installer for Windows.
+    Apex Arc installer for Windows.
 .DESCRIPTION
-    Downloads and installs MiMoCode to $env:USERPROFILE\.mimocode\bin,
+    Downloads and installs Apex Arc to $env:USERPROFILE\.arc\bin,
     then adds the directory to the user PATH.
 .PARAMETER Version
     Install a specific version (e.g., 0.1.0). Defaults to latest.
@@ -11,11 +11,11 @@
 .PARAMETER NoModifyPath
     Don't modify the user PATH environment variable.
 .LINK
-    https://mimo.xiaomi.com/coder
+    https://apex.pyintel.cc/arc
 .EXAMPLE
-    irm https://mimo.xiaomi.com/install.ps1 | iex
+    irm https://apex.pyintel.cc/arc/install.ps1 | iex
 .EXAMPLE
-    $env:VERSION = "0.1.0"; irm https://mimo.xiaomi.com/install.ps1 | iex
+    $env:VERSION = "0.1.0"; irm https://apex.pyintel.cc/arc/install.ps1 | iex
 #>
 param(
     [String] $Version,
@@ -58,7 +58,7 @@ if (($PSVersionTable.PSVersion.Major) -lt 5) {
 
 $Arch = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "arm64" }
     elseif ([Environment]::Is64BitOperatingSystem) { "x64" }
-    else { Write-Err "MiMoCode requires a 64-bit operating system." }
+    else { Write-Err "Apex Arc requires a 64-bit operating system." }
 
 # AVX2 baseline detection (only relevant for x64)
 $NeedsBaseline = $false
@@ -86,8 +86,8 @@ if ($NeedsBaseline) { $Target = "$Target-baseline" }
 
 # --- Resolve version ---
 
-$FdsBase = if ($env:MIMO_FDS_BASE) { $env:MIMO_FDS_BASE.TrimEnd('/') } else {
-    "https://mimocode.cnbj1.mi-fds.com/mimocode/mimocode"
+$FdsBase = if ($env:ARC_FDS_BASE) { $env:ARC_FDS_BASE.TrimEnd('/') } else {
+    "https://apex.pyintel.cc/arc"
 }
 
 if (-not $Version) {
@@ -100,14 +100,14 @@ if (-not $Version) {
     $Version = $Version.TrimStart('v')
 }
 
-# Warn about old versions that don't support mimo upgrade via install.ps1
+# Warn about old versions that don't support arc upgrade via install.ps1
 $MajMin = $Version -replace '^(\d+\.\d+\.\d+).*', '$1'
 if ($MajMin -match '^\d+\.\d+\.\d+$') {
     $parts = $MajMin.Split('.')
     $semver = [int]$parts[0] * 10000 + [int]$parts[1] * 100 + [int]$parts[2]
     if ($semver -le 104) {
         Write-Host ""
-        Write-Host "WARNING: Installing v$Version via install.ps1 will cause 'mimo upgrade' to not function properly." -ForegroundColor Yellow
+        Write-Host "WARNING: Installing v$Version via install.ps1 will cause 'arc upgrade' to not function properly." -ForegroundColor Yellow
         Write-Host "This is a known limitation for versions before 0.1.5." -ForegroundColor Yellow
         Write-Host ""
     }
@@ -116,19 +116,19 @@ if ($MajMin -match '^\d+\.\d+\.\d+$') {
 # --- Check existing installation ---
 
 $Staging = $false
-if ($env:MIMOCODE_INSTALL_DIR) {
-    $InstallDir = $env:MIMOCODE_INSTALL_DIR
+if ($env:ARC_INSTALL_DIR) {
+    $InstallDir = $env:ARC_INSTALL_DIR
     $Staging = $true
 } else {
-    $InstallDir = Join-Path $env:USERPROFILE ".mimocode\bin"
+    $InstallDir = Join-Path $env:USERPROFILE ".arc\bin"
 }
 
 if (-not $Staging) {
-    $Existing = Get-Command mimo -ErrorAction SilentlyContinue
+    $Existing = Get-Command arc -ErrorAction SilentlyContinue
     if ($Existing) {
-        $InstalledVersion = & mimo --version 2>$null
+        $InstalledVersion = & arc --version 2>$null
         if ($InstalledVersion -eq $Version) {
-            Write-Host "MiMoCode v$Version is already installed." -ForegroundColor DarkGray
+            Write-Host "Apex Arc v$Version is already installed." -ForegroundColor DarkGray
             Exit-Install 0
         }
         Write-Host "Installed version: $InstalledVersion" -ForegroundColor DarkGray
@@ -137,16 +137,16 @@ if (-not $Staging) {
 
 # --- Download and install ---
 
-$Filename = "mimocode-$Target.zip"
+$Filename = "apex-arc-$Target.zip"
 $Url = "$FdsBase/releases/v$Version/$Filename"
 
 Write-Host ""
 Write-Host "Installing " -NoNewline -ForegroundColor DarkGray
-Write-Host "mimocode" -NoNewline
+Write-Host "apex-arc" -NoNewline
 Write-Host " version: " -NoNewline -ForegroundColor DarkGray
 Write-Host "$Version"
 
-$TmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "mimocode_install_$PID"
+$TmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "arc_install_$PID"
 New-Item -ItemType Directory -Path $TmpDir -Force | Out-Null
 $ZipPath = Join-Path $TmpDir $Filename
 
@@ -172,12 +172,12 @@ try {
 }
 
 New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
-$BinName = if (Test-Path (Join-Path $TmpDir "mimo.exe")) { "mimo.exe" } else { "mimo" }
+$BinName = if (Test-Path (Join-Path $TmpDir "arc.exe")) { "arc.exe" } elseif (Test-Path (Join-Path $TmpDir "apex-arc.exe")) { "apex-arc.exe" } else { "arc" }
 try {
-    Move-Item -Path (Join-Path $TmpDir $BinName) -Destination (Join-Path $InstallDir "mimo.exe") -Force -ErrorAction Stop
+    Move-Item -Path (Join-Path $TmpDir $BinName) -Destination (Join-Path $InstallDir "arc.exe") -Force -ErrorAction Stop
 } catch {
     Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
-    Write-Err "Failed to install binary. If MiMoCode is currently running, please close it and retry.`n$($_.Exception.Message)"
+    Write-Err "Failed to install binary. If Apex Arc is currently running, please close it and retry.`n$($_.Exception.Message)"
 }
 Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
 
@@ -226,8 +226,8 @@ if ($PathUpdated) {
 }
 Write-Host ""
 Write-Host "  cd <project>"
-Write-Host "  mimo"
+Write-Host "  arc"
 Write-Host ""
 Write-Host "For more information visit " -NoNewline -ForegroundColor DarkGray
-Write-Host "https://mimo.xiaomi.com/coder/docs"
+Write-Host "https://apex.pyintel.cc/arc/docs"
 Write-Host ""

@@ -41,7 +41,7 @@ export const CalendarCreateTool = Tool.define(
       }) =>
         Effect.gen(function* () {
           if (!available(params.account)) {
-            return yield* Effect.fail(new Error(`Google account "${params.account}" is not configured. See packages/opencode/src/google/README.md.`))
+            throw new Error(`Google account "${params.account}" is not configured. See packages/opencode/src/google/README.md.`)
           }
           const calendar = buildCalendarClient(params.account)
           const requestBody: any = {
@@ -56,9 +56,12 @@ export const CalendarCreateTool = Tool.define(
               ? { reminders: { useDefault: false, overrides: params.reminders.map((r) => ({ minutes: r.minutes, method: r.method })) } }
               : {}),
           }
-          const res = yield* Effect.tryPromise({
-            try: () => calendar.events.insert({ calendarId: params.calendarId, requestBody }),
-            catch: (e: any) => new Error(`Calendar create failed: ${e.message ?? e}`),
+          const res = yield* Effect.promise(async () => {
+            try {
+              return await calendar.events.insert({ calendarId: params.calendarId, requestBody })
+            } catch (e: any) {
+              throw new Error(`Calendar create failed: ${e.message ?? e}`)
+            }
           })
           return {
             title: "calendar_create",
@@ -99,19 +102,22 @@ export const CalendarListTool = Tool.define(
       }) =>
         Effect.gen(function* () {
           if (!available(params.account)) {
-            return yield* Effect.fail(new Error(`Google account "${params.account}" is not configured. See packages/opencode/src/google/README.md.`))
+            throw new Error(`Google account "${params.account}" is not configured. See packages/opencode/src/google/README.md.`)
           }
           const calendar = buildCalendarClient(params.account)
-          const res = yield* Effect.tryPromise({
-            try: () => calendar.events.list({
+          const res = yield* Effect.promise(async () => {
+            try {
+              return await calendar.events.list({
               calendarId: params.calendarId,
               timeMin: params.timeMin,
               timeMax: params.timeMax,
               maxResults: params.maxResults,
               singleEvents: true,
               orderBy: "startTime",
-            }),
-            catch: (e: any) => new Error(`Calendar list failed: ${e.message ?? e}`),
+              })
+            } catch (e: any) {
+              throw new Error(`Calendar list failed: ${e.message ?? e}`)
+            }
           })
           const items = res.data.items ?? []
           const lines = items.map((ev: any) => {

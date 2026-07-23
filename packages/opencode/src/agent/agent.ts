@@ -122,7 +122,7 @@ export const layer = Layer.effect(
         const agents: Record<string, Info> = {
           build: {
             name: "build",
-            color: "#fb8147",
+            color: "#22c55e",
             description: "Executes tools based on configured permissions.",
             options: {},
             permission: Permission.merge(
