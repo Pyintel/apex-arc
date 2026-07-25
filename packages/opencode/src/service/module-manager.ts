@@ -12,7 +12,7 @@ export interface ModuleInfo {
   description: string
   source?: string
   dbFilename?: string
-  type?: "git" | "local" | "builtin"
+  type?: "git" | "local" | "builtin" | "npm"
 }
 
 export const BUILTIN_MODULES: ModuleInfo[] = [
@@ -68,10 +68,30 @@ export const BUILTIN_MODULES: ModuleInfo[] = [
   },
 ]
 
-
-
 function getCustomRegistryPath(): string {
   return path.join(GlobalPath.data, "modules", "custom_registry.json")
+}
+
+export async function fetchNpmModules(): Promise<ModuleInfo[]> {
+  try {
+    const res = await fetch("https://registry.npmjs.org/-/v1/search?text=scope:pyintel+keywords:pyintel-arc-module")
+    if (!res.ok) return []
+    const data = (await res.json()) as { objects?: { package: { name: string; description: string } }[] }
+    if (!Array.isArray(data.objects)) return []
+    return data.objects.map((obj) => {
+      const pkg = obj.package
+      const id = pkg.name.replace(/^@pyintel\/(arc-module-)?/, "")
+      return {
+        id,
+        name: pkg.name,
+        description: pkg.description || `Pyintel Arc Module ${pkg.name}`,
+        source: `npm:${pkg.name}`,
+        type: "npm" as const,
+      }
+    })
+  } catch {
+    return []
+  }
 }
 
 export async function getCustomModules(): Promise<ModuleInfo[]> {
@@ -92,9 +112,12 @@ export async function saveCustomModule(module: ModuleInfo): Promise<void> {
 
 export async function getAllAvailableModules(): Promise<ModuleInfo[]> {
   const custom = await getCustomModules()
+  const npmModules = await fetchNpmModules()
   const customIds = new Set(custom.map((c) => c.id))
-  const builtins = BUILTIN_MODULES.filter((b) => !customIds.has(b.id))
-  return [...builtins, ...custom]
+  const npmIds = new Set(npmModules.map((n) => n.id))
+  
+  const builtins = BUILTIN_MODULES.filter((b) => !customIds.has(b.id) && !npmIds.has(b.id))
+  return [...builtins, ...npmModules, ...custom]
 }
 
 export function isModuleInstalled(moduleId: string): boolean {
@@ -147,9 +170,28 @@ export async function installModule(
     await fs.rm(targetDir, { recursive: true, force: true })
   }
 
+  const isNpm = source.startsWith("npm:") || source.startsWith("@pyintel/")
   const isGit = source.startsWith("http://") || source.startsWith("https://") || source.startsWith("git@")
 
-  if (isGit) {
+  if (isNpm) {
+    const pkgName = source.startsWith("npm:") ? source.slice(4) : source
+    onProgress(`Fetching NPM package ${pkgName} from registry...`)
+    const { execSync } = require("child_process")
+    const tempDir = path.join(modulesDir, `_tmp_${Date.now()}`)
+    await fs.mkdir(tempDir, { recursive: true })
+    try {
+      execSync(`npm pack ${pkgName} --pack-destination "${tempDir}"`, { stdio: "pipe" })
+      const files = await fs.readdir(tempDir)
+      const tgzFile = files.find((f) => f.endsWith(".tgz"))
+      if (!tgzFile) throw new Error("Failed to download NPM tarball")
+      onProgress(`Extracting package bundle...`)
+      execSync(`tar -xzf "${path.join(tempDir, tgzFile)}" -C "${tempDir}"`, { stdio: "pipe" })
+      await fs.cp(path.join(tempDir, "package"), targetDir, { recursive: true })
+      onProgress(`✅ Installed module bundle from NPM registry`)
+    } finally {
+      await fs.rm(tempDir, { recursive: true, force: true })
+    }
+  } else if (isGit) {
     onProgress(`Cloning repository ${source}...`)
     await Process.run(["git", "clone", "--depth", "1", source, targetDir])
   } else {
@@ -212,7 +254,6 @@ export async function installModule(
   if (missingPrereqs.length > 0) {
     onProgress(`Detected ${missingPrereqs.length} missing system prerequisite(s): ${missingPrereqs.map(p => p.name).join(", ")}`)
     
-    // Auto-install missing prerequisites sequentially with progress updates
     for (let i = 0; i < missingPrereqs.length; i++) {
       const p = missingPrereqs[i]
       onProgress(`[${i + 1}/${missingPrereqs.length}] Installing missing system tool '${p.name}' using '${p.installCmd}'...`)
@@ -226,8 +267,6 @@ export async function installModule(
       }
     }
   }
-
-
 
   const dbFilename = moduleInfo.dbFilename || "boards.db"
   const dbPath = path.join(targetDir, dbFilename)
@@ -283,7 +322,6 @@ export async function installModule(
     )
     vecDb.close()
 
-    // Save manifest
     const manifest = {
       id: moduleId,
       name: moduleInfo.name,
@@ -299,7 +337,7 @@ export async function installModule(
         name: moduleInfo.name,
         description: moduleInfo.description,
         source,
-        type: isGit ? "git" : "local",
+        type: isNpm ? "npm" : isGit ? "git" : "local",
       })
     }
 
@@ -310,10 +348,7 @@ export async function installModule(
   const batchSize = 50
   const recordsToInsert: { module_id: string; item_id: string; text: string; embedding: Buffer }[] = []
 
-
   if (isDb) {
-
-
     onProgress("Loading database records...")
     const srcDb = new SqliteDb(dbPath, { readonly: true })
     const rows = srcDb.query("SELECT * FROM boards").all() as Record<string, unknown>[]
@@ -365,7 +400,6 @@ URL: ${row.url || "none"}`
       const relPath = path.relative(targetDir, filePath)
       const content = await Bun.file(filePath).text()
 
-      // Chunk file by headers or double newlines (approx 500 chars)
       const chunks = content
         .split(/(?=\n#{1,3} )|\n\n/)
         .map((c) => c.trim())
@@ -397,7 +431,6 @@ URL: ${row.url || "none"}`
 
   vecDb.close()
 
-  // Save manifest
   const manifest = {
     id: moduleId,
     name: moduleInfo.name,
@@ -413,7 +446,7 @@ URL: ${row.url || "none"}`
       name: moduleInfo.name,
       description: moduleInfo.description,
       source,
-      type: isGit ? "git" : "local",
+      type: isNpm ? "npm" : isGit ? "git" : "local",
     })
   }
 
@@ -432,7 +465,6 @@ export async function uninstallModule(moduleId: string) {
     const vecDb = new SqliteDb(vectorDbPath)
     vecDb.query("DELETE FROM module_embeddings WHERE module_id = ?").run(moduleId)
     vecDb.close()
-
   }
 
   const customPath = getCustomRegistryPath()
