@@ -44,11 +44,7 @@ import {
   GithubRenameRepoTool,
   BundleCodebaseTool,
 } from "./agent-tools-wrapper"
-import { CalendarCreateTool, CalendarListTool } from "./google-calendar"
-import { DocsCreateTool, DocsGetTool } from "./google-docs"
-import { DriveListTool, DriveUploadTool } from "./google-drive"
-import { GmailDraftTool, GmailSendTool } from "./google-gmail"
-import { SheetsAppendTool, SheetsReadTool } from "./google-sheets"
+
 import * as Tool from "./tool"
 import { Config } from "../config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@mimo-ai/plugin"
@@ -225,15 +221,7 @@ export const layer = Layer.effect(
     const githublistrepostool = yield* GithubListReposTool
     const githubrenamerepotool = yield* GithubRenameRepoTool
     const bundlecodebasetool = yield* BundleCodebaseTool
-    const calendarcreatetool = yield* CalendarCreateTool
-    const calendallisttool = yield* CalendarListTool
-    const docscreatetool = yield* DocsCreateTool
-    const docsgettool = yield* DocsGetTool
-    const drivelisttool = yield* DriveListTool
-    const driveuploadtool = yield* DriveUploadTool
-    const gmaildrafttool = yield* GmailDraftTool
-    const gmailsendtool = yield* GmailSendTool
-    const sheetsappendtool = yield* SheetsAppendTool
+
     const webfetchmarkdowntool = yield* WebFetchMarkdownTool
 
     const processimagetool = yield* ProcessImageTool
@@ -399,15 +387,7 @@ export const layer = Layer.effect(
           githublistrepos: Tool.init(githublistrepostool),
           githubrenamerepo: Tool.init(githubrenamerepotool),
           bundlecodebase: Tool.init(bundlecodebasetool),
-          calendarcreate: Tool.init(calendarcreatetool),
-          calendarlist: Tool.init(calendallisttool),
-          docscreate: Tool.init(docscreatetool),
-          docsget: Tool.init(docsgettool),
-          drivelist: Tool.init(drivelisttool),
-          driveupload: Tool.init(driveuploadtool),
-          gmaildraft: Tool.init(gmaildrafttool),
-          gmailsend: Tool.init(gmailsendtool),
-          sheetsappend: Tool.init(sheetsappendtool),
+
           webfetchmarkdown: Tool.init(webfetchmarkdowntool),
 
           processimage: Tool.init(processimagetool),
