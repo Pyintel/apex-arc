@@ -162,6 +162,40 @@ export async function installModule(
     await fs.cp(resolvedLocalPath, targetDir, { recursive: true })
   }
 
+  // Pre-flight inspection of ARC/config.json or module.json
+  const configPaths = [
+    path.join(targetDir, "ARC", "config.json"),
+    path.join(targetDir, "arc.json"),
+    path.join(targetDir, "module.json"),
+  ]
+  const foundConfigPath = configPaths.find((p) => existsSync(p))
+  if (foundConfigPath) {
+    onProgress("Reading ARC/config.json module manifest...")
+    try {
+      const configText = await fs.readFile(foundConfigPath, "utf-8")
+      const config = JSON.parse(configText)
+      if (Array.isArray(config.prerequisites)) {
+        for (const prereq of config.prerequisites) {
+          onProgress(`Running pre-flight check for prerequisite: ${prereq.name}...`)
+          try {
+            const { execSync } = require("child_process")
+            const checkCmd = process.platform === "win32" ? `cmd /c "${prereq.check}"` : prereq.check
+            execSync(checkCmd, { stdio: "ignore" })
+          } catch {
+            const platform = process.platform as "win32" | "darwin" | "linux"
+            const installCmd = prereq.install?.[platform] || prereq.install?.win32 || `Install ${prereq.name}`
+            throw new Error(
+              `Pre-flight check failed for missing dependency '${prereq.name}'. Recommended install command: ${installCmd}`
+            )
+          }
+        }
+      }
+    } catch (err: any) {
+      if (err.message?.includes("Pre-flight check failed")) throw err
+    }
+  }
+
+
 
   const dbFilename = moduleInfo.dbFilename || "boards.db"
   const dbPath = path.join(targetDir, dbFilename)
