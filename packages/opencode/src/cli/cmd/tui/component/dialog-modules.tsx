@@ -11,6 +11,7 @@ import {
   uninstallModule,
   type ModuleInfo,
 } from "@/service/module-manager"
+import { useSDK } from "@tui/context/sdk"
 import { createSignal, createResource, Show, batch } from "solid-js"
 import { TextAttributes } from "@opentui/core"
 
@@ -18,6 +19,8 @@ export function DialogModules() {
   const dialog = useDialog()
   const { theme } = useTheme()
   const toast = useToast()
+  const sdk = useSDK()
+
 
   const [status, setStatus] = createSignal<"list" | "select-provider" | "installing">("list")
   const [progress, setProgress] = createSignal("")
@@ -59,6 +62,8 @@ export function DialogModules() {
 
         try {
           await uninstallModule(moduleId)
+          void sdk.client.tool.reload().catch(() => {})
+          void sdk.client.skill.reload().catch(() => {})
           toast.show({
             message: `Successfully uninstalled module: ${item.title}`,
             variant: "success",
@@ -92,11 +97,7 @@ export function DialogModules() {
 
     batch(() => {
       setStatus("installing")
-      setProgress(
-        engine === "local"
-          ? "Downloading lightweight local embedding model..."
-          : "Connecting to cloud embedding provider..."
-      )
+      setProgress(`Initializing ${moduleInfo.title}...`)
     })
 
     installModule(
@@ -107,10 +108,13 @@ export function DialogModules() {
       moduleInfo.source
     )
       .then(() => {
+        void sdk.client.tool.reload().catch(() => {})
+        void sdk.client.skill.reload().catch(() => {})
         toast.show({
-          message: `Successfully installed module using ${engine} engine: ${moduleInfo.title}`,
+          message: `Successfully installed module: ${moduleInfo.title}`,
           variant: "success",
         })
+
         refetch()
         batch(() => {
           setStatus("list")
