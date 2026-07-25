@@ -99,10 +99,9 @@ export async function getAllAvailableModules(): Promise<ModuleInfo[]> {
 
 export function isModuleInstalled(moduleId: string): boolean {
   const moduleDir = path.join(GlobalPath.data, "modules", moduleId)
-  if (!existsSync(moduleDir)) return false
-  const dbPath = path.join(moduleDir, "boards.db")
-  const manifestPath = path.join(moduleDir, "manifest.json")
-  return existsSync(dbPath) || existsSync(manifestPath)
+  const devHomeDir = path.join(process.env.HOME || process.env.USERPROFILE || "", ".dev-home", "modules", moduleId)
+  if (existsSync(moduleDir) || existsSync(devHomeDir)) return true
+  return false
 }
 
 async function collectMarkdownFiles(dir: string): Promise<string[]> {
@@ -193,6 +192,7 @@ export async function installModule(
     }
   }
 
+  const warnings: string[] = []
   if (config && Array.isArray(config.prerequisites)) {
     for (const prereq of config.prerequisites) {
       onProgress(`Running pre-flight check for prerequisite: ${prereq.name}...`)
@@ -200,12 +200,16 @@ export async function installModule(
         const { execSync } = require("child_process")
         const checkCmd = process.platform === "win32" ? `cmd /c "${prereq.check}"` : prereq.check
         execSync(checkCmd, { stdio: "ignore" })
+        onProgress(`✅ Pre-flight check passed for ${prereq.name}`)
       } catch {
         const platform = process.platform as "win32" | "darwin" | "linux"
         const installCmd = prereq.install?.[platform] || prereq.install?.win32 || `Install ${prereq.name}`
-        throw new Error(
-          `Pre-flight check failed for missing dependency '${prereq.name}'. Recommended install command: ${installCmd}`
-        )
+        const warnMsg = `Prerequisite '${prereq.name}' is missing. Recommended install command: ${installCmd}`
+        warnings.push(warnMsg)
+        onProgress(`⚠️ ${warnMsg}`)
+        if (prereq.required === true) {
+          throw new Error(`Pre-flight check failed for required dependency '${prereq.name}'. Run: ${installCmd}`)
+        }
       }
     }
   }
