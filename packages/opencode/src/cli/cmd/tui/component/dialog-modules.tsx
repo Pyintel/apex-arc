@@ -82,7 +82,6 @@ export function DialogModules() {
       return
     }
 
-    const found = modules()?.find((m) => m.id === moduleId)
     batch(() => {
       setPendingModule({ id: moduleId, title: item.title, source: found?.source })
       setStatus("select-provider")
