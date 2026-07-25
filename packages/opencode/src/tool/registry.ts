@@ -73,6 +73,7 @@ import { MoveitPlanTool } from "./moveit-plan"
 import { WokwiSimulateTool, MujocoStepTool, PybulletStepTool, SimToRealCheckTool } from "./simulators"
 import { LintStreamTool } from "./lint-stream"
 import { ModuleQueryKnowledgeTool } from "./module-query"
+import { ModuleUpdateTool } from "./module-update"
 
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
@@ -240,6 +241,7 @@ export const layer = Layer.effect(
     const simtorealchecktool = yield* SimToRealCheckTool
     const lintstreamtool = yield* LintStreamTool
     const modulequeryknowledgetool = yield* ModuleQueryKnowledgeTool
+    const moduleupdatetool = yield* ModuleUpdateTool
 
     const agent = yield* Agent.Service
 
@@ -405,6 +407,7 @@ export const layer = Layer.effect(
           pybulletstep: Tool.init(pybulletsteptool),
           simtorealcheck: Tool.init(simtorealchecktool),
           lintstream: Tool.init(lintstreamtool),
+          moduleupdate: Tool.init(moduleupdatetool),
         })
 
         return {
@@ -457,16 +460,8 @@ export const layer = Layer.effect(
             tool.githublistrepos,
             tool.githubrenamerepo,
             tool.bundlecodebase,
-            tool.calendarcreate,
-            tool.calendarlist,
-            tool.docscreate,
-            tool.docsget,
-            tool.drivelist,
-            tool.driveupload,
-            tool.gmaildraft,
-            tool.gmailsend,
-            tool.sheetsappend,
             tool.webfetchmarkdown,
+            tool.moduleupdate,
 
             tool.processimage,
             tool.astedit,
