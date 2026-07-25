@@ -161,19 +161,33 @@ export function isModuleInstalled(moduleId: string): boolean {
   return false
 }
 
-async function collectMarkdownFiles(dir: string): Promise<string[]> {
-  const entries = await fs.readdir(dir, { withFileTypes: true })
+const EXCLUDED_DIRS = new Set(["node_modules", ".git", ".bun", "dist", "build", ".next", ".cache", "coverage", "__pycache__", ".venv", "venv"])
+
+async function collectMarkdownFiles(dir: string, includes?: string[]): Promise<string[]> {
+  if (includes && includes.length > 0) {
+    const results: string[] = []
+    for (const pattern of includes) {
+      const glob = new Bun.Glob(pattern)
+      for await (const file of glob.scan({ cwd: dir, onlyFiles: true })) {
+        const abs = path.join(dir, file)
+        if (!results.includes(abs)) results.push(abs)
+      }
+    }
+    return results
+  }
+  return walkMarkdownFiles(dir)
+}
+
+async function walkMarkdownFiles(dir: string): Promise<string[]> {
+  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => [])
   const files = await Promise.all(
     entries.map(async (entry) => {
+      if (EXCLUDED_DIRS.has(entry.name) || entry.name.startsWith(".")) return []
       const res = path.resolve(dir, entry.name)
-      if (entry.isDirectory()) {
-        return collectMarkdownFiles(res)
-      }
-      if (/\.(md|mdx|txt)$/i.test(entry.name)) {
-        return [res]
-      }
+      if (entry.isDirectory()) return walkMarkdownFiles(res)
+      if (/\.(md|mdx|txt)$/i.test(entry.name)) return [res]
       return []
-    })
+    }),
   )
   return files.flat()
 }
@@ -420,9 +434,10 @@ URL: ${row.url || "none"}`
       }
     }
   } else {
-    onProgress("Scanning markdown documentation files...")
-    const mdFiles = await collectMarkdownFiles(targetDir)
-    onProgress(`Found ${mdFiles.length} documentation files. Vectorizing...`)
+    onProgress("Scanning documentation files...")
+    const includePatterns: string[] | undefined = config?.vectorize?.includes
+    const mdFiles = await collectMarkdownFiles(targetDir, includePatterns)
+    onProgress(`Found ${mdFiles.length} documentation file${mdFiles.length !== 1 ? "s" : ""}. Vectorizing...`)
 
     for (let i = 0; i < mdFiles.length; i++) {
       const filePath = mdFiles[i]!
