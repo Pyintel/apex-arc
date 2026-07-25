@@ -282,6 +282,14 @@ export const layer = Layer.effect(
         }
 
         function fromPlugin(id: string, def: ToolDefinition): Tool.Def {
+          if (!def) {
+            return {
+              id,
+              parameters: z.object({}),
+              description: `Tool ${id}`,
+              execute: () => Effect.succeed({ title: id, output: "Empty tool" }),
+            }
+          }
           const shape: Record<string, z.ZodTypeAny> = {}
           for (const [k, v] of Object.entries(def.args ?? {})) {
             shape[k] = parseArgSchema(v)
@@ -289,8 +297,9 @@ export const layer = Layer.effect(
           return {
             id,
             parameters: z.object(shape),
-            description: def.description,
+            description: def.description ?? `Tool ${id}`,
             execute: (args, toolCtx) =>
+
 
               Effect.gen(function* () {
                 const pluginCtx: PluginToolContext = {
@@ -610,7 +619,9 @@ export const layer = Layer.effect(
       // full-capability agent (no toolAllowlist), so gate on the agent name
       // rather than an allowlist: every other agent — primaries without an
       // allowlist (build/plan/compose) and subagents — must not see `session`.
+      filtered = filtered.filter((tool) => tool && typeof tool.id === "string")
       filtered = filtered.filter((tool) => tool.id !== "session" || input.agent.name === "orchestrator")
+
 
       const cfg = yield* config.get()
       const resolveStyle = (toolId: string): "json" | "shell" => resolveInvocationStyle(cfg.tool, toolId)
