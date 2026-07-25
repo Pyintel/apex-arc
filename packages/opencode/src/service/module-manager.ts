@@ -169,29 +169,44 @@ export async function installModule(
     path.join(targetDir, "module.json"),
   ]
   const foundConfigPath = configPaths.find((p) => existsSync(p))
+  let config: any = null
+
   if (foundConfigPath) {
     onProgress("Reading ARC/config.json module manifest...")
     try {
       const configText = await fs.readFile(foundConfigPath, "utf-8")
-      const config = JSON.parse(configText)
-      if (Array.isArray(config.prerequisites)) {
-        for (const prereq of config.prerequisites) {
-          onProgress(`Running pre-flight check for prerequisite: ${prereq.name}...`)
-          try {
-            const { execSync } = require("child_process")
-            const checkCmd = process.platform === "win32" ? `cmd /c "${prereq.check}"` : prereq.check
-            execSync(checkCmd, { stdio: "ignore" })
-          } catch {
-            const platform = process.platform as "win32" | "darwin" | "linux"
-            const installCmd = prereq.install?.[platform] || prereq.install?.win32 || `Install ${prereq.name}`
-            throw new Error(
-              `Pre-flight check failed for missing dependency '${prereq.name}'. Recommended install command: ${installCmd}`
-            )
-          }
-        }
-      }
+      config = JSON.parse(configText)
+    } catch {}
+  }
+
+  // Automatic package dependency installation (bun install / npm install)
+  const hasPackageJson = existsSync(path.join(targetDir, "package.json"))
+  if (hasPackageJson || config?.setup?.command) {
+    onProgress("Installing module package dependencies (bun install / npm install)...")
+    try {
+      const { execSync } = require("child_process")
+      const setupCmd = config?.setup?.command || "bun install --production || npm install --production"
+      execSync(setupCmd, { cwd: targetDir, stdio: "pipe" })
+      onProgress("Module package dependencies successfully installed.")
     } catch (err: any) {
-      if (err.message?.includes("Pre-flight check failed")) throw err
+      onProgress(`Warning: Package setup encountered issue: ${err.message}`)
+    }
+  }
+
+  if (config && Array.isArray(config.prerequisites)) {
+    for (const prereq of config.prerequisites) {
+      onProgress(`Running pre-flight check for prerequisite: ${prereq.name}...`)
+      try {
+        const { execSync } = require("child_process")
+        const checkCmd = process.platform === "win32" ? `cmd /c "${prereq.check}"` : prereq.check
+        execSync(checkCmd, { stdio: "ignore" })
+      } catch {
+        const platform = process.platform as "win32" | "darwin" | "linux"
+        const installCmd = prereq.install?.[platform] || prereq.install?.win32 || `Install ${prereq.name}`
+        throw new Error(
+          `Pre-flight check failed for missing dependency '${prereq.name}'. Recommended install command: ${installCmd}`
+        )
+      }
     }
   }
 
