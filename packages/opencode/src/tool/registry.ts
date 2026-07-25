@@ -329,8 +329,9 @@ export const layer = Layer.effect(
           const mod = yield* Effect.promise(() => import(`${pathToFileURL(match).href}?v=${Date.now()}`))
           for (const [id, def] of Object.entries<ToolDefinition>(mod)) {
             if (def && typeof def === "object" && typeof (def as any).execute === "function") {
-              custom.push(fromPlugin(id === "default" ? namespace : `${namespace}_${id}`, def))
+              custom.push(fromPlugin(id === "default" ? namespace : id, def))
             }
+
           }
         }
 
