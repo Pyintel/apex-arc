@@ -18,21 +18,56 @@ export interface ModuleInfo {
 export const BUILTIN_MODULES: ModuleInfo[] = [
   {
     id: "open-board-registry",
-    name: "Knowledge About Dev Board Registry",
-    description: "Database containing structured specifications for 1,700+ microcontroller boards.",
-    source: "https://github.com/riteshrajas/open-board-registry.git",
+    name: "Dev Board Specifications Registry",
+    description: "Database containing structured specifications and pinouts for 1,700+ microcontroller boards.",
+    source: "https://github.com/Pyintel/open-board-registry.git",
     dbFilename: "boards.db",
     type: "builtin",
   },
   {
     id: "open-hardware-toolchain",
     name: "Hardware Toolchains & Device Interaction",
-    description: "Tools and skills for device detection, firmware flashing, serial monitoring, and pinout inspection.",
-    source: "https://github.com/riteshrajas/open-hardware-toolchain.git",
+    description: "Tools and skills for device detection, firmware flashing, serial monitoring, pinouts, and MicroPython REPL.",
+    source: "https://github.com/Pyintel/open-hardware-toolchain.git",
     type: "builtin",
   },
-
+  {
+    id: "open-robotics-simulators",
+    name: "Robotics & Physics Simulators",
+    description: "Tools for ROS 2 graph inspection, URDF/SDF kinematics parsing, MoveIt planning, and MuJoCo/PyBullet simulation.",
+    source: "https://github.com/Pyintel/open-robotics-simulators.git",
+    type: "builtin",
+  },
+  {
+    id: "open-document-media-suite",
+    name: "Document & Media Suite",
+    description: "Tools for PDF processing (merge, split, rotate), Word/PowerPoint readers, and audio/video format conversion.",
+    source: "https://github.com/Pyintel/open-document-media-suite.git",
+    type: "builtin",
+  },
+  {
+    id: "open-google-workspace",
+    name: "Google Workspace Automation",
+    description: "Integrations for Gmail, Google Drive, Calendar, Docs, and Sheets automation.",
+    source: "https://github.com/Pyintel/open-google-workspace.git",
+    type: "builtin",
+  },
+  {
+    id: "open-science-bioinformatics",
+    name: "Science & Bioinformatics Suite",
+    description: "Biomedical database search tools for PubMed, PubChem, ChEMBL, UniProt, AlphaFold, and PDB 3D structures.",
+    source: "https://github.com/Pyintel/open-science-bioinformatics.git",
+    type: "builtin",
+  },
+  {
+    id: "open-design-system",
+    name: "UI/UX & Design System Suite",
+    description: "Tools and skills for dynamic UI mockups, design tokens, component builders, and visual asset generation.",
+    source: "https://github.com/Pyintel/open-design-system.git",
+    type: "builtin",
+  },
 ]
+
 
 
 function getCustomRegistryPath(): string {
