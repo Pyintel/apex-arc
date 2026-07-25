@@ -5,6 +5,7 @@ import { Process } from "@/util"
 import fs from "fs/promises"
 import path from "path"
 import { existsSync } from "fs"
+import { execSync } from "child_process"
 
 export interface ModuleInfo {
   id: string
@@ -178,7 +179,6 @@ export async function installModule(
   if (isNpm) {
     const pkgName = source.startsWith("npm:") ? source.slice(4) : source
     onProgress(`Fetching NPM package ${pkgName} from registry...`)
-    const { execSync } = require("child_process")
     const tempDir = path.join(modulesDir, `_tmp_${Date.now()}`)
     await fs.mkdir(tempDir, { recursive: true })
     try {
@@ -227,12 +227,11 @@ export async function installModule(
   if (hasPackageJson || config?.setup?.command) {
     onProgress("[1/2] Installing module package dependencies (bun install / npm install)...")
     try {
-      const { execSync } = require("child_process")
       const setupCmd = config?.setup?.command || "bun install --production || npm install --production"
       execSync(setupCmd, { cwd: targetDir, stdio: "pipe" })
       onProgress("✅ Module package dependencies successfully installed.")
     } catch (err: any) {
-      onProgress(`Warning: Package setup encountered issue: ${err.message}`)
+      onProgress(`Warning: Package setup encountered issue: ${(err as Error).message}`)
     }
   }
 
@@ -241,7 +240,6 @@ export async function installModule(
     for (const prereq of config.prerequisites) {
       onProgress(`Running pre-flight check for prerequisite: ${prereq.name}...`)
       try {
-        const { execSync } = require("child_process")
         const checkCmd = process.platform === "win32" ? `cmd /c "${prereq.check}"` : prereq.check
         execSync(checkCmd, { stdio: "ignore" })
         onProgress(`✅ Pre-flight check passed for ${prereq.name}`)
@@ -255,16 +253,14 @@ export async function installModule(
 
   if (missingPrereqs.length > 0) {
     onProgress(`Detected ${missingPrereqs.length} missing system prerequisite(s): ${missingPrereqs.map(p => p.name).join(", ")}`)
-    
     for (let i = 0; i < missingPrereqs.length; i++) {
       const p = missingPrereqs[i]
       onProgress(`[${i + 1}/${missingPrereqs.length}] Installing missing system tool '${p.name}' using '${p.installCmd}'...`)
       try {
-        const { execSync } = require("child_process")
         execSync(p.installCmd, { stdio: "pipe" })
         onProgress(`✅ Successfully installed system prerequisite: ${p.name}`)
       } catch (installErr: any) {
-        onProgress(`⚠️ System installation of '${p.name}' encountered warning: ${installErr.message}`)
+        onProgress(`⚠️ System installation of '${p.name}' encountered warning: ${(installErr as Error).message}`)
         onProgress(`   Manual installation command: ${p.installCmd}`)
       }
     }
