@@ -181,18 +181,18 @@ export async function installModule(
   // Automatic package dependency installation (bun install / npm install)
   const hasPackageJson = existsSync(path.join(targetDir, "package.json"))
   if (hasPackageJson || config?.setup?.command) {
-    onProgress("Installing module package dependencies (bun install / npm install)...")
+    onProgress("[1/2] Installing module package dependencies (bun install / npm install)...")
     try {
       const { execSync } = require("child_process")
       const setupCmd = config?.setup?.command || "bun install --production || npm install --production"
       execSync(setupCmd, { cwd: targetDir, stdio: "pipe" })
-      onProgress("Module package dependencies successfully installed.")
+      onProgress("✅ Module package dependencies successfully installed.")
     } catch (err: any) {
       onProgress(`Warning: Package setup encountered issue: ${err.message}`)
     }
   }
 
-  const warnings: string[] = []
+  const missingPrereqs: { name: string; checkCmd: string; installCmd: string }[] = []
   if (config && Array.isArray(config.prerequisites)) {
     for (const prereq of config.prerequisites) {
       onProgress(`Running pre-flight check for prerequisite: ${prereq.name}...`)
@@ -204,12 +204,25 @@ export async function installModule(
       } catch {
         const platform = process.platform as "win32" | "darwin" | "linux"
         const installCmd = prereq.install?.[platform] || prereq.install?.win32 || `Install ${prereq.name}`
-        const warnMsg = `Prerequisite '${prereq.name}' is missing. Recommended install command: ${installCmd}`
-        warnings.push(warnMsg)
-        onProgress(`⚠️ ${warnMsg}`)
-        if (prereq.required === true) {
-          throw new Error(`Pre-flight check failed for required dependency '${prereq.name}'. Run: ${installCmd}`)
-        }
+        missingPrereqs.push({ name: prereq.name, checkCmd: prereq.check, installCmd })
+      }
+    }
+  }
+
+  if (missingPrereqs.length > 0) {
+    onProgress(`Detected ${missingPrereqs.length} missing system prerequisite(s): ${missingPrereqs.map(p => p.name).join(", ")}`)
+    
+    // Auto-install missing prerequisites sequentially with progress updates
+    for (let i = 0; i < missingPrereqs.length; i++) {
+      const p = missingPrereqs[i]
+      onProgress(`[${i + 1}/${missingPrereqs.length}] Installing missing system tool '${p.name}' using '${p.installCmd}'...`)
+      try {
+        const { execSync } = require("child_process")
+        execSync(p.installCmd, { stdio: "pipe" })
+        onProgress(`✅ Successfully installed system prerequisite: ${p.name}`)
+      } catch (installErr: any) {
+        onProgress(`⚠️ System installation of '${p.name}' encountered warning: ${installErr.message}`)
+        onProgress(`   Manual installation command: ${p.installCmd}`)
       }
     }
   }
