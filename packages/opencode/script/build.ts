@@ -53,6 +53,58 @@ const singleFlag = process.argv.includes("--single")
 const baselineFlag = process.argv.includes("--baseline")
 const skipInstall = process.argv.includes("--skip-install")
 const plugin = createSolidTransformPlugin()
+const sharpPlugin: import("bun").BunPlugin = {
+  name: "sharp-stub",
+  setup(build) {
+    build.onResolve({ filter: /^sharp$/ }, () => {
+      return { path: "sharp", namespace: "sharp-stub" }
+    })
+    build.onLoad({ filter: /.*/, namespace: "sharp-stub" }, () => {
+      return {
+        contents: `
+          function sharpStub() {
+            throw new Error("sharp native module is not available in standalone binary")
+          }
+          export default sharpStub
+        `,
+        loader: "js",
+      }
+    })
+  },
+}
+const parcelWatcherPlugin: import("bun").BunPlugin = {
+  name: "parcel-watcher-stub",
+  setup(build) {
+    build.onResolve({ filter: /^@parcel\/watcher/ }, (args) => {
+      return { path: args.path, namespace: "parcel-watcher-stub" }
+    })
+    build.onLoad({ filter: /.*/, namespace: "parcel-watcher-stub" }, () => {
+      return {
+        contents: `
+          export function createWrapper() {
+            return {
+              subscribe: async () => ({ unsubscribe: async () => {} }),
+              writeSnapshot: async () => {},
+              getEventsSince: async () => [],
+            }
+          }
+          export async function subscribe() {
+            return { unsubscribe: async () => {} }
+          }
+          export async function writeSnapshot() {}
+          export async function getEventsSince() { return [] }
+          export default {
+            subscribe,
+            writeSnapshot,
+            getEventsSince,
+            createWrapper,
+          }
+        `,
+        loader: "js",
+      }
+    })
+  },
+}
 // const skipEmbedWebUi = process.argv.includes("--skip-embed-web-ui")
 // Web UI temporarily disabled
 const skipEmbedWebUi = true
@@ -233,8 +285,8 @@ for (const item of targets) {
   await Bun.build({
     conditions: ["browser"],
     tsconfig: "./tsconfig.json",
-    plugins: [plugin],
-    external: ["node-gyp", "sharp"],
+    plugins: [plugin, sharpPlugin, parcelWatcherPlugin],
+    external: ["node-gyp"],
     format: "esm",
     minify: true,
     splitting: true,

@@ -4,8 +4,14 @@ import { useToast } from "@tui/ui/toast"
 import { DialogSelect, type DialogSelectOption } from "@tui/ui/dialog-select"
 import { DialogConfirm } from "@tui/ui/dialog-confirm"
 import { Spinner } from "./spinner"
-import { AVAILABLE_MODULES, isModuleInstalled, installModule, uninstallModule } from "@/service/module-manager"
-import { createSignal, createMemo, Show, batch } from "solid-js"
+import {
+  getAllAvailableModules,
+  isModuleInstalled,
+  installModule,
+  uninstallModule,
+  type ModuleInfo,
+} from "@/service/module-manager"
+import { createSignal, createResource, Show, batch } from "solid-js"
 import { TextAttributes } from "@opentui/core"
 
 export function DialogModules() {
@@ -15,22 +21,24 @@ export function DialogModules() {
 
   const [status, setStatus] = createSignal<"list" | "select-provider" | "installing">("list")
   const [progress, setProgress] = createSignal("")
-  const [refreshTrigger, setRefreshTrigger] = createSignal(0)
-  const [pendingModule, setPendingModule] = createSignal<{ id: string; title: string } | null>(null)
+  const [pendingModule, setPendingModule] = createSignal<{ id: string; title: string; source?: string } | null>(null)
 
-  const rows = createMemo(() => {
-    refreshTrigger()
-    return AVAILABLE_MODULES.map((m) => {
+  const [modules, { refetch }] = createResource(getAllAvailableModules)
+
+  const rows = () => {
+    const list = modules() || []
+    const options: DialogSelectOption<string>[] = list.map((m) => {
       const installed = isModuleInstalled(m.id)
       return {
         title: m.name,
         value: m.id,
         description: m.description,
         footer: installed ? "Installed (Press Enter to Uninstall)" : "Not Installed (Press Enter to Install)",
-        category: "Available Modules",
-      } as DialogSelectOption<string>
+        category: installed ? "Installed Modules" : "Available Modules",
+      }
     })
-  })
+    return options
+  }
 
   const handleSelect = async (item: DialogSelectOption<string>) => {
     const moduleId = item.value
@@ -61,10 +69,8 @@ export function DialogModules() {
             variant: "error",
           })
         } finally {
-          batch(() => {
-            setRefreshTrigger((x) => x + 1)
-            setStatus("list")
-          })
+          refetch()
+          setStatus("list")
           dialog.replace(() => <DialogModules />)
         }
       } else {
@@ -73,8 +79,9 @@ export function DialogModules() {
       return
     }
 
+    const found = modules()?.find((m) => m.id === moduleId)
     batch(() => {
-      setPendingModule({ id: moduleId, title: item.title })
+      setPendingModule({ id: moduleId, title: item.title, source: found?.source })
       setStatus("select-provider")
     })
   }
@@ -92,17 +99,20 @@ export function DialogModules() {
       )
     })
 
-    // Run the installation
-    installModule(moduleInfo.id, (msg) => {
-      setProgress(msg)
-    })
+    installModule(
+      moduleInfo.id,
+      (msg) => {
+        setProgress(msg)
+      },
+      moduleInfo.source
+    )
       .then(() => {
         toast.show({
           message: `Successfully installed module using ${engine} engine: ${moduleInfo.title}`,
           variant: "success",
         })
+        refetch()
         batch(() => {
-          setRefreshTrigger((x) => x + 1)
           setStatus("list")
           setPendingModule(null)
         })
@@ -121,14 +131,14 @@ export function DialogModules() {
 
   const providerOptions: DialogSelectOption<"local" | "cloud">[] = [
     {
-      title: "Local Model (Recommended)",
+      title: "Local Embedding Model (Recommended)",
       value: "local",
-      description: "Downloads and runs a lightweight open-source model locally.",
+      description: "Vectorizes knowledge base locally using lightweight embeddings.",
     },
     {
       title: "Cloud Provider APIs",
       value: "cloud",
-      description: "Uses external cloud providers like OpenAI or Cohere (requires credentials).",
+      description: "Uses cloud provider APIs for embedding generation.",
     },
   ]
 
@@ -155,7 +165,7 @@ export function DialogModules() {
       <Show when={status() === "installing"}>
         <box paddingLeft={4} paddingRight={4} paddingTop={2} paddingBottom={2} gap={1}>
           <text attributes={TextAttributes.BOLD} fg={theme.text}>
-            Processing Module...
+            Processing Knowledge Module...
           </text>
           <box paddingTop={1} paddingBottom={1}>
             <Spinner>{progress()}</Spinner>

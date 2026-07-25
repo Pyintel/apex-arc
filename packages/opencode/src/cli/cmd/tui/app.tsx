@@ -44,6 +44,8 @@ import { DialogTree } from "@tui/component/dialog-tree"
 import { DialogWorkflows } from "@tui/component/dialog-workflows"
 import { DialogConsoleOrg } from "@tui/component/dialog-console-org"
 import { DialogModules } from "@tui/component/dialog-modules"
+import { DialogSettings } from "@tui/component/dialog-settings"
+
 import { KeybindProvider, useKeybind } from "@tui/context/keybind"
 import { ThemeProvider, useTheme } from "@tui/context/theme"
 import { Home } from "@tui/routes/home"
@@ -835,6 +837,19 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       category: "system",
     },
+    {
+      title: "Settings & Specialized Embedding Models",
+      value: "settings.show",
+      slash: {
+        name: "settings",
+        aliases: ["config"],
+      },
+      onSelect: () => {
+        dialog.replace(() => <DialogSettings />)
+      },
+      category: "system",
+    },
+
     {
       title: t("tui.command.docs.open.title"),
       value: "docs.open",

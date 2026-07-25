@@ -66,7 +66,7 @@ import { HwListDevicesTool } from "./hw-list-devices"
 import { HwFlashTool } from "./hw-flash"
 import { HwSerialMonitorTool } from "./hw-serial-monitor"
 import { HwInspectDeviceTool } from "./hw-inspect-device"
-import { HwBoardRegistryTool } from "./hw-board-registry"
+
 import { WebFetchMarkdownTool } from "./web-fetch-markdown"
 import { HwReplInteractTool } from "./hw-repl-interact"
 import { HwPinoutDatasheetTool } from "./hw-pinout-datasheet"
@@ -82,17 +82,23 @@ import { UrdfToMeshTool } from "./urdf-to-mesh"
 import { MoveitPlanTool } from "./moveit-plan"
 import { WokwiSimulateTool, MujocoStepTool, PybulletStepTool, SimToRealCheckTool } from "./simulators"
 import { LintStreamTool } from "./lint-stream"
+import { ModuleQueryKnowledgeTool } from "./module-query"
+
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
 import { ChangeDirectoryTool } from "./change-directory"
 import { Glob } from "@mimo-ai/shared/util/glob"
 import path from "path"
+import { existsSync } from "fs"
 import { pathToFileURL } from "url"
+
 import { Effect, Layer, Context } from "effect"
 import { FetchHttpClient, HttpClient } from "effect/unstable/http"
 import { ChildProcessSpawner } from "effect/unstable/process/ChildProcessSpawner"
 import * as CrossSpawnSpawner from "@/effect/cross-spawn-spawner"
+import { Global, Path as GlobalPath } from "@/global"
 import { Ripgrep } from "../file/ripgrep"
+
 import { Format } from "../format"
 import { InstanceState } from "@/effect"
 import { Question } from "../question"
@@ -239,7 +245,7 @@ export const layer = Layer.effect(
     const hwflashtool = yield* HwFlashTool
     const hwserialmonitortool = yield* HwSerialMonitorTool
     const hwinspectdevicetool = yield* HwInspectDeviceTool
-    const hwboardregistrytool = yield* HwBoardRegistryTool
+
     const webfetchmarkdowntool = yield* WebFetchMarkdownTool
     const hwreplinteracttool = yield* HwReplInteractTool
     const hwpinoutdatasheettool = yield* HwPinoutDatasheetTool
@@ -258,18 +264,34 @@ export const layer = Layer.effect(
     const pybulletsteptool = yield* PybulletStepTool
     const simtorealchecktool = yield* SimToRealCheckTool
     const lintstreamtool = yield* LintStreamTool
+    const modulequeryknowledgetool = yield* ModuleQueryKnowledgeTool
+
     const agent = yield* Agent.Service
 
     const state = yield* InstanceState.make<State>(
       Effect.fn("ToolRegistry.state")(function* (ctx) {
         const custom: Tool.Def[] = []
 
+        function parseArgSchema(arg: any): z.ZodTypeAny {
+          if (!arg) return z.any()
+          if (typeof arg === "object" && ("_zod" in arg || "parse" in arg)) return arg
+          if (typeof arg === "object" && arg.type === "string") return z.string().describe(arg.description || "")
+          if (typeof arg === "object" && arg.type === "number") return z.number().describe(arg.description || "")
+          if (typeof arg === "object" && arg.type === "boolean") return z.boolean().describe(arg.description || "")
+          return z.any()
+        }
+
         function fromPlugin(id: string, def: ToolDefinition): Tool.Def {
+          const shape: Record<string, z.ZodTypeAny> = {}
+          for (const [k, v] of Object.entries(def.args ?? {})) {
+            shape[k] = parseArgSchema(v)
+          }
           return {
             id,
-            parameters: z.object(def.args),
+            parameters: z.object(shape),
             description: def.description,
             execute: (args, toolCtx) =>
+
               Effect.gen(function* () {
                 const pluginCtx: PluginToolContext = {
                   ...toolCtx,
@@ -299,16 +321,21 @@ export const layer = Layer.effect(
         const matches = dirs.flatMap((dir) =>
           Glob.scanSync("{tool,tools}/*.{js,ts}", { cwd: dir, absolute: true, dot: true, symlink: true }),
         )
-        if (matches.length) yield* config.waitForDependencies()
-        for (const match of matches) {
+        const modulesDir = path.join(Global.Path.data, "modules")
+        const moduleMatches = existsSync(modulesDir)
+          ? Glob.scanSync("*/{tool,tools}/*.{js,ts}", { cwd: modulesDir, absolute: true, dot: true, symlink: true })
+          : []
+
+        const allMatches = [...matches, ...moduleMatches]
+        if (allMatches.length) yield* config.waitForDependencies()
+        for (const match of allMatches) {
           const namespace = path.basename(match, path.extname(match))
-          // `match` is an absolute filesystem path from `Glob.scanSync(..., { absolute: true })`.
-          // Import it as `file://` so Node on Windows accepts the dynamic import.
           const mod = yield* Effect.promise(() => import(`${pathToFileURL(match).href}?v=${Date.now()}`))
           for (const [id, def] of Object.entries<ToolDefinition>(mod)) {
             custom.push(fromPlugin(id === "default" ? namespace : `${namespace}_${id}`, def))
           }
         }
+
 
         const plugins = yield* plugin.list()
         for (const p of plugins) {
@@ -386,7 +413,9 @@ export const layer = Layer.effect(
           hwflash: Tool.init(hwflashtool),
           hwserialmonitor: Tool.init(hwserialmonitortool),
           hwinspectdevice: Tool.init(hwinspectdevicetool),
-          hwboardregistry: Tool.init(hwboardregistrytool),
+
+          module_query_knowledge: Tool.init(modulequeryknowledgetool),
+
           webfetchmarkdown: Tool.init(webfetchmarkdowntool),
           hwreplinteract: Tool.init(hwreplinteracttool),
           hwpinoutdatasheet: Tool.init(hwpinoutdatasheettool),

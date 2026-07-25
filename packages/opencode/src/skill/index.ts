@@ -215,6 +215,12 @@ const discoverSkills = Effect.fnUntraced(function* (
     yield* scan(state, dir, MIMOCODE_SKILL_PATTERN)
   }
 
+  const modulesDir = path.join(Global.Path.data, "modules")
+  if (yield* fsys.isDir(modulesDir)) {
+    yield* scan(state, modulesDir, SKILL_PATTERN, { scope: "modules" })
+  }
+
+
   const cfg = yield* config.get()
   for (const item of cfg.skills?.paths ?? []) {
     const expanded = item.startsWith("~/") ? path.join(os.homedir(), item.slice(2)) : item
