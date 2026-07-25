@@ -833,6 +833,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         name: "modules",
       },
       onSelect: () => {
+        dialog.setSize("xlarge")
         dialog.replace(() => <DialogModules />)
       },
       category: "system",

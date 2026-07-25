@@ -74,6 +74,7 @@ export function DialogModules() {
         } finally {
           refetch()
           setStatus("list")
+          dialog.setSize("xlarge")
           dialog.replace(() => <DialogModules />)
         }
       } else {
