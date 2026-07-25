@@ -206,7 +206,12 @@ export async function installModule(
     return
   }
 
+  const batchSize = 50
+  const recordsToInsert: { module_id: string; item_id: string; text: string; embedding: Buffer }[] = []
+
+
   if (isDb) {
+
 
     onProgress("Loading database records...")
     const srcDb = new SqliteDb(dbPath, { readonly: true })
