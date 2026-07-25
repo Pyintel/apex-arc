@@ -134,22 +134,41 @@ export async function getAllAvailableModules(): Promise<ModuleInfo[]> {
     getInstalledModules(),
   ])
 
-  const installedIds = new Set(installedModules.map((m) => m.id))
-  const npmIds = new Set(npmModules.map((n) => n.id))
-  const customIds = new Set(custom.map((c) => c.id))
+  // Helper to normalize IDs (strip 'open-' prefix or '@pyintel/arc-module-' scope/prefix)
+  const normalizeId = (id: string) => id.replace(/^(@pyintel\/arc-module-|open-)/, "")
+
+  // Build lookup map for installed modules by raw ID and normalized ID
+  const installedMap = new Map<string, ModuleInfo>()
+  for (const m of installedModules) {
+    installedMap.set(m.id, m)
+    installedMap.set(normalizeId(m.id), m)
+  }
+
+  // Set of matched installed IDs so we can track orphans
+  const matchedInstalledIds = new Set<string>()
 
   // Merge installed status into npm modules
-  const mergedNpm = npmModules.map((m) =>
-    installedIds.has(m.id) ? { ...m, installed: true, installedAt: installedModules.find((i) => i.id === m.id)?.installedAt } : m
-  )
+  const mergedNpm = npmModules.map((m) => {
+    const installed = installedMap.get(m.id) || installedMap.get(normalizeId(m.id))
+    if (installed) {
+      matchedInstalledIds.add(installed.id)
+      return { ...m, name: m.name || installed.name, installed: true, installedAt: installed.installedAt }
+    }
+    return m
+  })
 
   // Merge installed status into custom modules
-  const mergedCustom = custom.map((m) =>
-    installedIds.has(m.id) ? { ...m, installed: true, installedAt: installedModules.find((i) => i.id === m.id)?.installedAt } : m
-  )
+  const mergedCustom = custom.map((m) => {
+    const installed = installedMap.get(m.id) || installedMap.get(normalizeId(m.id))
+    if (installed) {
+      matchedInstalledIds.add(installed.id)
+      return { ...m, name: m.name || installed.name, installed: true, installedAt: installed.installedAt }
+    }
+    return m
+  })
 
-  // Include installed modules not found in npm or custom registries
-  const orphanInstalled = installedModules.filter((m) => !npmIds.has(m.id) && !customIds.has(m.id))
+  // Include installed modules not matched to npm or custom registries
+  const orphanInstalled = installedModules.filter((m) => !matchedInstalledIds.has(m.id))
 
   return [...mergedNpm, ...mergedCustom, ...orphanInstalled]
 }
