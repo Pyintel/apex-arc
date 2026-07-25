@@ -341,9 +341,12 @@ export const layer = Layer.effect(
           const namespace = path.basename(match, path.extname(match))
           const mod = yield* Effect.promise(() => import(`${pathToFileURL(match).href}?v=${Date.now()}`))
           for (const [id, def] of Object.entries<ToolDefinition>(mod)) {
-            custom.push(fromPlugin(id === "default" ? namespace : `${namespace}_${id}`, def))
+            if (def && typeof def === "object" && typeof (def as any).execute === "function") {
+              custom.push(fromPlugin(id === "default" ? namespace : `${namespace}_${id}`, def))
+            }
           }
         }
+
 
 
         const plugins = yield* plugin.list()
@@ -540,10 +543,13 @@ export const layer = Layer.effect(
 
     const all: Interface["all"] = Effect.fn("ToolRegistry.all")(function* () {
       const s = yield* InstanceState.get(state)
-      const customIds = new Set(s.custom.map((t) => t.id))
-      const builtins = s.builtin.filter((t) => !customIds.has(t.id))
-      return [...builtins, ...s.custom] as Tool.Def[]
+      const validCustom = (s.custom ?? []).filter((t): t is Tool.Def => Boolean(t && typeof t.id === "string"))
+      const validBuiltin = (s.builtin ?? []).filter((t): t is Tool.Def => Boolean(t && typeof t.id === "string"))
+      const customIds = new Set(validCustom.map((t) => t.id))
+      const builtins = validBuiltin.filter((t) => !customIds.has(t.id))
+      return [...builtins, ...validCustom]
     })
+
 
     const ids: Interface["ids"] = Effect.fn("ToolRegistry.ids")(function* () {
       return (yield* all()).map((tool) => tool.id)
