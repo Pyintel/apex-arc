@@ -12,61 +12,11 @@ export interface ModuleInfo {
   description: string
   source?: string
   dbFilename?: string
-  type?: "git" | "local" | "builtin" | "npm"
+  type?: "git" | "local" | "npm"
+  installed?: boolean
+  installedAt?: string
+  version?: string
 }
-
-export const BUILTIN_MODULES: ModuleInfo[] = [
-  {
-    id: "open-board-registry",
-    name: "Dev Board Specifications Registry",
-    description: "Database containing structured specifications and pinouts for 1,700+ microcontroller boards.",
-    source: "https://github.com/Pyintel/open-board-registry.git",
-    dbFilename: "boards.db",
-    type: "builtin",
-  },
-  {
-    id: "open-hardware-toolchain",
-    name: "Hardware Toolchains & Device Interaction",
-    description: "Tools and skills for device detection, firmware flashing, serial monitoring, pinouts, and MicroPython REPL.",
-    source: "https://github.com/Pyintel/open-hardware-toolchain.git",
-    type: "builtin",
-  },
-  {
-    id: "open-robotics-simulators",
-    name: "Robotics & Physics Simulators",
-    description: "Tools for ROS 2 graph inspection, URDF/SDF kinematics parsing, MoveIt planning, and MuJoCo/PyBullet simulation.",
-    source: "https://github.com/Pyintel/open-robotics-simulators.git",
-    type: "builtin",
-  },
-  {
-    id: "open-document-media-suite",
-    name: "Document & Media Suite",
-    description: "Tools for PDF processing (merge, split, rotate), Word/PowerPoint readers, and audio/video format conversion.",
-    source: "https://github.com/Pyintel/open-document-media-suite.git",
-    type: "builtin",
-  },
-  {
-    id: "open-google-workspace",
-    name: "Google Workspace Automation",
-    description: "Integrations for Gmail, Google Drive, Calendar, Docs, and Sheets automation.",
-    source: "https://github.com/Pyintel/open-google-workspace.git",
-    type: "builtin",
-  },
-  {
-    id: "open-science-bioinformatics",
-    name: "Science & Bioinformatics Suite",
-    description: "Biomedical database search tools for PubMed, PubChem, ChEMBL, UniProt, AlphaFold, and PDB 3D structures.",
-    source: "https://github.com/Pyintel/open-science-bioinformatics.git",
-    type: "builtin",
-  },
-  {
-    id: "open-design-system",
-    name: "UI/UX & Design System Suite",
-    description: "Tools and skills for dynamic UI mockups, design tokens, component builders, and visual asset generation.",
-    source: "https://github.com/Pyintel/open-design-system.git",
-    type: "builtin",
-  },
-]
 
 function getCustomRegistryPath(): string {
   return path.join(GlobalPath.data, "modules", "custom_registry.json")
@@ -110,14 +60,66 @@ export async function saveCustomModule(module: ModuleInfo): Promise<void> {
   await fs.writeFile(customPath, JSON.stringify(filtered, null, 2))
 }
 
+async function getInstalledModules(): Promise<ModuleInfo[]> {
+  const modulesDir = path.join(GlobalPath.data, "modules")
+  const devHomeDir = path.join(process.env.HOME || process.env.USERPROFILE || "", ".dev-home", "data", "modules")
+  const installed: ModuleInfo[] = []
+  const seen = new Set<string>()
+
+  for (const dir of [modulesDir, devHomeDir]) {
+    if (!existsSync(dir)) continue
+    const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => [])
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.name.startsWith("_") || seen.has(entry.name)) continue
+      seen.add(entry.name)
+      const manifestPath = path.join(dir, entry.name, "manifest.json")
+      if (existsSync(manifestPath)) {
+        try {
+          const manifest = JSON.parse(await Bun.file(manifestPath).text())
+          installed.push({
+            id: entry.name,
+            name: manifest.name || entry.name,
+            description: manifest.description || `Installed module ${entry.name}`,
+            source: manifest.source,
+            type: manifest.type || "git",
+            installed: true,
+            installedAt: manifest.installedAt,
+            version: manifest.version,
+          })
+        } catch {
+          installed.push({ id: entry.name, name: entry.name, description: `Installed module ${entry.name}`, installed: true })
+        }
+      }
+    }
+  }
+  return installed
+}
+
 export async function getAllAvailableModules(): Promise<ModuleInfo[]> {
-  const custom = await getCustomModules()
-  const npmModules = await fetchNpmModules()
-  const customIds = new Set(custom.map((c) => c.id))
+  const [custom, npmModules, installedModules] = await Promise.all([
+    getCustomModules(),
+    fetchNpmModules(),
+    getInstalledModules(),
+  ])
+
+  const installedIds = new Set(installedModules.map((m) => m.id))
   const npmIds = new Set(npmModules.map((n) => n.id))
-  
-  const builtins = BUILTIN_MODULES.filter((b) => !customIds.has(b.id) && !npmIds.has(b.id))
-  return [...builtins, ...npmModules, ...custom]
+  const customIds = new Set(custom.map((c) => c.id))
+
+  // Merge installed status into npm modules
+  const mergedNpm = npmModules.map((m) =>
+    installedIds.has(m.id) ? { ...m, installed: true, installedAt: installedModules.find((i) => i.id === m.id)?.installedAt } : m
+  )
+
+  // Merge installed status into custom modules
+  const mergedCustom = custom.map((m) =>
+    installedIds.has(m.id) ? { ...m, installed: true, installedAt: installedModules.find((i) => i.id === m.id)?.installedAt } : m
+  )
+
+  // Include installed modules not found in npm or custom registries
+  const orphanInstalled = installedModules.filter((m) => !npmIds.has(m.id) && !customIds.has(m.id))
+
+  return [...mergedNpm, ...mergedCustom, ...orphanInstalled]
 }
 
 export function isModuleInstalled(moduleId: string): boolean {
