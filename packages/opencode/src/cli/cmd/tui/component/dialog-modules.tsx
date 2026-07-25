@@ -6,7 +6,6 @@ import { DialogConfirm } from "@tui/ui/dialog-confirm"
 import { Spinner } from "./spinner"
 import {
   getAllAvailableModules,
-  isModuleInstalled,
   installModule,
   uninstallModule,
   type ModuleInfo,
@@ -31,7 +30,7 @@ export function DialogModules() {
   const rows = () => {
     const list = modules() || []
     const options: DialogSelectOption<string>[] = list.map((m) => {
-      const installed = isModuleInstalled(m.id)
+      const installed = m.installed === true
       return {
         title: m.name,
         value: m.id,
@@ -45,7 +44,8 @@ export function DialogModules() {
 
   const handleSelect = async (item: DialogSelectOption<string>) => {
     const moduleId = item.value
-    const installed = isModuleInstalled(moduleId)
+    const found = modules()?.find((m) => m.id === moduleId)
+    const installed = found?.installed === true
 
     if (installed) {
       const confirmUninstall = await DialogConfirm.show(

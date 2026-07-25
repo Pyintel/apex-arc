@@ -25,19 +25,23 @@ function getCustomRegistryPath(): string {
 
 export async function fetchNpmModules(): Promise<ModuleInfo[]> {
   try {
-    const res = await fetch("https://registry.npmjs.org/-/v1/search?text=scope:pyintel+keywords:pyintel-arc-module")
+    const res = await fetch("https://registry.npmjs.org/-/v1/search?text=scope:pyintel+keywords:pyintel-arc-module&size=50")
     if (!res.ok) return []
-    const data = (await res.json()) as { objects?: { package: { name: string; description: string } }[] }
+    const data = (await res.json()) as { objects?: { package: { name: string; description: string; version: string } }[] }
     if (!Array.isArray(data.objects)) return []
+    // Normalize id: @pyintel/arc-module-google-workspace -> open-google-workspace
+    // so it matches the installed module directory name (open-*)
     return data.objects.map((obj) => {
       const pkg = obj.package
-      const id = pkg.name.replace(/^@pyintel\/(arc-module-)?/, "")
+      const slug = pkg.name.replace(/^@pyintel\/arc-module-/, "")
+      const id = `open-${slug}`
       return {
         id,
         name: pkg.name,
         description: pkg.description || `Pyintel Arc Module ${pkg.name}`,
         source: `npm:${pkg.name}`,
         type: "npm" as const,
+        version: pkg.version,
       }
     })
   } catch {
@@ -73,14 +77,28 @@ async function getInstalledModules(): Promise<ModuleInfo[]> {
     for (const entry of entries) {
       if (!entry.isDirectory() || entry.name.startsWith("_") || seen.has(entry.name)) continue
       seen.add(entry.name)
-      const manifestPath = path.join(dir, entry.name, "manifest.json")
+      const moduleDir = path.join(dir, entry.name)
+
+      // Prefer ARC/config.json for name/description (source of truth)
+      const arcConfigPath = path.join(moduleDir, "ARC", "config.json")
+      let arcName: string | undefined
+      let arcDescription: string | undefined
+      if (existsSync(arcConfigPath)) {
+        try {
+          const arc = JSON.parse(await Bun.file(arcConfigPath).text())
+          arcName = arc.name
+          arcDescription = arc.description
+        } catch {}
+      }
+
+      const manifestPath = path.join(moduleDir, "manifest.json")
       if (existsSync(manifestPath)) {
         try {
           const manifest = JSON.parse(await Bun.file(manifestPath).text())
           installed.push({
             id: entry.name,
-            name: manifest.name || entry.name,
-            description: manifest.description || `Installed module ${entry.name}`,
+            name: arcName || manifest.name || entry.name,
+            description: arcDescription || manifest.description || `Installed module ${entry.name}`,
             source: manifest.source,
             type: manifest.type || "git",
             installed: true,
@@ -88,8 +106,21 @@ async function getInstalledModules(): Promise<ModuleInfo[]> {
             version: manifest.version,
           })
         } catch {
-          installed.push({ id: entry.name, name: entry.name, description: `Installed module ${entry.name}`, installed: true })
+          installed.push({
+            id: entry.name,
+            name: arcName || entry.name,
+            description: arcDescription || `Installed module ${entry.name}`,
+            installed: true,
+          })
         }
+      } else {
+        // No manifest yet but dir exists — still show as installed
+        installed.push({
+          id: entry.name,
+          name: arcName || entry.name,
+          description: arcDescription || `Installed module ${entry.name}`,
+          installed: true,
+        })
       }
     }
   }
