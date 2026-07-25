@@ -62,8 +62,6 @@ export function DialogModules() {
 
         try {
           await uninstallModule(moduleId)
-          void sdk.client.tool.reload().catch(() => {})
-          void sdk.client.skill.reload().catch(() => {})
           toast.show({
             message: `Successfully uninstalled module: ${item.title}`,
             variant: "success",
@@ -108,12 +106,11 @@ export function DialogModules() {
       moduleInfo.source
     )
       .then(() => {
-        void sdk.client.tool.reload().catch(() => {})
-        void sdk.client.skill.reload().catch(() => {})
         toast.show({
           message: `Successfully installed module: ${moduleInfo.title}`,
           variant: "success",
         })
+
 
         refetch()
         batch(() => {
