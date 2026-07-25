@@ -62,14 +62,8 @@ import { CodeSearchTool } from "./codesearch"
 import { Flag } from "@/flag/flag"
 import { Log } from "@/util"
 import { LspTool } from "./lsp"
-import { HwListDevicesTool } from "./hw-list-devices"
-import { HwFlashTool } from "./hw-flash"
-import { HwSerialMonitorTool } from "./hw-serial-monitor"
-import { HwInspectDeviceTool } from "./hw-inspect-device"
 
 import { WebFetchMarkdownTool } from "./web-fetch-markdown"
-import { HwReplInteractTool } from "./hw-repl-interact"
-import { HwPinoutDatasheetTool } from "./hw-pinout-datasheet"
 import { ProcessImageTool } from "./process-image"
 import { AstEditTool } from "./ast-edit"
 import { ShellRunTool } from "./shell-run"
@@ -240,15 +234,8 @@ export const layer = Layer.effect(
     const gmaildrafttool = yield* GmailDraftTool
     const gmailsendtool = yield* GmailSendTool
     const sheetsappendtool = yield* SheetsAppendTool
-    const sheetsreadtool = yield* SheetsReadTool
-    const hwlistdevicestool = yield* HwListDevicesTool
-    const hwflashtool = yield* HwFlashTool
-    const hwserialmonitortool = yield* HwSerialMonitorTool
-    const hwinspectdevicetool = yield* HwInspectDeviceTool
-
     const webfetchmarkdowntool = yield* WebFetchMarkdownTool
-    const hwreplinteracttool = yield* HwReplInteractTool
-    const hwpinoutdatasheettool = yield* HwPinoutDatasheetTool
+
     const processimagetool = yield* ProcessImageTool
     const astedittool = yield* AstEditTool
     const shellruntool = yield* ShellRunTool
@@ -420,17 +407,8 @@ export const layer = Layer.effect(
           gmaildraft: Tool.init(gmaildrafttool),
           gmailsend: Tool.init(gmailsendtool),
           sheetsappend: Tool.init(sheetsappendtool),
-          sheetsread: Tool.init(sheetsreadtool),
-          hwlistdevices: Tool.init(hwlistdevicestool),
-          hwflash: Tool.init(hwflashtool),
-          hwserialmonitor: Tool.init(hwserialmonitortool),
-          hwinspectdevice: Tool.init(hwinspectdevicetool),
-
-          module_query_knowledge: Tool.init(modulequeryknowledgetool),
-
           webfetchmarkdown: Tool.init(webfetchmarkdowntool),
-          hwreplinteract: Tool.init(hwreplinteracttool),
-          hwpinoutdatasheet: Tool.init(hwpinoutdatasheettool),
+
           processimage: Tool.init(processimagetool),
           astedit: Tool.init(astedittool),
           shellrun: Tool.init(shellruntool),
@@ -507,15 +485,8 @@ export const layer = Layer.effect(
             tool.gmaildraft,
             tool.gmailsend,
             tool.sheetsappend,
-            tool.sheetsread,
-            tool.hwlistdevices,
-            tool.hwflash,
-            tool.hwserialmonitor,
-            tool.hwinspectdevice,
-            tool.hwboardregistry,
             tool.webfetchmarkdown,
-            tool.hwreplinteract,
-            tool.hwpinoutdatasheet,
+
             tool.processimage,
             tool.astedit,
             tool.shellrun,
