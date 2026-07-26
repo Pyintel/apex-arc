@@ -1,4 +1,3 @@
-import { pipeline, env, type FeatureExtractionPipeline } from "@xenova/transformers"
 import { Effect } from "effect"
 import path from "path"
 import fs from "fs/promises"
@@ -6,7 +5,8 @@ import { existsSync } from "fs"
 import { Global } from "../global"
 
 const DEFAULT_MODEL = "Xenova/all-MiniLM-L6-v2"
-env.cacheDir = path.join(Global.Path.data, "models")
+
+type FeatureExtractionPipeline = Awaited<ReturnType<typeof import("@xenova/transformers").pipeline>>
 
 let extractorPromise: Promise<FeatureExtractionPipeline> | null = null
 
@@ -68,9 +68,12 @@ export async function deleteDownloadedModel(modelPathOrName: string): Promise<vo
 
 export async function getExtractor(modelName = DEFAULT_MODEL) {
   if (!extractorPromise) {
-    extractorPromise = pipeline("feature-extraction", modelName, {
-      quantized: true,
-    }) as Promise<FeatureExtractionPipeline>
+    extractorPromise = import("@xenova/transformers").then((transformers) => {
+      transformers.env.cacheDir = path.join(Global.Path.data, "models")
+      return transformers.pipeline("feature-extraction", modelName, {
+        quantized: true,
+      })
+    })
   }
   return extractorPromise
 }

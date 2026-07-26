@@ -14,6 +14,9 @@ Apex Arc is a terminal-native AI coding assistant. It can read and write code, r
 
 ## Quick Start
 
+For full Windows, macOS, and Linux setup instructions, see the
+[Apex Arc Installation Guide](https://github.com/Pyintel/apex-arc/blob/master/docs/installation.md).
+
 ```bash
 # Install via npm
 npm install -g @pyintel/arc
@@ -43,6 +46,13 @@ see the warning on an older version, reinstall the latest global package:
 
 ```bash
 npm install -g @pyintel/arc@latest
+```
+
+Verify the install:
+
+```bash
+arc --version
+arc --help
 ```
 
 The first launch guides you through configuration automatically. Supported options:
