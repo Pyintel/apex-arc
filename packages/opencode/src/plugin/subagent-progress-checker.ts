@@ -1,4 +1,4 @@
-import type { Hooks, PluginInput } from "@mimo-ai/plugin"
+import type { Hooks, PluginInput } from "@pyintel/plugin"
 import fs from "fs/promises"
 import path from "path"
 import { Log } from "../util"

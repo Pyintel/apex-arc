@@ -1,5 +1,5 @@
-import type { Event } from "@mimo-ai/sdk/v2/client"
-import { createSimpleContext } from "@mimo-ai/ui/context"
+import type { Event } from "@pyintel/sdk/v2/client"
+import { createSimpleContext } from "@pyintel/ui/context"
 import { createGlobalEmitter } from "@solid-primitives/event-bus"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { batch, onCleanup, onMount } from "solid-js"

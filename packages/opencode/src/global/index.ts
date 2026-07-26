@@ -2,8 +2,8 @@ import fs from "fs/promises"
 import path from "path"
 import os from "os"
 import { Filesystem } from "../util"
-import { Flock } from "@mimo-ai/shared/util/flock"
-import { resolveApexArcHome } from "@mimo-ai/shared/global"
+import { Flock } from "@pyintel/shared/util/flock"
+import { resolveApexArcHome } from "@pyintel/shared/global"
 
 const { data, cache, config, state } = resolveApexArcHome()
 

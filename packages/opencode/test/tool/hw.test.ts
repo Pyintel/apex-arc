@@ -16,7 +16,7 @@ import { SessionID, MessageID } from "../../src/session/schema"
 import { provideTmpdirInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 import * as CrossSpawnSpawner from "../../src/effect/cross-spawn-spawner"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 
 const ctx = {
   sessionID: SessionID.make("ses_test-hw-session"),

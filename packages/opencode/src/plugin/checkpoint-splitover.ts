@@ -1,4 +1,4 @@
-import type { Hooks, PluginInput } from "@mimo-ai/plugin"
+import type { Hooks, PluginInput } from "@pyintel/plugin"
 import { Log } from "../util"
 import type { ProjectID } from "../project/schema"
 import type { SessionID } from "../session/schema"

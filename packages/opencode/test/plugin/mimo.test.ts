@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import crypto from "crypto"
 import { MimoAuthPlugin } from "../../src/plugin/mimo"
-import type { PluginInput } from "@mimo-ai/plugin"
+import type { PluginInput } from "@pyintel/plugin"
 
 function encrypt(recipientPkBase64: string, payload: string): string {
   const recipientPublicKey = crypto.createPublicKey({

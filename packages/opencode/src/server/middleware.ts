@@ -1,5 +1,5 @@
 import { Provider } from "../provider"
-import { NamedError } from "@mimo-ai/shared/util/error"
+import { NamedError } from "@pyintel/shared/util/error"
 import { NotFoundError } from "../storage"
 import { Session } from "../session"
 import type { ContentfulStatusCode } from "hono/utils/http-status"

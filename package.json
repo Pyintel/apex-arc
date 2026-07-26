@@ -100,6 +100,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.933.0",
+    "@opentui/core": "0.1.101",
+    "@parcel/watcher": "2.5.1",
     "@pyintel/plugin": "workspace:*",
     "@pyintel/script": "workspace:*",
     "@pyintel/sdk": "workspace:*",

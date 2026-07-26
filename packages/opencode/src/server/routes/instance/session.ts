@@ -30,7 +30,7 @@ import { spawnRef } from "@/actor/spawn-ref"
 import { errors } from "../../error"
 import { lazy } from "@/util/lazy"
 import { Bus } from "@/bus"
-import { NamedError } from "@mimo-ai/shared/util/error"
+import { NamedError } from "@pyintel/shared/util/error"
 import { jsonRequest, runRequest } from "./trace"
 import { RateLimitMiddleware } from "../../rate-limit"
 

@@ -1,5 +1,5 @@
-import type { Hooks, PluginInput } from "@mimo-ai/plugin"
-import type { Model } from "@mimo-ai/sdk/v2"
+import type { Hooks, PluginInput } from "@pyintel/plugin"
+import type { Model } from "@pyintel/sdk/v2"
 import { InstallationVersion } from "@/installation/version"
 import { iife } from "@/util/iife"
 import { Log } from "../../util"

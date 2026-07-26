@@ -9,10 +9,10 @@ import type {
   QuestionRequest,
   Session,
   Todo,
-} from "@mimo-ai/sdk/v2/client"
-import { showToast } from "@mimo-ai/ui/toast"
-import { getFilename } from "@mimo-ai/shared/util/path"
-import { retry } from "@mimo-ai/shared/util/retry"
+} from "@pyintel/sdk/v2/client"
+import { showToast } from "@pyintel/ui/toast"
+import { getFilename } from "@pyintel/shared/util/path"
+import { retry } from "@pyintel/shared/util/retry"
 import { batch } from "solid-js"
 import { reconcile, type SetStoreFunction, type Store } from "solid-js/store"
 import type { State, VcsCache } from "./types"

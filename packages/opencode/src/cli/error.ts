@@ -1,4 +1,4 @@
-import { NamedError } from "@mimo-ai/shared/util/error"
+import { NamedError } from "@pyintel/shared/util/error"
 import { errorFormat } from "@/util/error"
 
 interface ErrorLike {

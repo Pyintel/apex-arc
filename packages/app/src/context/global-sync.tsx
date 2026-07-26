@@ -6,9 +6,9 @@ import type {
   ProviderAuthResponse,
   ProviderListResponse,
   Todo,
-} from "@mimo-ai/sdk/v2/client"
-import { showToast } from "@mimo-ai/ui/toast"
-import { getFilename } from "@mimo-ai/shared/util/path"
+} from "@pyintel/sdk/v2/client"
+import { showToast } from "@pyintel/ui/toast"
+import { getFilename } from "@pyintel/shared/util/path"
 import { batch, createContext, getOwner, onCleanup, onMount, type ParentProps, untrack, useContext } from "solid-js"
 import { createStore, produce, reconcile, unwrap } from "solid-js/store"
 import { useLanguage } from "@/context/language"

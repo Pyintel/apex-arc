@@ -1,6 +1,6 @@
 import path from "path"
 import z from "zod"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 import { Cause, Context, Effect, Fiber, Layer, Queue, Stream } from "effect"
 import type { PlatformError } from "effect/PlatformError"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/unstable/http"

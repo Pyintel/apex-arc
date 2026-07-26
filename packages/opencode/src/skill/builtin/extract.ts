@@ -1,6 +1,6 @@
 import path from "path"
 import { Effect } from "effect"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 import { Flag } from "@/flag/flag"
 import { Path as GlobalPath } from "@/global"
 import { InstallationLocal, InstallationVersion } from "@/installation/version"

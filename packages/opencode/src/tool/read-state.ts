@@ -1,7 +1,7 @@
 import path from "path"
 import type * as Tool from "./tool"
 import { SessionCwd } from "./session-cwd"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 import { RecoverableError } from "./recoverable"
 import type { SessionID } from "../session/schema"
 

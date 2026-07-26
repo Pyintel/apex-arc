@@ -1,4 +1,4 @@
-import { Slug } from "@mimo-ai/shared/util/slug"
+import { Slug } from "@pyintel/shared/util/slug"
 import path from "path"
 import { BusEvent } from "@/bus/bus-event"
 import { Bus } from "@/bus"

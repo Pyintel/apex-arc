@@ -10,7 +10,7 @@ import {
 import * as ConfigPaths from "@/config/paths"
 import { Global } from "@/global"
 import { Filesystem } from "@/util"
-import { Flock } from "@mimo-ai/shared/util/flock"
+import { Flock } from "@pyintel/shared/util/flock"
 import { isRecord } from "@/util/record"
 
 import { parsePluginSpecifier, readPackageThemes, readPluginPackage, resolvePluginTarget } from "./shared"

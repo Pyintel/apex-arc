@@ -12,7 +12,7 @@ import { Process } from "../util"
 import { spawn as lspspawn } from "./launch"
 import { Effect, Layer, Context } from "effect"
 import { InstanceState } from "@/effect"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 
 const log = Log.create({ service: "lsp" })
 

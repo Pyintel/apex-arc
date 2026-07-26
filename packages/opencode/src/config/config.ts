@@ -6,7 +6,7 @@ import z from "zod"
 import { mergeDeep, pipe } from "remeda"
 import { Global } from "../global"
 import fsNode from "fs/promises"
-import { NamedError } from "@mimo-ai/shared/util/error"
+import { NamedError } from "@pyintel/shared/util/error"
 import { Flag } from "../flag/flag"
 import { Auth } from "../auth"
 import { Env } from "../env"
@@ -19,10 +19,10 @@ import { Event } from "../server/event"
 import { Account } from "@/account/account"
 import { isRecord } from "@/util/record"
 import type { ConsoleState } from "./console-state"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 import { InstanceState } from "@/effect"
 import { Context, Duration, Effect, Exit, Fiber, Layer, Option, Schema } from "effect"
-import { EffectFlock } from "@mimo-ai/shared/util/effect-flock"
+import { EffectFlock } from "@pyintel/shared/util/effect-flock"
 import { InstanceRef } from "@/effect/instance-ref"
 import { zod, ZodOverride } from "@/util/effect-zod"
 import { ConfigAgent } from "./agent"
@@ -817,7 +817,7 @@ export const layer = Layer.effect(
             .install(dir, {
               add: [
                 {
-                  name: "@mimo-ai/plugin",
+                  name: "@pyintel/plugin",
                   version: InstallationLocal ? undefined : InstallationVersion,
                 },
               ],

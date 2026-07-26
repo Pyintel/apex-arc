@@ -6,8 +6,8 @@ import { Installation } from "../installation"
 import { Flag } from "../flag/flag"
 import { lazy } from "@/util/lazy"
 import { Filesystem } from "../util"
-import { Flock } from "@mimo-ai/shared/util/flock"
-import { Hash } from "@mimo-ai/shared/util/hash"
+import { Flock } from "@pyintel/shared/util/flock"
+import { Hash } from "@pyintel/shared/util/hash"
 
 // Try to import bundled snapshot (generated at build time)
 // Falls back to undefined in dev mode when snapshot doesn't exist

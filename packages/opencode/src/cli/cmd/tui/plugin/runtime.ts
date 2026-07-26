@@ -9,7 +9,7 @@ import {
   type TuiPluginStatus,
   type TuiSlotPlugin,
   type TuiTheme,
-} from "@mimo-ai/plugin/tui"
+} from "@pyintel/plugin/tui"
 import path from "path"
 import { fileURLToPath, pathToFileURL } from "url"
 import { TuiConfig } from "@/cli/cmd/tui/config/tui"
@@ -32,9 +32,9 @@ import { hasTheme, upsertTheme } from "../context/theme"
 import { Global } from "@/global"
 import { Filesystem } from "@/util"
 import { Process } from "@/util"
-import { Flock } from "@mimo-ai/shared/util/flock"
+import { Flock } from "@pyintel/shared/util/flock"
 import { Flag } from "@/flag/flag"
-import { Glob } from "@mimo-ai/shared/util/glob"
+import { Glob } from "@pyintel/shared/util/glob"
 import { INTERNAL_TUI_PLUGINS, type InternalTuiPlugin } from "./internal"
 import { setupSlots, Slot as View } from "./slots"
 import type { HostPluginApi, HostSlots } from "./slots"

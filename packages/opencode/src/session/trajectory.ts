@@ -1,4 +1,4 @@
-import type { TrajectoryMessage, TrajectoryPart } from "@mimo-ai/plugin"
+import type { TrajectoryMessage, TrajectoryPart } from "@pyintel/plugin"
 import { MessageV2 } from "./message-v2"
 
 /**

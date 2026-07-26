@@ -20,15 +20,15 @@ beforeAll(async () => {
       },
     }),
   }))
-  mock.module("@mimo-ai/ui/collapsible", () => ({
+  mock.module("@pyintel/ui/collapsible", () => ({
     Collapsible: {
       Trigger: (props: { children?: unknown }) => props.children,
       Content: (props: { children?: unknown }) => props.children,
     },
   }))
-  mock.module("@mimo-ai/ui/file-icon", () => ({ FileIcon: () => null }))
-  mock.module("@mimo-ai/ui/icon", () => ({ Icon: () => null }))
-  mock.module("@mimo-ai/ui/tooltip", () => ({ Tooltip: (props: { children?: unknown }) => props.children }))
+  mock.module("@pyintel/ui/file-icon", () => ({ FileIcon: () => null }))
+  mock.module("@pyintel/ui/icon", () => ({ Icon: () => null }))
+  mock.module("@pyintel/ui/tooltip", () => ({ Tooltip: (props: { children?: unknown }) => props.children }))
   const mod = await import("./file-tree")
   shouldListRoot = mod.shouldListRoot
   shouldListExpanded = mod.shouldListExpanded

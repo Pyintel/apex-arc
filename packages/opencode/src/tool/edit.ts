@@ -19,7 +19,7 @@ import { SessionCwd } from "./session-cwd"
 import { Snapshot } from "@/snapshot"
 import { assertWriteAllowed, askEditUnlessMemory } from "./external-directory"
 import { assertFileRead } from "./read-state"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@pyintel/shared/filesystem"
 import { Flag } from "@/flag/flag"
 
 function normalizeLineEndings(text: string): string {
