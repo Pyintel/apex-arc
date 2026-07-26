@@ -2,179 +2,154 @@
 
 <p align="center"><strong>Apex Arc: Where Models and Agents Co-Evolve</strong></p>
 
+Apex Arc is a terminal-native AI coding assistant. It can read and write code, run commands, manage Git, use MCP servers, and keep persistent project memory across sessions.
 
-
----
-
-Apex Arc is a terminal-native AI coding assistant. It can read and write code, run commands, manage Git, and use a persistent memory system to keep a deep understanding of your project across sessions while continuously improving itself.
-
----
-
-## Quick Start
+## Install
 
 ```bash
-# Install via npm (all platforms)
-# Mirror registries (e.g. cnpm/taobao) may have delayed platform package sync
 npm install -g @pyintel/arc --registry https://registry.npmjs.org
-
-# Run
-apex-arc
 ```
 
-The first launch guides you through configuration automatically. Supported options:
-- **Import from Claude Code** — migrate existing authentication in one step
-- **Custom Provider** — add any OpenAI-compatible API in the TUI
+Run either command:
 
-<details>
-<summary><strong>WSL: clipboard issues</strong></summary>
-
-If you encounter garbled text when copying on WSL, install `xsel`:
 ```bash
-sudo apt install xsel
+apex-arc
+arc
 ```
-</details>
 
----
+The npm package links both `apex-arc` and `arc` to the same CLI wrapper.
+
+## Build From Source
+
+Install dependencies from the repo root:
+
+```bash
+bun install
+```
+
+Run the CLI from source:
+
+```bash
+bun run dev
+```
+
+Typecheck the main CLI package:
+
+```bash
+cd packages/opencode
+bun typecheck
+```
+
+Tests must be run from package directories, not the repo root.
+
+## Build Binaries
+
+Set the release version and npm dist-tag/channel with `ARC_VERSION` and `ARC_CHANNEL`.
+
+PowerShell:
+
+```powershell
+$env:ARC_VERSION="0.2.10"
+$env:ARC_CHANNEL="latest"
+```
+
+Bash:
+
+```bash
+export ARC_VERSION=0.2.10
+export ARC_CHANNEL=latest
+```
+
+Build all targets:
+
+```bash
+bun run --cwd packages/opencode build
+```
+
+Build by operating system:
+
+```bash
+bun run build:windows
+bun run build:linux
+bun run build:macos
+```
+
+Equivalent npm commands:
+
+```bash
+npm run build:windows
+npm run build:linux
+npm run build:macos
+```
+
+The OS-specific scripts call:
+
+```bash
+bun run --cwd packages/opencode script/build.ts --os=windows
+bun run --cwd packages/opencode script/build.ts --os=linux
+bun run --cwd packages/opencode script/build.ts --os=macos
+```
+
+For a current-machine smoke build:
+
+```bash
+bun run build:windows --single --skip-install
+```
+
+On Windows x64 this writes:
+
+```text
+packages/opencode/dist/apex-arc-windows-x64/bin/apex-arc.exe
+```
+
+## Publish To npm
+
+After building the desired platform packages, publish from `packages/opencode`:
+
+```bash
+bun run --cwd packages/opencode script/publish.ts
+```
+
+The publish script publishes platform binary packages first, then publishes the wrapper package `@pyintel/arc`.
+
+The wrapper package installs the `arc` and `apex-arc` commands and resolves the correct native package at runtime.
+
+## Build Environment Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `ARC_VERSION` | Version embedded into binaries and generated package manifests |
+| `ARC_CHANNEL` | npm dist-tag/channel, for example `latest` |
+| `ARC_BUMP` | Optional version bump mode used by scripts |
+| `ARC_RELEASE` | Enables release-mode behavior in build scripts |
+| `ARC_BIN_PATH` | Override native binary path for the JS wrapper |
+| `ARC_HOME` | Override config/data/cache/state root directory |
+
+## Runtime Configuration
+
+Apex Arc uses JSON/JSONC config files.
+
+| File | Project-level | Global |
+| --- | --- | --- |
+| Main config | `.apex-arc/config.jsonc` | `~/.config/apex-arc/config.json` |
+| TUI config | `.apex-arc/tui.json` | `~/.config/apex-arc/tui.json` |
+| Auth credentials | - | `~/.local/share/apex-arc/auth.json` |
+
+On Windows, XDG-style paths are resolved under `%LOCALAPPDATA%\apex-arc\` unless `ARC_HOME` is set.
 
 ## Core Features
 
-### Multiple Agents
-
-| Agent | Description |
-|--------|------|
-| **build** | Default. Full tool permissions for development |
-| **plan** | Read-only analysis mode for code exploration and solution design |
-| **compose** | Orchestration mode for specs-driven development and skill-driven workflows |
-
-Press `Tab` to switch between primary agents. Subagents are created by the system as needed.
-
-### Persistent Memory
-
-Cross-session memory powered by SQLite FTS5 full-text search:
-
-- **Project memory** (`MEMORY.md`) — persistent project knowledge, rules, and architecture decisions
-- **Session checkpoint** (`checkpoint.md`) — structured state snapshots maintained automatically by the checkpoint-writer subagent
-- **Scratch notes** (`notes.md`) — temporary note area for agents
-- **Task progress** (`tasks/<id>/progress.md`) — per-task logs
-
-Memory is injected automatically when a session resumes, so the agent does not need to relearn project context.
-
-### Intelligent Context Management
-
-- **Automatic checkpoints** — decides when to save session state based on the model context window
-- **Context reconstruction** — when context approaches the limit, rebuilds it from the latest checkpoint, project memory, task progress, and retained recent messages so the agent can continue the current task
-- **Budgeted injection** — uses a token budget to control how much checkpoint, memory, and notes content enters context, with importance ranking
-
-### Task Tracking
-
-A tree-shaped task system (`T1`, `T1.1`, `T1.2`, …) that integrates automatically with the checkpoint system, so task progress is preserved when sessions resume.
-
-### Subagent System
-
-The primary agent can create subagents on demand. Subagents share the current session context and can work in parallel, with lifecycle tracking, cancellation, and background execution.
-
-### Goal / Stop Condition
-
-The `/goal` command sets a stopping condition for a session. When the agent tries to stop, an independent judge model evaluates the conversation to decide whether the condition is truly satisfied — preventing premature "optimistic stops" during autonomous work.
-
-### Compose Mode
-
-Compose mode provides a structured workflow for specs-driven development. It includes built-in skills for planning, execution, code review, TDD, debugging, verification, and merging — orchestrating the full lifecycle from spec to shipped code.
-
-### Dream & Distill
-
-- **`/dream`** — scans recent session traces, extracts persistent knowledge into project memory, and removes outdated entries
-- **`/distill`** — discovers repeated manual workflows in recent work and packages high-confidence candidates into reusable skills, subagents, or commands
-
----
-
-## Configuration
-
-Apex Arc uses JSON/JSONC config files with published JSON Schemas for autocompletion and validation.
-
-### File Locations
-
-| File | Project-level | Global |
-|------|--------------|--------|
-| Main config | `.apex-arc/config.jsonc` | `~/.config/apex-arc/config.json` |
-| TUI config | `.apex-arc/tui.json` | `~/.config/apex-arc/tui.json` |
-| Auth credentials | — | `~/.local/share/apex-arc/auth.json` |
-
-> On Windows, XDG paths fall under `%LOCALAPPDATA%\apex-arc\`. You can override all paths with `ARC_HOME`.
-
-<details>
-<summary><strong>Data directories</strong></summary>
-
-Beyond config files, Apex Arc stores runtime data under XDG paths (or `$ARC_HOME`):
-
-| Directory | Default (Linux) | Contents |
-|-----------|----------------|----------|
-| data | `~/.local/share/apex-arc/` | SQLite database, auth credentials (`auth.json`), memory, logs |
-| state | `~/.local/state/apex-arc/` | TUI preferences (`kv.json`), recent models (`model.json`) |
-| cache | `~/.cache/apex-arc/` | Language servers, cached model catalog, skills |
-
-To remove stored credentials, delete `auth.json` from the data directory. On macOS, XDG data defaults to `~/Library/Application Support/apex-arc/`.
-
-</details>
-
-### Key Options
-
-- Provider and model selection
-- Agent permissions and custom agents
-- Checkpoint and memory behavior
-- MCP server connections
-- Keybindings and theme
-
-Max Mode (parallel best-of-N reasoning with judge selection) can be enabled via `experimental.maxMode` in the config.
-
-<details>
-<summary><strong>Allowing the system temp directory (<code>/tmp</code>)</strong></summary>
-
-By default, reading or writing files outside the project working directory triggers an
-`external_directory` permission prompt — including the system temp directory. This is
-intentional: Apex Arc does not silently widen permissions, so you stay in control of what
-the model can touch outside your project.
-
-The temp directory comes up often because most models reach for it as scratch space (e.g.
-a quick script, a throwaway data file). If you trust your environment and would rather not
-be prompted each time, you can opt in by allowing it in your config:
-
-```json title=".apex-arc/config.json"
-{
-  "permission": {
-    "external_directory": {
-      "/tmp/**": "allow"
-    }
-  }
-}
-```
-
-**This setting has known risks — use it at your own risk.** The temp directory is
-world-writable and shared with every other process and user on the machine. Auto-allowing
-it means the model can read and write there without confirmation, which widens your exposure
-to predictable temp-path / symlink tricks (e.g. another process pre-creating `/tmp/foo` as a
-symlink to a sensitive file). For that reason it is only recommended for single-user,
-controlled environments or inside a container. Keep the allowlist as narrow as possible.
-
-</details>
-
----
-
-## Development
-
-```bash
-bun install              # Install dependencies
-bun run dev              # Run in development mode
-bun turbo typecheck      # Type check
-```
-
----
+- Multiple agents: build, plan, and compose
+- Persistent project memory backed by SQLite FTS5
+- Automatic checkpoints and context reconstruction
+- Task tracking with nested task IDs
+- Subagent orchestration
+- MCP, LSP, plugins, and custom providers
+- `/goal`, `/dream`, and `/distill` workflows
 
 ## Relationship to OpenCode
 
-Apex Arc is built as a fork of [OpenCode](https://github.com/anomalyco/opencode). It keeps all core OpenCode capabilities (multiple providers, TUI, LSP, MCP, plugins) and adds persistent memory, intelligent context management, subagent orchestration, goal-driven autonomous loops, compose workflows, and self-improvement via dream/distill.
-
----
+Apex Arc is built as a fork of [OpenCode](https://github.com/anomalyco/opencode). It keeps the terminal UI, provider, MCP, LSP, and plugin foundation while adding Arc-specific memory, orchestration, and self-improvement workflows.
 
 ## License
 
