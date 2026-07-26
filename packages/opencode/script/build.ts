@@ -208,7 +208,7 @@ const allTargets: {
 ]
 
 const osTargets = (targetOS ? allTargets.filter((item) => item.os === targetOS) : allTargets).filter((item) => {
-  if (item.os === "win32" && item.arch === "arm64" && process.env.ARC_BUILD_WINDOWS_ARM64 !== "1") {
+  if (item.os === "win32" && item.arch === "arm64") {
     return false
   }
   if (item.os === "win32" && item.avx2 === false && process.env.ARC_BUILD_WINDOWS_BASELINE !== "1") {
@@ -375,6 +375,39 @@ for (const item of targets) {
     ),
   )
   binaries[name] = Script.version
+}
+
+if ((targetOS === undefined || targetOS === "win32") && process.env.ARC_BUILD_WINDOWS_ARM64 === "1") {
+  const source = "apex-arc-windows-x64"
+  const name = "apex-arc-windows-arm64"
+  if (binaries[source] && !binaries[name]) {
+    fs.cpSync(`dist/${source}`, `dist/${name}`, { recursive: true })
+    await Bun.file(`dist/${name}/README.md`).write(
+      `This is the Windows ARM64 compatibility package for [@pyintel/arc](https://www.npmjs.com/package/@pyintel/arc). It uses the Windows x64 binary under Windows ARM64 emulation. Install @pyintel/arc directly.\n`,
+    )
+    await Bun.file(`dist/${name}/package.json`).write(
+      JSON.stringify(
+        {
+          name: `@pyintel/${name}`,
+          version: Script.version,
+          description: "Windows ARM64 compatibility binary package for @pyintel/arc.",
+          license: "MIT",
+          author: "Apex Arc Team",
+          homepage: "https://github.com/riteshrajas/apex-arc",
+          repository: {
+            type: "git",
+            url: "git+https://github.com/riteshrajas/apex-arc.git",
+          },
+          keywords: ["ai", "coding", "agent", "cli", "arc"],
+          os: ["win32"],
+          cpu: ["arm64"],
+        },
+        null,
+        2,
+      ),
+    )
+    binaries[name] = Script.version
+  }
 }
 
 if (Script.release) {
