@@ -2,9 +2,20 @@ import { $ } from "bun"
 import semver from "semver"
 import path from "path"
 
-const rootPkgPath = path.resolve(import.meta.dir, "../../../package.json")
-const rootPkg = await Bun.file(rootPkgPath).json()
-const expectedBunVersion = rootPkg.packageManager?.split("@")[1]
+let currentDir = import.meta.dir
+let rootPkg: any = null
+while (currentDir && currentDir !== path.dirname(currentDir)) {
+  const candidate = path.join(currentDir, "package.json")
+  if (Bun.file(candidate).size > 0) {
+    const pkg = await Bun.file(candidate).json()
+    if (pkg.packageManager) {
+      rootPkg = pkg
+      break
+    }
+  }
+  currentDir = path.dirname(currentDir)
+}
+const expectedBunVersion = rootPkg?.packageManager?.split("@")[1]
 
 if (!expectedBunVersion) {
   throw new Error("packageManager field not found in root package.json")

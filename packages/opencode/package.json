@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "0.2.9",
+  "version": "0.0.0-master-202607260103",
   "name": "@pyintel/arc",
   "type": "module",
   "license": "MIT",
@@ -53,8 +53,8 @@
     "@babel/core": "7.28.4",
     "@effect/language-service": "0.84.2",
     "@octokit/webhooks-types": "7.6.1",
-    "@pyintel/script": "^0.1.4",
-    "@pyintel/shared": "^0.1.5",
+    "@pyintel/script": "workspace:*",
+    "@pyintel/shared": "workspace:*",
     "@parcel/watcher-darwin-arm64": "2.5.1",
     "@parcel/watcher-darwin-x64": "2.5.1",
     "@parcel/watcher-linux-arm64-glibc": "2.5.1",

@@ -415,8 +415,8 @@
         "@parcel/watcher-linux-x64-musl": "2.5.1",
         "@parcel/watcher-win32-arm64": "2.5.1",
         "@parcel/watcher-win32-x64": "2.5.1",
-        "@pyintel/script": "^0.1.4",
-        "@pyintel/shared": "^0.1.5",
+        "@pyintel/script": "workspace:*",
+        "@pyintel/shared": "workspace:*",
         "@standard-schema/spec": "1.0.0",
         "@tsconfig/bun": "catalog:",
         "@types/babel__core": "7.20.5",
@@ -5696,8 +5696,6 @@
 
     "@pyintel/arc/@pyintel/sdk": ["@pyintel/sdk@0.1.5", "", { "dependencies": { "cross-spawn": "^1.0.0" } }, "sha512-Lb4aFKpwSZ49XahODZxH0OCVJeLuLaFxM1ho/47LqNWAfidvWsMSYQv5OwJcmCLQ3WJ6GAQ0kfzqDQ8xynZXFQ=="],
 
-    "@pyintel/arc/@pyintel/shared": ["@pyintel/shared@0.1.5", "", { "dependencies": { "@effect/platform-node": "4.0.0-beta.48", "@npmcli/arborist": "9.4.0", "effect": "4.0.0-beta.48", "glob": "13.0.5", "mime-types": "3.0.2", "minimatch": "10.2.5", "semver": "7.7.4", "xdg-basedir": "5.1.0", "zod": "4.1.8" }, "bin": { "opencode": "bin/opencode" } }, "sha512-9rr0C2VAQvWzIVSNVKKgG8xRUtPx/Di/kTYbboraljNngUYeeImgD5hhhBest/a0IlRYujL+Q9086ADkCXgbEQ=="],
-
     "@pyintel/arc/@pyintel/ui": ["@pyintel/ui@0.1.5", "", { "dependencies": { "@kobalte/core": "catalog:", "@pierre/diffs": "catalog:", "@pyintel/sdk": "workspace:*", "@pyintel/shared": "workspace:*", "@shikijs/transformers": "3.9.2", "@solid-primitives/bounds": "0.1.3", "@solid-primitives/event-listener": "2.4.5", "@solid-primitives/media": "2.3.3", "@solid-primitives/resize-observer": "2.1.3", "@solidjs/meta": "catalog:", "@solidjs/router": "catalog:", "diff": "catalog:", "dompurify": "3.3.1", "fuzzysort": "catalog:", "katex": "0.16.27", "luxon": "catalog:", "marked": "catalog:", "marked-katex-extension": "5.1.6", "marked-shiki": "catalog:", "morphdom": "2.7.8", "motion": "12.34.5", "motion-dom": "12.34.3", "motion-utils": "12.29.2", "remeda": "catalog:", "remend": "catalog:", "shiki": "catalog:", "solid-js": "catalog:", "solid-list": "catalog:", "strip-ansi": "7.1.2", "virtua": "catalog:" } }, "sha512-B7Q6ipn8cUib3SAJp9+4sNFpnkPpoBBoZxWFuEOX3znhYUUfgduqRfa0udfHrzlQFjaOts5ZNIANWCqa887eYw=="],
 
     "@pyintel/arc/@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20260707.2", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20260707.2", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20260707.2", "@typescript/native-preview-linux-arm": "7.0.0-dev.20260707.2", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20260707.2", "@typescript/native-preview-linux-x64": "7.0.0-dev.20260707.2", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20260707.2", "@typescript/native-preview-win32-x64": "7.0.0-dev.20260707.2" }, "bin": { "tsgo": "bin/tsgo" } }, "sha512-oUGp+Rep/hqMhPunyinsALUwSlzHINSxitifPiSaeqoKOKD2OlR9NE3TaPqwsl4NlGslsOSUXI1JotWQzpYCPg=="],
@@ -6536,15 +6534,7 @@
 
     "@pyintel/arc/@pyintel/sdk/cross-spawn": ["cross-spawn@1.0.4", "", { "dependencies": { "cross-spawn-async": "^1.0.1", "spawn-sync": "^1.0.13" } }, "sha512-J3bBPtzmiMdJzF9iIMSprPmgx4aFaFVw0MsKjzKIvSmhlOHzliTGRZ6RpjktTq8r61tiIYn/K/qVuyHqCTA75w=="],
 
-    "@pyintel/arc/@pyintel/shared/effect": ["effect@4.0.0-beta.48", "", { "dependencies": { "@standard-schema/spec": "^1.1.0", "fast-check": "^4.6.0", "find-my-way-ts": "^0.1.6", "ini": "^6.0.0", "kubernetes-types": "^1.30.0", "msgpackr": "^1.11.9", "multipasta": "^0.2.7", "toml": "^4.1.1", "uuid": "^13.0.0", "yaml": "^2.8.3" } }, "sha512-MMAM/ZabuNdNmgXiin+BAanQXK7qM8mlt7nfXDoJ/Gn9V8i89JlCq+2N0AiWmqFLXjGLA0u3FjiOjSOYQk5uMw=="],
-
-    "@pyintel/arc/@pyintel/shared/minimatch": ["minimatch@10.2.5", "", { "dependencies": { "brace-expansion": "^5.0.5" } }, "sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg=="],
-
-    "@pyintel/arc/@pyintel/shared/semver": ["semver@7.7.4", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA=="],
-
     "@pyintel/arc/@pyintel/ui/@pyintel/sdk": ["@pyintel/sdk@workspace:packages/sdk/js"],
-
-    "@pyintel/arc/@pyintel/ui/@pyintel/shared": ["@pyintel/shared@workspace:packages/shared"],
 
     "@pyintel/arc/@pyintel/ui/@solid-primitives/resize-observer": ["@solid-primitives/resize-observer@2.1.3", "", { "dependencies": { "@solid-primitives/event-listener": "^2.4.3", "@solid-primitives/rootless": "^1.5.2", "@solid-primitives/static-store": "^0.1.2", "@solid-primitives/utils": "^6.3.2" }, "peerDependencies": { "solid-js": "^1.6.12" } }, "sha512-zBLje5E06TgOg93S7rGPldmhDnouNGhvfZVKOp+oG2XU8snA+GoCSSCz1M+jpNAg5Ek2EakU5UVQqL152WmdXQ=="],
 
@@ -7068,13 +7058,7 @@
 
     "@pyintel/arc/@pyintel/plugin/effect/fast-check": ["fast-check@3.23.2", "", { "dependencies": { "pure-rand": "^6.1.0" } }, "sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A=="],
 
-    "@pyintel/arc/@pyintel/shared/effect/@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
-
     "@pyintel/arc/@pyintel/ui/@pyintel/sdk/@typescript/native-preview": ["@typescript/native-preview@7.0.0-dev.20251207.1", "", { "optionalDependencies": { "@typescript/native-preview-darwin-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-darwin-x64": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-arm": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-linux-x64": "7.0.0-dev.20251207.1", "@typescript/native-preview-win32-arm64": "7.0.0-dev.20251207.1", "@typescript/native-preview-win32-x64": "7.0.0-dev.20251207.1" }, "bin": { "tsgo": "bin/tsgo.js" } }, "sha512-4QcRnzB0pi9rS0AOvg8kWbmuwHv5X7B2EXHbgcms9+56hsZ8SZrZjNgBJb2rUIodJ4kU5mrkj/xlTTT4r9VcpQ=="],
-
-    "@pyintel/arc/@pyintel/ui/@pyintel/shared/minimatch": ["minimatch@10.2.5", "", { "dependencies": { "brace-expansion": "^5.0.5" } }, "sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg=="],
-
-    "@pyintel/arc/@pyintel/ui/@pyintel/shared/semver": ["semver@7.7.4", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA=="],
 
     "@pyintel/console-function/@ai-sdk/anthropic/@ai-sdk/provider-utils/@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 

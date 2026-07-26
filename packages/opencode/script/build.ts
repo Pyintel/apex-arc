@@ -256,8 +256,9 @@ process.on("exit", () => {
 
 const binaries: Record<string, string> = {}
 if (!skipInstall) {
-  await $`bun install --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`
-  await $`bun install --os="*" --cpu="*" @parcel/watcher@${pkg.dependencies["@parcel/watcher"]}`
+  const rootDir = path.resolve(dir, "../..")
+  await $`bun install --cwd ${rootDir} --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`
+  await $`bun install --cwd ${rootDir} --os="*" --cpu="*" @parcel/watcher@${pkg.dependencies["@parcel/watcher"]}`
 }
 for (const item of targets) {
   const name = [
@@ -275,7 +276,8 @@ for (const item of targets) {
 
   const localPath = path.resolve(dir, "node_modules/@opentui/core/parser.worker.js")
   const rootPath = path.resolve(dir, "../../node_modules/@opentui/core/parser.worker.js")
-  const parserWorker = fs.realpathSync(fs.existsSync(localPath) ? localPath : rootPath)
+  const parserWorkerPath = fs.existsSync(rootPath) ? rootPath : localPath
+  const parserWorker = fs.realpathSync(parserWorkerPath)
   const workerPath = "./src/cli/cmd/tui/worker.ts"
 
   // Use platform-specific bunfs root path based on target OS
@@ -294,7 +296,7 @@ for (const item of targets) {
       autoloadBunfig: false,
       autoloadDotenv: false,
       autoloadTsconfig: true,
-      autoloadPackageJson: true,
+      autoloadPackageJson: false,
       target: name.replace(BINARY_PREFIX, "bun") as any,
       outfile: `dist/${name}/bin/apex-arc`,
       execArgv: [`--user-agent=mimocode/${Script.version}`, "--use-system-ca", "--"],
