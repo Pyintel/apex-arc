@@ -51,8 +51,8 @@ if (!arch) {
   arch = os.arch()
 }
 const scope = "@pyintel/"
-const base = scope + "mimocode-" + platform + "-" + arch
-const binary = platform === "windows" ? "arc.exe" : "arc"
+const base = scope + "apex-arc-" + platform + "-" + arch
+const binary = platform === "windows" ? "apex-arc.exe" : "apex-arc"
 
 function supportsAvx2() {
   if (arch !== "x64") return false
@@ -157,6 +157,9 @@ function findBinary(startDir) {
       for (const name of names) {
         const candidate = path.join(modules, name, "bin", binary)
         if (fs.existsSync(candidate)) return candidate
+        const altBinary = platform === "windows" ? "arc.exe" : "arc"
+        const altCandidate = path.join(modules, name, "bin", altBinary)
+        if (fs.existsSync(altCandidate)) return altCandidate
       }
     }
     const parent = path.dirname(current)
