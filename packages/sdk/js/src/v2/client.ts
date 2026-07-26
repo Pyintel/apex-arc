@@ -1,4 +1,23 @@
 export * from "./gen/types.gen.js"
+export type {
+  AgentPart,
+  Event,
+  FilePart,
+  LspStatus,
+  McpStatus,
+  Todo,
+  Message,
+  Part,
+  Provider,
+  SessionStatus,
+  TextPart,
+  Model,
+  Config,
+} from "../gen/types.gen.js"
+
+import type { PermissionListResponse, QuestionListResponse } from "./gen/types.gen.js"
+export type PermissionRequest = PermissionListResponse[number]
+export type QuestionRequest = QuestionListResponse[number]
 
 import { createClient } from "./gen/client/client.gen.js"
 import { type Config } from "./gen/client/types.gen.js"

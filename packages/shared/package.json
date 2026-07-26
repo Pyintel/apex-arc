@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "0.1.5",
+  "version": "0.0.0-master-202607260103",
   "name": "@pyintel/shared",
   "type": "module",
   "license": "MIT",
