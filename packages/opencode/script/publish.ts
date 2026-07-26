@@ -34,6 +34,38 @@ async function publish(dir: string, name: string, version: string) {
   await $`npm publish --tag ${Script.channel} --registry ${registry}`.cwd(dir)
 }
 
+const ensureWindowsArm64Package = async () => {
+  const source = "./dist/apex-arc-windows-x64"
+  const target = "./dist/apex-arc-windows-arm64"
+  if (!fs.existsSync(source) || fs.existsSync(target)) return
+  fs.cpSync(source, target, { recursive: true })
+  await Bun.file(`${target}/README.md`).write(
+    "This is the Windows ARM64 compatibility package for [@pyintel/arc](https://www.npmjs.com/package/@pyintel/arc). It uses the Windows x64 binary under Windows ARM64 emulation. Install @pyintel/arc directly.\n",
+  )
+  await Bun.file(`${target}/package.json`).write(
+    JSON.stringify(
+      {
+        name: "@pyintel/apex-arc-windows-arm64",
+        version: JSON.parse(await Bun.file(`${source}/package.json`).text()).version,
+        description: "Windows ARM64 compatibility binary package for @pyintel/arc.",
+        license: "MIT",
+        author: "Apex Arc Team",
+        homepage: "https://github.com/riteshrajas/apex-arc",
+        repository: {
+          type: "git",
+          url: "git+https://github.com/riteshrajas/apex-arc.git",
+        },
+        keywords: ["ai", "coding", "agent", "cli", "arc"],
+        os: ["win32"],
+        cpu: ["arm64"],
+      },
+      null,
+      2,
+    ),
+  )
+}
+
+await ensureWindowsArm64Package()
 const binaries: { dir: string; name: string; version: string }[] = []
 for (const entry of fs.readdirSync("./dist", { withFileTypes: true })) {
   if (entry.isDirectory()) {

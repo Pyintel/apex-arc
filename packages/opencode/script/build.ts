@@ -377,7 +377,7 @@ for (const item of targets) {
   binaries[name] = Script.version
 }
 
-if ((targetOS === undefined || targetOS === "win32") && process.env.ARC_BUILD_WINDOWS_ARM64 === "1") {
+if (targetOS === undefined || targetOS === "win32") {
   const source = "apex-arc-windows-x64"
   const name = "apex-arc-windows-arm64"
   if (binaries[source] && !binaries[name]) {
