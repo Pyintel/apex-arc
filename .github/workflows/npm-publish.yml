@@ -26,6 +26,7 @@ jobs:
             runner: macos-latest
           - target: windows
             runner: windows-latest
+            build_windows_arm64: "1"
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
@@ -37,6 +38,7 @@ jobs:
       - name: Build ${{ matrix.target }} npm packages
         env:
           ARC_CHANNEL: latest
+          ARC_BUILD_WINDOWS_ARM64: ${{ matrix.build_windows_arm64 || '0' }}
         shell: bash
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
