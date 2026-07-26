@@ -63,6 +63,7 @@ await Bun.file(`${targetDir}/package.json`).write(
       license: "MIT",
       bin: {
         arc: "./bin/apex-arc.cjs",
+        "apex-arc": "./bin/apex-arc.cjs",
       },
       scripts: {
         postinstall: "bun ./postinstall.mjs || node ./postinstall.mjs",
