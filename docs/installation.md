@@ -68,6 +68,17 @@ Expected package version for this release:
 
 ### Windows Troubleshooting
 
+If running `npm` or `arc` produces a PowerShell security error like:
+> `npm : File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.`
+
+Allow script execution for your user account by running this command in PowerShell:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+Select `Y` when prompted. Alternatively, run commands from **Command Prompt (`cmd.exe`)** where `.cmd` shims run without PowerShell script execution restrictions.
+
 If `arc` is not recognized, npm's global bin directory is not on `PATH`. Check it with:
 
 ```powershell
