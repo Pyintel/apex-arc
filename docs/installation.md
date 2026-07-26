@@ -244,24 +244,22 @@ The `@pyintel/arc` package is a small JavaScript wrapper. During install, npm al
 
 The wrapper chooses the correct native binary when you run `arc` or `apex-arc`.
 
-## Verification Checklist
+## Finding Log Files
 
-Use this checklist for new machines and VMs:
+Apex Arc writes diagnostic logs for every session to standard OS data directories:
+
+- **Windows**: `%LOCALAPPDATA%\apex-arc\log\` (`C:\Users\<Username>\AppData\Local\apex-arc\log\`)
+- **macOS**: `~/Library/Application Support/apex-arc/log/`
+- **Linux**: `~/.local/share/apex-arc/log/`
+
+To view the latest logs in PowerShell on Windows:
+
+```powershell
+Get-Content "$env:LOCALAPPDATA\apex-arc\log\*.log" -Tail 100
+```
+
+To stream real-time debug log messages to stderr when connecting to a model provider or troubleshooting errors:
 
 ```bash
-node --version
-npm --version
-npm view @pyintel/arc version
-npm install -g @pyintel/arc@latest
-arc --version
-arc --help
-arc
+arc --log-level DEBUG --print-logs
 ```
-
-For Windows validation of the current startup fix, `arc --version` should print:
-
-```text
-0.2.21
-```
-
-Then bare `arc` should open the terminal UI instead of crashing during startup.
