@@ -22,7 +22,7 @@ import { extractBuiltinBundle, DOCUMENT_SKILL_NAMES } from "./builtin/extract"
 const log = Log.create({ service: "skill" })
 const EXTERNAL_DIRS = [".claude", ".agents", ".codex", ".opencode"]
 const EXTERNAL_SKILL_PATTERN = "skills/**/SKILL.md"
-const MIMOCODE_SKILL_PATTERN = "{skill,skills}/**/SKILL.md"
+const ARC_SKILL_PATTERN = "{skill,skills}/**/SKILL.md"
 const SKILL_PATTERN = "**/SKILL.md"
 
 export const Info = z.object({
@@ -212,7 +212,7 @@ const discoverSkills = Effect.fnUntraced(function* (
 
   const configDirs = yield* config.directories()
   for (const dir of configDirs) {
-    yield* scan(state, dir, MIMOCODE_SKILL_PATTERN)
+    yield* scan(state, dir, ARC_SKILL_PATTERN)
   }
 
   const modulesDir = path.join(Global.Path.data, "modules")

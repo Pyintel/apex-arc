@@ -103,7 +103,7 @@ export async function listen(opts: {
     opts.hostname === "127.0.0.1" || opts.hostname === "localhost" || opts.hostname === "::1"
   if (!isLoopback && !Flag.ARC_SERVER_PASSWORD && !opts.noAuth) {
     throw new Error(
-      "Refusing to bind to non-loopback address without MIMOCODE_SERVER_PASSWORD. " +
+      "Refusing to bind to non-loopback address without ARC_SERVER_PASSWORD. " +
         "Set the environment variable or pass noAuth to explicitly allow unauthenticated access.",
     )
   }

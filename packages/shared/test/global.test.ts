@@ -15,9 +15,9 @@ describe("resolveApexArcHome", () => {
     expect(result.cache).toBe(path.join("/tmp/profile-a", "cache"))
   })
 
-  test("with MIMOCODE_HOME set (legacy), resolves 4 subdirs under root", () => {
+  test("with ARC_HOME set (legacy), resolves 4 subdirs under root", () => {
     const result = resolveApexArcHome({
-      MIMOCODE_HOME: "/tmp/profile-b",
+      ARC_HOME: "/tmp/profile-b",
     })
     expect(result.mode).toBe("apex_arc_home")
     expect(result.root).toBe("/tmp/profile-b")

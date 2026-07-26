@@ -10,7 +10,7 @@ import { ChildProcessSpawner } from "effect/unstable/process/ChildProcessSpawner
 import * as CrossSpawnSpawner from "@/effect/cross-spawn-spawner"
 import { Global } from "@/global"
 import { Log } from "@/util"
-import { sanitizedProcessEnv } from "@/util/mimo-process"
+import { sanitizedProcessEnv } from "@/util/arc-process"
 import { which } from "@/util/which"
 
 const log = Log.create({ service: "ripgrep" })

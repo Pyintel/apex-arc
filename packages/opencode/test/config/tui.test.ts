@@ -28,8 +28,8 @@ const getTuiConfig = async (directory: string) =>
   )
 
 afterEach(async () => {
-  delete process.env.MIMOCODE_CONFIG
-  delete process.env.MIMOCODE_TUI_CONFIG
+  delete process.env.ARC_CONFIG
+  delete process.env.ARC_TUI_CONFIG
   await fs.rm(path.join(Global.Path.config, "mimocode.json"), { force: true }).catch(() => {})
   await fs.rm(path.join(Global.Path.config, "mimocode.jsonc"), { force: true }).catch(() => {})
   await fs.rm(path.join(Global.Path.config, "tui.json"), { force: true }).catch(() => {})
@@ -358,13 +358,13 @@ test("top-level keys in tui.json take precedence over nested tui key", async () 
   expect(config.scroll_speed).toBe(2)
 })
 
-test("project config takes precedence over MIMOCODE_TUI_CONFIG (matches MIMOCODE_CONFIG)", async () => {
+test("project config takes precedence over ARC_TUI_CONFIG (matches ARC_CONFIG)", async () => {
   await using tmp = await tmpdir({ outsideGit: true,
     init: async (dir) => {
       await Bun.write(path.join(dir, "tui.json"), JSON.stringify({ theme: "project", diff_style: "auto" }))
       const custom = path.join(dir, "custom-tui.json")
       await Bun.write(custom, JSON.stringify({ theme: "custom", diff_style: "stacked" }))
-      process.env.MIMOCODE_TUI_CONFIG = custom
+      process.env.ARC_TUI_CONFIG = custom
     },
   })
 
@@ -417,12 +417,12 @@ wintest("ignores terminal suspend bindings on Windows", async () => {
   expect(config.keybinds?.input_undo).toBe("ctrl+z,ctrl+-,super+z")
 })
 
-test("MIMOCODE_TUI_CONFIG provides settings when no project config exists", async () => {
+test("ARC_TUI_CONFIG provides settings when no project config exists", async () => {
   await using tmp = await tmpdir({ outsideGit: true,
     init: async (dir) => {
       const custom = path.join(dir, "custom-tui.json")
       await Bun.write(custom, JSON.stringify({ theme: "from-env", diff_style: "stacked" }))
-      process.env.MIMOCODE_TUI_CONFIG = custom
+      process.env.ARC_TUI_CONFIG = custom
     },
   })
   const config = await getTuiConfig(tmp.path)
@@ -430,14 +430,14 @@ test("MIMOCODE_TUI_CONFIG provides settings when no project config exists", asyn
   expect(config.diff_style).toBe("stacked")
 })
 
-test("does not derive tui path from MIMOCODE_CONFIG", async () => {
+test("does not derive tui path from ARC_CONFIG", async () => {
   await using tmp = await tmpdir({ outsideGit: true,
     init: async (dir) => {
       const customDir = path.join(dir, "custom")
       await fs.mkdir(customDir, { recursive: true })
       await Bun.write(path.join(customDir, "mimocode.json"), JSON.stringify({ model: "test/model" }))
       await Bun.write(path.join(customDir, "tui.json"), JSON.stringify({ theme: "should-not-load" }))
-      process.env.MIMOCODE_CONFIG = path.join(customDir, "mimocode.json")
+      process.env.ARC_CONFIG = path.join(customDir, "mimocode.json")
     },
   })
   const config = await getTuiConfig(tmp.path)

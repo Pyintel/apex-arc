@@ -2692,7 +2692,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
               }
               // T18-bridge mount: fire CronBridge.start(sessionID, workspaceRoot)
               // once per new top-level session boot. The bridge itself no-ops when
-              // MIMOCODE_EXPERIMENTAL_CRON is unset; the outer gate just skips the
+              // ARC_EXPERIMENTAL_CRON is unset; the outer gate just skips the
               // resolve cost in the common case. Mirrors auto-dream's detached
               // dynamic-import pattern so prompt.ts stays out of the app-runtime
               // module-init cycle. Bridge.start is idempotent via its `started`

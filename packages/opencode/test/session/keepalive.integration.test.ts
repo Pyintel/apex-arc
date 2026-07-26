@@ -96,9 +96,9 @@ const it = testEffect(env)
 beforeEach(() => {
   clearAllLoopStates()
   removeSessionCronTasks(getSessionCronTasks().map((t) => t.id))
-  delete process.env.MIMOCODE_DISABLE_CRON
-  delete process.env.MIMOCODE_LOOP_KEEPALIVE_BUDGET
-  delete process.env.MIMOCODE_LOOP_KEEPALIVE_DELAY_S
+  delete process.env.ARC_DISABLE_CRON
+  delete process.env.ARC_LOOP_KEEPALIVE_BUDGET
+  delete process.env.ARC_LOOP_KEEPALIVE_DELAY_S
   ;(Flag as { ARC_EXPERIMENTAL_CRON: boolean }).ARC_EXPERIMENTAL_CRON = true
 })
 
@@ -229,7 +229,7 @@ describe("cron-bridge keepalive sweep", () => {
 
   it.live("budget=0 ends loop immediately on first turn without a re-arm", () =>
     Effect.gen(function* () {
-      process.env.MIMOCODE_LOOP_KEEPALIVE_BUDGET = "0"
+      process.env.ARC_LOOP_KEEPALIVE_BUDGET = "0"
       yield* withMountedBridge(({ bridge, scheduler }) =>
         Effect.gen(function* () {
           yield* scheduler.armLoop({ prompt: "zero", delay_seconds: 600, reason_length: 0 })

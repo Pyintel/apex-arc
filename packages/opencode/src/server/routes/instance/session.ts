@@ -41,7 +41,7 @@ const log = Log.create({ service: "server" })
 // event.ts/global.ts. Read per-request (not memoized) so it can be tuned at
 // runtime; smaller values are useful in tests.
 function promptHeartbeatIntervalMs() {
-  return Number(process.env["MIMOCODE_PROMPT_HEARTBEAT_INTERVAL_MS"]) || 10_000
+  return Number(process.env["ARC_PROMPT_HEARTBEAT_INTERVAL_MS"]) || 10_000
 }
 
 function taskToTodo(t: Task) {

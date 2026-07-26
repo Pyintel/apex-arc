@@ -14,12 +14,12 @@ import { Log } from "@/util"
 const log = Log.create({ service: "cron-bridge" })
 
 /**
- * Reads MIMOCODE_DISABLE_CRON from the live environment so a runtime flip stops
- * already-running schedulers (per spec [S10]). MIMOCODE_EXPERIMENTAL_CRON, by
+ * Reads ARC_DISABLE_CRON from the live environment so a runtime flip stops
+ * already-running schedulers (per spec [S10]). ARC_EXPERIMENTAL_CRON, by
  * contrast, is read once at start() time.
  */
 const isCronDisabled = () => {
-  const v = process.env.MIMOCODE_DISABLE_CRON
+  const v = process.env.ARC_DISABLE_CRON
   if (!v) return false
   const s = v.trim().toLowerCase()
   // Whitespace-only env value treated as not set (matches !v above semantically).
@@ -30,7 +30,7 @@ export interface Interface {
   /**
    * Start the scheduler for one session. Wires onFire → injectScheduledPrompt,
    * onLoopEnded → log emission, and busy→idle status edges → keepalive sweep
-   * (spec [S8]). No-op when MIMOCODE_EXPERIMENTAL_CRON is unset.
+   * (spec [S8]). No-op when ARC_EXPERIMENTAL_CRON is unset.
    */
   readonly start: (sessionID: SessionID, workspaceRoot: string) => Effect.Effect<void>
   readonly stop: () => Effect.Effect<void>

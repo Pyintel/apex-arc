@@ -63,7 +63,7 @@ const ready = () =>
   Effect.runPromise(Config.Service.use((svc) => svc.waitForDependencies()).pipe(Effect.scoped, Effect.provide(layer)))
 
 // Get managed config directory from environment (set in preload.ts)
-const managedConfigDir = process.env.MIMOCODE_TEST_MANAGED_CONFIG_DIR!
+const managedConfigDir = process.env.ARC_TEST_MANAGED_CONFIG_DIR!
 
 beforeEach(async () => {
   await clear(true)
@@ -518,7 +518,7 @@ test("preserves JSONC comments when injecting $schema", async () => {
 })
 
 test("resolves env templates in account config with account token", async () => {
-  const originalControlToken = process.env["MIMOCODE_CONSOLE_TOKEN"]
+  const originalControlToken = process.env["ARC_CONSOLE_TOKEN"]
 
   const fakeAccount = Layer.mock(Account.Service)({
     active: () =>
@@ -548,7 +548,7 @@ test("resolves env templates in account config with account token", async () => 
     config: () =>
       Effect.succeed(
         Option.some({
-          provider: { opencode: { options: { apiKey: "{env:MIMOCODE_CONSOLE_TOKEN}" } } },
+          provider: { opencode: { options: { apiKey: "{env:ARC_CONSOLE_TOKEN}" } } },
         }),
       ),
     token: () => Effect.succeed(Option.some(AccessToken.make("st_test_token"))),
@@ -574,9 +574,9 @@ test("resolves env templates in account config with account token", async () => 
     ).pipe(Effect.scoped, Effect.provide(layer), Effect.provide(Npm.defaultLayer), Effect.runPromise)
   } finally {
     if (originalControlToken !== undefined) {
-      process.env["MIMOCODE_CONSOLE_TOKEN"] = originalControlToken
+      process.env["ARC_CONSOLE_TOKEN"] = originalControlToken
     } else {
-      delete process.env["MIMOCODE_CONSOLE_TOKEN"]
+      delete process.env["ARC_CONSOLE_TOKEN"]
     }
   }
 })
@@ -1068,7 +1068,7 @@ test("gets config directories", async () => {
   })
 })
 
-test("does not try to install dependencies in read-only MIMOCODE_CONFIG_DIR", async () => {
+test("does not try to install dependencies in read-only ARC_CONFIG_DIR", async () => {
   if (process.platform === "win32") return
 
   await using tmp = await tmpdir<string>({
@@ -1085,8 +1085,8 @@ test("does not try to install dependencies in read-only MIMOCODE_CONFIG_DIR", as
     },
   })
 
-  const prev = process.env.MIMOCODE_CONFIG_DIR
-  process.env.MIMOCODE_CONFIG_DIR = tmp.extra
+  const prev = process.env.ARC_CONFIG_DIR
+  process.env.ARC_CONFIG_DIR = tmp.extra
 
   try {
     await Instance.provide({
@@ -1096,12 +1096,12 @@ test("does not try to install dependencies in read-only MIMOCODE_CONFIG_DIR", as
       },
     })
   } finally {
-    if (prev === undefined) delete process.env.MIMOCODE_CONFIG_DIR
-    else process.env.MIMOCODE_CONFIG_DIR = prev
+    if (prev === undefined) delete process.env.ARC_CONFIG_DIR
+    else process.env.ARC_CONFIG_DIR = prev
   }
 })
 
-test("installs dependencies in writable MIMOCODE_CONFIG_DIR", async () => {
+test("installs dependencies in writable ARC_CONFIG_DIR", async () => {
   await using tmp = await tmpdir<string>({
     init: async (dir) => {
       const cfg = path.join(dir, "configdir")
@@ -1110,8 +1110,8 @@ test("installs dependencies in writable MIMOCODE_CONFIG_DIR", async () => {
     },
   })
 
-  const prev = process.env.MIMOCODE_CONFIG_DIR
-  process.env.MIMOCODE_CONFIG_DIR = tmp.extra
+  const prev = process.env.ARC_CONFIG_DIR
+  process.env.ARC_CONFIG_DIR = tmp.extra
 
   const noopNpm = Layer.mock(Npm.Service)({
     install: () => Effect.void,
@@ -1146,8 +1146,8 @@ test("installs dependencies in writable MIMOCODE_CONFIG_DIR", async () => {
     expect(await Filesystem.exists(path.join(tmp.extra, ".gitignore"))).toBe(true)
     expect(await Filesystem.readText(path.join(tmp.extra, ".gitignore"))).toContain("package-lock.json")
   } finally {
-    if (prev === undefined) delete process.env.MIMOCODE_CONFIG_DIR
-    else process.env.MIMOCODE_CONFIG_DIR = prev
+    if (prev === undefined) delete process.env.ARC_CONFIG_DIR
+    else process.env.ARC_CONFIG_DIR = prev
   }
 })
 
@@ -1549,7 +1549,7 @@ test("migrates legacy write tool to edit permission", async () => {
 })
 
 // Managed settings tests
-// Note: preload.ts sets MIMOCODE_TEST_MANAGED_CONFIG which Global.Path.managedConfig uses
+// Note: preload.ts sets ARC_TEST_MANAGED_CONFIG which Global.Path.managedConfig uses
 
 test("managed settings override user settings", async () => {
   await using tmp = await tmpdir({
@@ -2241,10 +2241,10 @@ describe("deduplicatePluginOrigins", () => {
   })
 })
 
-describe("MIMOCODE_DISABLE_PROJECT_CONFIG", () => {
+describe("ARC_DISABLE_PROJECT_CONFIG", () => {
   test("skips project config files when flag is set", async () => {
-    const originalEnv = process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
-    process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = "true"
+    const originalEnv = process.env["ARC_DISABLE_PROJECT_CONFIG"]
+    process.env["ARC_DISABLE_PROJECT_CONFIG"] = "true"
 
     try {
       await using tmp = await tmpdir({
@@ -2271,16 +2271,16 @@ describe("MIMOCODE_DISABLE_PROJECT_CONFIG", () => {
       })
     } finally {
       if (originalEnv === undefined) {
-        delete process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
+        delete process.env["ARC_DISABLE_PROJECT_CONFIG"]
       } else {
-        process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = originalEnv
+        process.env["ARC_DISABLE_PROJECT_CONFIG"] = originalEnv
       }
     }
   })
 
   test("skips project .mimocode/ directories when flag is set", async () => {
-    const originalEnv = process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
-    process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = "true"
+    const originalEnv = process.env["ARC_DISABLE_PROJECT_CONFIG"]
+    process.env["ARC_DISABLE_PROJECT_CONFIG"] = "true"
 
     try {
       await using tmp = await tmpdir({
@@ -2302,16 +2302,16 @@ describe("MIMOCODE_DISABLE_PROJECT_CONFIG", () => {
       })
     } finally {
       if (originalEnv === undefined) {
-        delete process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
+        delete process.env["ARC_DISABLE_PROJECT_CONFIG"]
       } else {
-        process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = originalEnv
+        process.env["ARC_DISABLE_PROJECT_CONFIG"] = originalEnv
       }
     }
   })
 
   test("still loads global config when flag is set", async () => {
-    const originalEnv = process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
-    process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = "true"
+    const originalEnv = process.env["ARC_DISABLE_PROJECT_CONFIG"]
+    process.env["ARC_DISABLE_PROJECT_CONFIG"] = "true"
 
     try {
       await using tmp = await tmpdir()
@@ -2326,21 +2326,21 @@ describe("MIMOCODE_DISABLE_PROJECT_CONFIG", () => {
       })
     } finally {
       if (originalEnv === undefined) {
-        delete process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
+        delete process.env["ARC_DISABLE_PROJECT_CONFIG"]
       } else {
-        process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = originalEnv
+        process.env["ARC_DISABLE_PROJECT_CONFIG"] = originalEnv
       }
     }
   })
 
   test("skips relative instructions with warning when flag is set but no config dir", async () => {
-    const originalDisable = process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
-    const originalConfigDir = process.env["MIMOCODE_CONFIG_DIR"]
+    const originalDisable = process.env["ARC_DISABLE_PROJECT_CONFIG"]
+    const originalConfigDir = process.env["ARC_CONFIG_DIR"]
 
     try {
       // Ensure no config dir is set
-      delete process.env["MIMOCODE_CONFIG_DIR"]
-      process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = "true"
+      delete process.env["ARC_CONFIG_DIR"]
+      process.env["ARC_DISABLE_PROJECT_CONFIG"] = "true"
 
       await using tmp = await tmpdir({
         init: async (dir) => {
@@ -2371,21 +2371,21 @@ describe("MIMOCODE_DISABLE_PROJECT_CONFIG", () => {
       })
     } finally {
       if (originalDisable === undefined) {
-        delete process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
+        delete process.env["ARC_DISABLE_PROJECT_CONFIG"]
       } else {
-        process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = originalDisable
+        process.env["ARC_DISABLE_PROJECT_CONFIG"] = originalDisable
       }
       if (originalConfigDir === undefined) {
-        delete process.env["MIMOCODE_CONFIG_DIR"]
+        delete process.env["ARC_CONFIG_DIR"]
       } else {
-        process.env["MIMOCODE_CONFIG_DIR"] = originalConfigDir
+        process.env["ARC_CONFIG_DIR"] = originalConfigDir
       }
     }
   })
 
-  test("MIMOCODE_CONFIG_DIR still works when flag is set", async () => {
-    const originalDisable = process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
-    const originalConfigDir = process.env["MIMOCODE_CONFIG_DIR"]
+  test("ARC_CONFIG_DIR still works when flag is set", async () => {
+    const originalDisable = process.env["ARC_DISABLE_PROJECT_CONFIG"]
+    const originalConfigDir = process.env["ARC_CONFIG_DIR"]
 
     try {
       await using configDirTmp = await tmpdir({
@@ -2414,38 +2414,38 @@ describe("MIMOCODE_DISABLE_PROJECT_CONFIG", () => {
         },
       })
 
-      process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = "true"
-      process.env["MIMOCODE_CONFIG_DIR"] = configDirTmp.path
+      process.env["ARC_DISABLE_PROJECT_CONFIG"] = "true"
+      process.env["ARC_CONFIG_DIR"] = configDirTmp.path
 
       await Instance.provide({
         directory: projectTmp.path,
         fn: async () => {
           const config = await load()
-          // Should load from MIMOCODE_CONFIG_DIR, not project
+          // Should load from ARC_CONFIG_DIR, not project
           expect(config.model).toBe("configdir/model")
         },
       })
     } finally {
       if (originalDisable === undefined) {
-        delete process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"]
+        delete process.env["ARC_DISABLE_PROJECT_CONFIG"]
       } else {
-        process.env["MIMOCODE_DISABLE_PROJECT_CONFIG"] = originalDisable
+        process.env["ARC_DISABLE_PROJECT_CONFIG"] = originalDisable
       }
       if (originalConfigDir === undefined) {
-        delete process.env["MIMOCODE_CONFIG_DIR"]
+        delete process.env["ARC_CONFIG_DIR"]
       } else {
-        process.env["MIMOCODE_CONFIG_DIR"] = originalConfigDir
+        process.env["ARC_CONFIG_DIR"] = originalConfigDir
       }
     }
   })
 })
 
-describe("MIMOCODE_CONFIG_CONTENT token substitution", () => {
-  test("substitutes {env:} tokens in MIMOCODE_CONFIG_CONTENT", async () => {
-    const originalEnv = process.env["MIMOCODE_CONFIG_CONTENT"]
+describe("ARC_CONFIG_CONTENT token substitution", () => {
+  test("substitutes {env:} tokens in ARC_CONFIG_CONTENT", async () => {
+    const originalEnv = process.env["ARC_CONFIG_CONTENT"]
     const originalTestVar = process.env["TEST_CONFIG_VAR"]
     process.env["TEST_CONFIG_VAR"] = "test_api_key_12345"
-    process.env["MIMOCODE_CONFIG_CONTENT"] = JSON.stringify({
+    process.env["ARC_CONFIG_CONTENT"] = JSON.stringify({
       $schema: "https://opencode.ai/config.json",
       username: "{env:TEST_CONFIG_VAR}",
     })
@@ -2461,9 +2461,9 @@ describe("MIMOCODE_CONFIG_CONTENT token substitution", () => {
       })
     } finally {
       if (originalEnv !== undefined) {
-        process.env["MIMOCODE_CONFIG_CONTENT"] = originalEnv
+        process.env["ARC_CONFIG_CONTENT"] = originalEnv
       } else {
-        delete process.env["MIMOCODE_CONFIG_CONTENT"]
+        delete process.env["ARC_CONFIG_CONTENT"]
       }
       if (originalTestVar !== undefined) {
         process.env["TEST_CONFIG_VAR"] = originalTestVar
@@ -2473,14 +2473,14 @@ describe("MIMOCODE_CONFIG_CONTENT token substitution", () => {
     }
   })
 
-  test("substitutes {file:} tokens in MIMOCODE_CONFIG_CONTENT", async () => {
-    const originalEnv = process.env["MIMOCODE_CONFIG_CONTENT"]
+  test("substitutes {file:} tokens in ARC_CONFIG_CONTENT", async () => {
+    const originalEnv = process.env["ARC_CONFIG_CONTENT"]
 
     try {
       await using tmp = await tmpdir({
         init: async (dir) => {
           await Filesystem.write(path.join(dir, "api_key.txt"), "secret_key_from_file")
-          process.env["MIMOCODE_CONFIG_CONTENT"] = JSON.stringify({
+          process.env["ARC_CONFIG_CONTENT"] = JSON.stringify({
             $schema: "https://opencode.ai/config.json",
             username: "{file:./api_key.txt}",
           })
@@ -2495,9 +2495,9 @@ describe("MIMOCODE_CONFIG_CONTENT token substitution", () => {
       })
     } finally {
       if (originalEnv !== undefined) {
-        process.env["MIMOCODE_CONFIG_CONTENT"] = originalEnv
+        process.env["ARC_CONFIG_CONTENT"] = originalEnv
       } else {
-        delete process.env["MIMOCODE_CONFIG_CONTENT"]
+        delete process.env["ARC_CONFIG_CONTENT"]
       }
     }
   })

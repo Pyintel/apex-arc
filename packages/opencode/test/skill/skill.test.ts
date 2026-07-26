@@ -7,8 +7,8 @@ import { testEffect } from "../lib/effect"
 import path from "path"
 import fs from "fs/promises"
 
-process.env.MIMOCODE_DISABLE_COMPOSE_SKILLS = "true"
-process.env.MIMOCODE_DISABLE_BUILTIN_SKILLS = "true"
+process.env.ARC_DISABLE_COMPOSE_SKILLS = "true"
+process.env.ARC_DISABLE_BUILTIN_SKILLS = "true"
 
 const node = CrossSpawnSpawner.defaultLayer
 

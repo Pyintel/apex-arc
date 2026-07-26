@@ -12,7 +12,7 @@ import { testEffect } from "../lib/effect"
 import * as CrossSpawnSpawner from "../../src/effect/cross-spawn-spawner"
 
 // The test process shares a single in-memory SQLite DB (test/preload sets
-// MIMOCODE_DB=:memory:), so other suites' SessionTable/PartTable rows are visible
+// ARC_DB=:memory:), so other suites' SessionTable/PartTable rows are visible
 // here. backfillAll() walks ALL sessions in the DB and would index those rows,
 // so wipe the relevant tables both before AND after each test.
 const wipe = () =>

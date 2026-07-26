@@ -89,7 +89,7 @@ const freshDir = () => mkdtempSync(join(tmpdir(), "cron-bridge-"))
 beforeEach(() => {
   clearAllLoopStates()
   removeSessionCronTasks(getSessionCronTasks().map((t) => t.id))
-  delete process.env.MIMOCODE_DISABLE_CRON
+  delete process.env.ARC_DISABLE_CRON
   process.env.ARC_EXPERIMENTAL_CRON = "1"
 })
 
@@ -173,16 +173,16 @@ test("cron-bridge start wires Scheduler with isLoading + isKilled + onFire", asy
         expect(list.length).toBe(1)
         expect(list[0]!.id).toBe(created.id)
 
-        // isKilled honors process.env.MIMOCODE_DISABLE_CRON live (verified by
+        // isKilled honors process.env.ARC_DISABLE_CRON live (verified by
         // forcing it and observing armLoop refuse to schedule).
-        process.env.MIMOCODE_DISABLE_CRON = "1"
+        process.env.ARC_DISABLE_CRON = "1"
         const arm = yield* scheduler.armLoop({
           prompt: "k",
           delay_seconds: 120,
           reason_length: 0,
         })
         expect(arm).toBe(null)
-        delete process.env.MIMOCODE_DISABLE_CRON
+        delete process.env.ARC_DISABLE_CRON
 
         yield* bridge.stop()
       }),
@@ -192,7 +192,7 @@ test("cron-bridge start wires Scheduler with isLoading + isKilled + onFire", asy
   }
 })
 
-test("cron-bridge is a no-op when MIMOCODE_EXPERIMENTAL_CRON is explicitly disabled", async () => {
+test("cron-bridge is a no-op when ARC_EXPERIMENTAL_CRON is explicitly disabled", async () => {
   const captured: { value: CapturedPrompt[] } = { value: [] }
   const originalFlag = Flag.ARC_EXPERIMENTAL_CRON
   ;(Flag as { ARC_EXPERIMENTAL_CRON: boolean }).ARC_EXPERIMENTAL_CRON = false

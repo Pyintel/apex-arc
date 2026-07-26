@@ -221,8 +221,8 @@ describe("Instruction.resolve", () => {
 
 describe("Instruction.system", () => {
   test("loads both project and global AGENTS.md when both exist", async () => {
-    const originalConfigDir = process.env["MIMOCODE_CONFIG_DIR"]
-    delete process.env["MIMOCODE_CONFIG_DIR"]
+    const originalConfigDir = process.env["ARC_CONFIG_DIR"]
+    delete process.env["ARC_CONFIG_DIR"]
 
     await using globalTmp = await tmpdir({
       init: async (dir) => {
@@ -265,30 +265,30 @@ describe("Instruction.system", () => {
     } finally {
       ;(Global.Path as { config: string }).config = originalGlobalConfig
       if (originalConfigDir === undefined) {
-        delete process.env["MIMOCODE_CONFIG_DIR"]
+        delete process.env["ARC_CONFIG_DIR"]
       } else {
-        process.env["MIMOCODE_CONFIG_DIR"] = originalConfigDir
+        process.env["ARC_CONFIG_DIR"] = originalConfigDir
       }
     }
   })
 })
 
-describe("Instruction.systemPaths MIMOCODE_CONFIG_DIR", () => {
+describe("Instruction.systemPaths ARC_CONFIG_DIR", () => {
   let originalConfigDir: string | undefined
 
   beforeEach(() => {
-    originalConfigDir = process.env["MIMOCODE_CONFIG_DIR"]
+    originalConfigDir = process.env["ARC_CONFIG_DIR"]
   })
 
   afterEach(() => {
     if (originalConfigDir === undefined) {
-      delete process.env["MIMOCODE_CONFIG_DIR"]
+      delete process.env["ARC_CONFIG_DIR"]
     } else {
-      process.env["MIMOCODE_CONFIG_DIR"] = originalConfigDir
+      process.env["ARC_CONFIG_DIR"] = originalConfigDir
     }
   })
 
-  test("prefers MIMOCODE_CONFIG_DIR AGENTS.md over global when both exist", async () => {
+  test("prefers ARC_CONFIG_DIR AGENTS.md over global when both exist", async () => {
     await using profileTmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(path.join(dir, "AGENTS.md"), "# Profile Instructions")
@@ -301,7 +301,7 @@ describe("Instruction.systemPaths MIMOCODE_CONFIG_DIR", () => {
     })
     await using projectTmp = await tmpdir()
 
-    process.env["MIMOCODE_CONFIG_DIR"] = profileTmp.path
+    process.env["ARC_CONFIG_DIR"] = profileTmp.path
     const originalGlobalConfig = Global.Path.config
     ;(Global.Path as { config: string }).config = globalTmp.path
 
@@ -324,7 +324,7 @@ describe("Instruction.systemPaths MIMOCODE_CONFIG_DIR", () => {
     }
   })
 
-  test("falls back to global AGENTS.md when MIMOCODE_CONFIG_DIR has no AGENTS.md", async () => {
+  test("falls back to global AGENTS.md when ARC_CONFIG_DIR has no AGENTS.md", async () => {
     await using profileTmp = await tmpdir()
     await using globalTmp = await tmpdir({
       init: async (dir) => {
@@ -333,7 +333,7 @@ describe("Instruction.systemPaths MIMOCODE_CONFIG_DIR", () => {
     })
     await using projectTmp = await tmpdir()
 
-    process.env["MIMOCODE_CONFIG_DIR"] = profileTmp.path
+    process.env["ARC_CONFIG_DIR"] = profileTmp.path
     const originalGlobalConfig = Global.Path.config
     ;(Global.Path as { config: string }).config = globalTmp.path
 
@@ -356,7 +356,7 @@ describe("Instruction.systemPaths MIMOCODE_CONFIG_DIR", () => {
     }
   })
 
-  test("uses global AGENTS.md when MIMOCODE_CONFIG_DIR is not set", async () => {
+  test("uses global AGENTS.md when ARC_CONFIG_DIR is not set", async () => {
     await using globalTmp = await tmpdir({
       init: async (dir) => {
         await Bun.write(path.join(dir, "AGENTS.md"), "# Global Instructions")
@@ -364,7 +364,7 @@ describe("Instruction.systemPaths MIMOCODE_CONFIG_DIR", () => {
     })
     await using projectTmp = await tmpdir()
 
-    delete process.env["MIMOCODE_CONFIG_DIR"]
+    delete process.env["ARC_CONFIG_DIR"]
     const originalGlobalConfig = Global.Path.config
     ;(Global.Path as { config: string }).config = globalTmp.path
 

@@ -93,7 +93,7 @@ export const layer: Layer.Layer<Service, never, AppFileSystem.Service | Config.S
         }
         if (!Flag.ARC_CONFIG_DIR) {
           log.warn(
-            `Skipping relative instruction "${instruction}" - no MIMOCODE_CONFIG_DIR set while project config is disabled`,
+            `Skipping relative instruction "${instruction}" - no ARC_CONFIG_DIR set while project config is disabled`,
           )
           return []
         }

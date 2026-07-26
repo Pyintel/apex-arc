@@ -805,7 +805,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
         return store.status
       },
       get ready() {
-        if (process.env.MIMOCODE_FAST_BOOT) return true
+        if (process.env.ARC_FAST_BOOT) return true
         return store.status !== "loading"
       },
       get path() {

@@ -107,7 +107,7 @@ const loadState = Effect.fn("TuiConfig.loadState")(function* (ctx: { directory: 
     yield* Effect.promise(() => mergeFile(acc, file, ctx)).pipe(Effect.orDie)
   }
 
-  // 2. Explicit MIMOCODE_TUI_CONFIG override, if set.
+  // 2. Explicit ARC_TUI_CONFIG override, if set.
   if (Flag.ARC_TUI_CONFIG) {
     const configFile = Flag.ARC_TUI_CONFIG
     yield* Effect.promise(() => mergeFile(acc, configFile, ctx)).pipe(Effect.orDie)

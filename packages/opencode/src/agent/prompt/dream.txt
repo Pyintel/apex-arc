@@ -32,7 +32,7 @@ Memory files root: `<DATA>/memory/`
 2. Use Glob/Read to inspect the memory paths from the system memory instructions.
 3. Use bash to locate the database:
    - Infer `<DATA>/mimocode.db` from the resolved memory root.
-   - If `MIMOCODE_DB` is visible in the shell environment, account for its override behavior.
+   - If `ARC_DB` is visible in the shell environment, account for its override behavior.
    - Treat the resolved database path as read-only.
 4. If memory is empty and the database has no current project sessions, report "Nothing to consolidate - memory is empty" and stop.
 

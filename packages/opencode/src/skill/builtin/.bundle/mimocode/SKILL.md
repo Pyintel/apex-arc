@@ -58,7 +58,7 @@ For task-oriented walkthroughs — signing in & choosing a model, making memory 
 
 ## Where Things Live On Disk
 
-Base dirs follow `MIMOCODE_HOME` (if set, absolute) else XDG. Data typically lives at `~/.local/share/mimocode/` (memory, logs, extracted builtin skills), config at `~/.config/mimocode/`, cache at `~/.cache/mimocode/`. See @reference/config.md for the full layout and env vars.
+Base dirs follow `ARC_HOME` (if set, absolute) else XDG. Data typically lives at `~/.local/share/mimocode/` (memory, logs, extracted builtin skills), config at `~/.config/mimocode/`, cache at `~/.cache/mimocode/`. See @reference/config.md for the full layout and env vars.
 
 ## Commands
 

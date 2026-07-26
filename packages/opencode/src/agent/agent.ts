@@ -211,7 +211,7 @@ export const layer = Layer.effect(
             native: true,
           },
           // Orchestrator mode is experimental and opt-in (default OFF): only
-          // registered when MIMOCODE_EXPERIMENTAL_ORCHESTRATOR is set. Gating the
+          // registered when ARC_EXPERIMENTAL_ORCHESTRATOR is set. Gating the
           // registration here removes it from the TUI mode-cycle, the agent
           // dialog, defaultAgent, and prevents any `session`-tool peer spawns —
           // making the rest of the orchestrator feature dead code when off.

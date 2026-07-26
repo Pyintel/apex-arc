@@ -15,7 +15,7 @@ import { Log } from "@/util"
 import { SessionShareTable } from "./share.sql"
 
 const log = Log.create({ service: "share-next" })
-const disabled = process.env["MIMOCODE_DISABLE_SHARE"] === "true" || process.env["MIMOCODE_DISABLE_SHARE"] === "1"
+const disabled = process.env["ARC_DISABLE_SHARE"] === "true" || process.env["ARC_DISABLE_SHARE"] === "1"
 
 export type Api = {
   create: string

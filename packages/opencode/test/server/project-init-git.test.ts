@@ -18,15 +18,15 @@ afterEach(async () => {
 })
 
 // This test needs a tmpdir OUTSIDE any git repo so project detection doesn't
-// inherit a parent .git. We temporarily set Flag.MIMOCODE_SERVER_PASSWORD to
+// inherit a parent .git. We temporarily set Flag.ARC_SERVER_PASSWORD to
 // bypass the middleware cwd containment check and include auth headers.
 const TEST_PASSWORD = "init-git-test"
 const authHeader = `Basic ${Buffer.from(`mimocode:${TEST_PASSWORD}`).toString("base64")}`
 
 describe("project.initGit endpoint", () => {
   test("initializes git and reloads immediately", async () => {
-    const prevFlag = (Flag as any).MIMOCODE_SERVER_PASSWORD
-    ;(Flag as any).MIMOCODE_SERVER_PASSWORD = TEST_PASSWORD
+    const prevFlag = (Flag as any).ARC_SERVER_PASSWORD
+    ;(Flag as any).ARC_SERVER_PASSWORD = TEST_PASSWORD
     try {
       await using tmp = await tmpdir({ outsideGit: true })
       const app = Server.Default().app
@@ -86,7 +86,7 @@ describe("project.initGit endpoint", () => {
         GlobalBus.off("event", fn)
       }
     } finally {
-      ;(Flag as any).MIMOCODE_SERVER_PASSWORD = prevFlag
+      ;(Flag as any).ARC_SERVER_PASSWORD = prevFlag
     }
   })
 

@@ -202,7 +202,7 @@ describe("workflows routes", () => {
 // data (not the degenerate []). These run under the workflow test layer
 // (makeLayer) so WorkflowRuntime.layer is live and populates the module-global
 // `workflowRef` that the route reads through. Crucially the data path is the
-// process-global `:memory:` DB (test/preload sets MIMOCODE_DB=:memory:, and the
+// process-global `:memory:` DB (test/preload sets ARC_DB=:memory:, and the
 // storage Client is a per-process singleton): the run writes its WorkflowRunTable
 // row there, and the route's handler — run via AppRuntime, NOT this layer — reads
 // the SAME DB. So `Server.Default().app.request("/workflows")` genuinely

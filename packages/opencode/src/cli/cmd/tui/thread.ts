@@ -15,7 +15,7 @@ import type { EventSource } from "./context/sdk"
 import { win32DisableProcessedInput, win32InstallCtrlCGuard } from "./win32"
 import { writeHeapSnapshot } from "v8"
 import { TuiConfig } from "./config/tui"
-import { MIMOCODE_PROCESS_ROLE, MIMOCODE_RUN_ID, ensureRunID, sanitizedProcessEnv } from "@/util/mimo-process"
+import { ARC_PROCESS_ROLE, ARC_RUN_ID, ensureRunID, sanitizedProcessEnv } from "@/util/arc-process"
 import { checkTrust, markTrusted } from "@/project/workspace-trust"
 import { t } from "@/cli/i18n"
 
@@ -214,8 +214,8 @@ export const TuiThreadCommand = cmd({
       }
 
       const env = sanitizedProcessEnv({
-        [MIMOCODE_PROCESS_ROLE]: "worker",
-        [MIMOCODE_RUN_ID]: ensureRunID(),
+        [ARC_PROCESS_ROLE]: "worker",
+        [ARC_RUN_ID]: ensureRunID(),
       })
 
       const worker = new Worker(file, {

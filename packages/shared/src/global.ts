@@ -24,7 +24,7 @@ export type ResolvedPaths = {
  * @throws if ARC_HOME is set but not an absolute path
  */
 export function resolveApexArcHome(env: NodeJS.ProcessEnv = process.env): ResolvedPaths {
-  const home = env.ARC_HOME ?? env.MIMOCODE_HOME
+  const home = env.ARC_HOME
   if (home) {
     if (!path.isAbsolute(home)) {
       throw new Error(

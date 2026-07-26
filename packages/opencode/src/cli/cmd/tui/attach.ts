@@ -35,7 +35,7 @@ export const AttachCommand = cmd({
       .option("password", {
         alias: ["p"],
         type: "string",
-        describe: "basic auth password (defaults to MIMOCODE_SERVER_PASSWORD)",
+        describe: "basic auth password (defaults to ARC_SERVER_PASSWORD)",
       }),
   handler: async (args) => {
     const unguard = win32InstallCtrlCGuard()
@@ -59,9 +59,9 @@ export const AttachCommand = cmd({
         }
       })()
       const headers = (() => {
-        const password = args.password ?? process.env.MIMOCODE_SERVER_PASSWORD
+        const password = args.password ?? process.env.ARC_SERVER_PASSWORD
         if (!password) return undefined
-        const username = process.env.MIMOCODE_SERVER_USERNAME ?? "mimocode"
+        const username = process.env.ARC_SERVER_USERNAME ?? "mimocode"
         const auth = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
         return { Authorization: auth }
       })()

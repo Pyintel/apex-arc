@@ -11,7 +11,7 @@ import { Flag } from "@/flag/flag"
 import { writeHeapSnapshot } from "node:v8"
 import { Heap } from "@/cli/heap"
 import { AppRuntime } from "@/effect/app-runtime"
-import { ensureProcessMetadata } from "@/util/mimo-process"
+import { ensureProcessMetadata } from "@/util/arc-process"
 
 ensureProcessMetadata("worker")
 

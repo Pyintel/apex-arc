@@ -51,11 +51,11 @@ function outsideGitTmpRoot() {
 
 /** Tmpdirs under cwd inherit the parent repo's worktree; use this when tests need a non-git project. */
 export function withTmpdirOutsideGit<T>(fn: () => Promise<T>): Promise<T> {
-  const prev = process.env["MIMOCODE_TEST_TMPDIR_ROOT"]
-  process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = outsideGitTmpRoot()
+  const prev = process.env["ARC_TEST_TMPDIR_ROOT"]
+  process.env["ARC_TEST_TMPDIR_ROOT"] = outsideGitTmpRoot()
   return fn().finally(() => {
-    if (prev !== undefined) process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = prev
-    else delete process.env["MIMOCODE_TEST_TMPDIR_ROOT"]
+    if (prev !== undefined) process.env["ARC_TEST_TMPDIR_ROOT"] = prev
+    else delete process.env["ARC_TEST_TMPDIR_ROOT"]
   })
 }
 
@@ -72,10 +72,10 @@ type TmpDirOptions<T> = {
   dispose?: (dir: string) => Promise<T>
 }
 export async function tmpdir<T>(options?: TmpDirOptions<T>) {
-  const prevRoot = options?.outsideGit ? process.env["MIMOCODE_TEST_TMPDIR_ROOT"] : undefined
-  if (options?.outsideGit) process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = outsideGitTmpRoot()
+  const prevRoot = options?.outsideGit ? process.env["ARC_TEST_TMPDIR_ROOT"] : undefined
+  if (options?.outsideGit) process.env["ARC_TEST_TMPDIR_ROOT"] = outsideGitTmpRoot()
   const dirpath = sanitizePath(
-    path.join(process.env["MIMOCODE_TEST_TMPDIR_ROOT"] ?? os.tmpdir(), "mimocode-test-" + Math.random().toString(36).slice(2)),
+    path.join(process.env["ARC_TEST_TMPDIR_ROOT"] ?? os.tmpdir(), "mimocode-test-" + Math.random().toString(36).slice(2)),
   )
   await fs.mkdir(dirpath, { recursive: true })
   if (options?.git) {
@@ -105,8 +105,8 @@ export async function tmpdir<T>(options?: TmpDirOptions<T>) {
         if (options?.git) await stop(realpath).catch(() => undefined)
         await cleanupTmpdir(realpath)
         if (options?.outsideGit) {
-          if (prevRoot !== undefined) process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = prevRoot
-          else delete process.env["MIMOCODE_TEST_TMPDIR_ROOT"]
+          if (prevRoot !== undefined) process.env["ARC_TEST_TMPDIR_ROOT"] = prevRoot
+          else delete process.env["ARC_TEST_TMPDIR_ROOT"]
         }
       }
     },
@@ -119,20 +119,20 @@ export async function tmpdir<T>(options?: TmpDirOptions<T>) {
 /** Effectful scoped tmpdir. Cleaned up when the scope closes. Make sure these stay in sync */
 export function tmpdirScoped(options?: { git?: boolean; config?: Partial<Config.Info>; outsideGit?: boolean }) {
   return Effect.gen(function* () {
-    const prevRoot = options?.outsideGit ? process.env["MIMOCODE_TEST_TMPDIR_ROOT"] : undefined
-    if (options?.outsideGit) process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = outsideGitTmpRoot()
+    const prevRoot = options?.outsideGit ? process.env["ARC_TEST_TMPDIR_ROOT"] : undefined
+    if (options?.outsideGit) process.env["ARC_TEST_TMPDIR_ROOT"] = outsideGitTmpRoot()
     if (options?.outsideGit) {
       yield* Effect.addFinalizer(() =>
         Effect.sync(() => {
-          if (prevRoot !== undefined) process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = prevRoot
-          else delete process.env["MIMOCODE_TEST_TMPDIR_ROOT"]
+          if (prevRoot !== undefined) process.env["ARC_TEST_TMPDIR_ROOT"] = prevRoot
+          else delete process.env["ARC_TEST_TMPDIR_ROOT"]
         }),
       )
     }
 
     const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
     const dirpath = sanitizePath(
-      path.join(process.env["MIMOCODE_TEST_TMPDIR_ROOT"] ?? os.tmpdir(), "mimocode-test-" + Math.random().toString(36).slice(2)),
+      path.join(process.env["ARC_TEST_TMPDIR_ROOT"] ?? os.tmpdir(), "mimocode-test-" + Math.random().toString(36).slice(2)),
     )
     yield* Effect.promise(() => fs.mkdir(dirpath, { recursive: true }))
     const dir = sanitizePath(yield* Effect.promise(() => fs.realpath(dirpath)))

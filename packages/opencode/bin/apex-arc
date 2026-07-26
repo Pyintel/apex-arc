@@ -17,7 +17,7 @@ function run(target) {
   process.exit(code)
 }
 
-const envPath = process.env.MIMOCODE_BIN_PATH
+const envPath = process.env.ARC_BIN_PATH
 if (envPath) {
   run(envPath)
 }

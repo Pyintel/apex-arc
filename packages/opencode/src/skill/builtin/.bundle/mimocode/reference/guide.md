@@ -5,7 +5,7 @@ How-to for the features users most often ask about. For config keys see @config.
 ## Getting started & auth
 
 1. **Sign in** — `mimo account login <url>` runs a device flow: it prints a URL + code and opens your browser. `/connect` does the same from inside the TUI (e.g. to add OpenRouter). Other account subcommands: `logout`, `switch`, `orgs`, `open`, `console`.
-2. **Pick a model** — set `"model": "provider/model"` in config, or switch live in the TUI model dialog. Provider API keys are auto-detected from environment variables (unless `MIMOCODE_MIMO_ONLY=1`).
+2. **Pick a model** — set `"model": "provider/model"` in config, or switch live in the TUI model dialog. Provider API keys are auto-detected from environment variables (unless `ARC_MIMO_ONLY=1`).
 3. **List what's available** — `mimo models`, `mimo providers`.
 
 ## Memory: making MiMoCode remember
@@ -118,7 +118,7 @@ The `notebook-edit` tool edits `.ipynb` cells directly (replace / insert / delet
 
 ## Scheduled prompts (cron) & loops
 
-**Cron** schedules a prompt to be injected into a session on a recurring or one-shot basis. It is driven by the `cron` tool (no `/cron` slash command); `MIMOCODE_EXPERIMENTAL_CRON` is **on by default** (kill switch: `MIMOCODE_DISABLE_CRON`).
+**Cron** schedules a prompt to be injected into a session on a recurring or one-shot basis. It is driven by the `cron` tool (no `/cron` slash command); `ARC_EXPERIMENTAL_CRON` is **on by default** (kill switch: `ARC_DISABLE_CRON`).
 
 The `cron` tool has six verbs:
 

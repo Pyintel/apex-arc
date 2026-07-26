@@ -7,9 +7,9 @@ import { testEffect } from "../lib/effect"
 
 // Disable compose bundle to keep the skill universe small for this test; keep
 // the builtin bundle ON so the /loop skill is discoverable.
-process.env.MIMOCODE_DISABLE_COMPOSE_SKILLS = "true"
-process.env.MIMOCODE_DISABLE_EXTERNAL_SKILLS = "true"
-delete process.env.MIMOCODE_DISABLE_BUILTIN_SKILLS
+process.env.ARC_DISABLE_COMPOSE_SKILLS = "true"
+process.env.ARC_DISABLE_EXTERNAL_SKILLS = "true"
+delete process.env.ARC_DISABLE_BUILTIN_SKILLS
 
 const it = testEffect(Layer.mergeAll(Skill.defaultLayer, CrossSpawnSpawner.defaultLayer))
 

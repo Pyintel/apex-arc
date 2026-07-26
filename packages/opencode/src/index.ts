@@ -41,7 +41,7 @@ import { errorMessage } from "./util/error"
 import { PluginCommand } from "./cli/cmd/plug"
 import { Heap } from "./cli/heap"
 import { drizzle } from "drizzle-orm/bun-sqlite"
-import { ensureProcessMetadata } from "./util/mimo-process"
+import { ensureProcessMetadata } from "./util/arc-process"
 
 const processMetadata = ensureProcessMetadata("main")
 
@@ -92,7 +92,7 @@ const cli = yargs(args)
   })
   .middleware(async (opts) => {
     if (opts.pure) {
-      process.env.MIMOCODE_PURE = "1"
+      process.env.ARC_PURE = "1"
     }
 
     await Log.init({
@@ -108,8 +108,8 @@ const cli = yargs(args)
     Heap.start()
 
     process.env.AGENT = "1"
-    process.env.MIMOCODE = "1"
-    process.env.MIMOCODE_PID = String(process.pid)
+    process.env.ARC = "1"
+    process.env.ARC_PID = String(process.pid)
 
     Log.Default.info("mimocode", {
       version: InstallationVersion,
@@ -158,8 +158,8 @@ const cli = yargs(args)
     // Idempotently import Claude Code sessions into SQLite. Runs once per process
     // tree (the env guard is inherited by spawned children) and is best-effort:
     // a failure here must never block command startup.
-    if (!process.env.MIMOCODE_DISABLE_CLAUDE_IMPORT && !process.env.MIMOCODE_CLAUDE_IMPORTED) {
-      process.env.MIMOCODE_CLAUDE_IMPORTED = "1"
+    if (!process.env.ARC_DISABLE_CLAUDE_IMPORT && !process.env.ARC_CLAUDE_IMPORTED) {
+      process.env.ARC_CLAUDE_IMPORTED = "1"
       try {
         await ClaudeImport.run()
       } catch (e) {

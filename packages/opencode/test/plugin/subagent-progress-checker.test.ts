@@ -8,15 +8,15 @@ import { SessionID } from "../../src/session/schema"
 
 async function withTmpHome<T>(fn: (sessionID: SessionID) => Promise<T>): Promise<T> {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "subagent-progress-test-"))
-  const prevHome = process.env.MIMOCODE_HOME
-  process.env.MIMOCODE_HOME = dir
+  const prevHome = process.env.ARC_HOME
+  process.env.ARC_HOME = dir
   try {
     const sid = SessionID.make("ses_test_" + Date.now())
     await fs.mkdir(tasksDir(sid), { recursive: true })
     return await fn(sid)
   } finally {
-    if (prevHome === undefined) delete process.env.MIMOCODE_HOME
-    else process.env.MIMOCODE_HOME = prevHome
+    if (prevHome === undefined) delete process.env.ARC_HOME
+    else process.env.ARC_HOME = prevHome
     await fs.rm(dir, { recursive: true, force: true })
   }
 }

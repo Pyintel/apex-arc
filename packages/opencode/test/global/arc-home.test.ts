@@ -57,10 +57,10 @@ async function runWorker(env: Record<string, string>): Promise<{ ok: true; paths
   })
 }
 
-describe("MIMOCODE_HOME end-to-end", () => {
+describe("ARC_HOME end-to-end", () => {
   test("sets all four paths under the profile root", async () => {
     await using tmp = await tmpdir()
-    const result = await runWorker({ MIMOCODE_HOME: tmp.path })
+    const result = await runWorker({ ARC_HOME: tmp.path })
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.paths.config).toBe(path.join(tmp.path, "config"))
@@ -73,7 +73,7 @@ describe("MIMOCODE_HOME end-to-end", () => {
 
   test("orchestrator dir is a stable absolute path under data and is created on first use", async () => {
     await using tmp = await tmpdir()
-    const result = await runWorker({ MIMOCODE_HOME: tmp.path })
+    const result = await runWorker({ ARC_HOME: tmp.path })
     expect(result.ok).toBe(true)
     if (!result.ok) return
     // Fixed location under the global data root, independent of launch dir
@@ -88,7 +88,7 @@ describe("MIMOCODE_HOME end-to-end", () => {
   test("auto-creates all four subdirs under a nonexistent root", async () => {
     await using tmp = await tmpdir()
     const nested = path.join(tmp.path, "deeply", "nested", "profile")
-    const result = await runWorker({ MIMOCODE_HOME: nested })
+    const result = await runWorker({ ARC_HOME: nested })
     expect(result.ok).toBe(true)
     if (!result.ok) return
     // Directories should now exist
@@ -103,7 +103,7 @@ describe("MIMOCODE_HOME end-to-end", () => {
     await using b = await tmpdir()
 
     // First run with profile A initializes its directories
-    const resultA = await runWorker({ MIMOCODE_HOME: a.path })
+    const resultA = await runWorker({ ARC_HOME: a.path })
     expect(resultA.ok).toBe(true)
     if (!resultA.ok) return
     expect(resultA.paths.data).toBe(path.join(a.path, "data"))
@@ -113,7 +113,7 @@ describe("MIMOCODE_HOME end-to-end", () => {
     await fs.writeFile(path.join(resultA.paths.data, marker), "profile-a-data")
 
     // Run with profile B — marker must not exist in B's data dir
-    const resultB = await runWorker({ MIMOCODE_HOME: b.path })
+    const resultB = await runWorker({ ARC_HOME: b.path })
     expect(resultB.ok).toBe(true)
     if (!resultB.ok) return
     expect(resultB.paths.data).toBe(path.join(b.path, "data"))
@@ -123,7 +123,7 @@ describe("MIMOCODE_HOME end-to-end", () => {
     ).rejects.toThrow()
 
     // Run again with profile A — marker must still be there
-    const resultA2 = await runWorker({ MIMOCODE_HOME: a.path })
+    const resultA2 = await runWorker({ ARC_HOME: a.path })
     expect(resultA2.ok).toBe(true)
     if (!resultA2.ok) return
     const reread = await fs.readFile(
@@ -134,17 +134,17 @@ describe("MIMOCODE_HOME end-to-end", () => {
   })
 
   test("relative path causes startup failure with clear error", async () => {
-    const result = await runWorker({ MIMOCODE_HOME: "./relative-path" })
+    const result = await runWorker({ ARC_HOME: "./relative-path" })
     expect(result.ok).toBe(false)
     if (result.ok) return
-    expect(result.stderr).toMatch(/MIMOCODE_HOME must be an absolute path/)
+    expect(result.stderr).toMatch(/ARC_HOME must be an absolute path/)
   })
 
   test("empty string falls through to XDG behavior", async () => {
     await using tmp = await tmpdir()
     // Isolate XDG to tmp so we can see it used
     const result = await runWorker({
-      MIMOCODE_HOME: "",
+      ARC_HOME: "",
       XDG_CONFIG_HOME: path.join(tmp.path, "config"),
       XDG_DATA_HOME: path.join(tmp.path, "data"),
       XDG_STATE_HOME: path.join(tmp.path, "state"),
@@ -152,7 +152,7 @@ describe("MIMOCODE_HOME end-to-end", () => {
     })
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    // Paths should reflect XDG layout (ends with "/arc"), not MIMOCODE_HOME layout
+    // Paths should reflect XDG layout (ends with "/arc"), not ARC_HOME layout
     expect(result.paths.config).toBe(path.join(tmp.path, "config", "arc"))
     expect(result.paths.data).toBe(path.join(tmp.path, "data", "arc"))
   })

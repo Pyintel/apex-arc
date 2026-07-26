@@ -93,7 +93,7 @@ beforeEach(() => {
   captured.value = []
   clearAllLoopStates()
   removeSessionCronTasks(getSessionCronTasks().map((t) => t.id))
-  delete process.env.MIMOCODE_DISABLE_CRON
+  delete process.env.ARC_DISABLE_CRON
   ;(Flag as { ARC_EXPERIMENTAL_CRON: boolean }).ARC_EXPERIMENTAL_CRON = true
 })
 

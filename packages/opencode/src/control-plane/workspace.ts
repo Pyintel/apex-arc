@@ -110,9 +110,9 @@ export const create = fn(CreateInput, async (input) => {
   })
 
   const env = {
-    MIMOCODE_AUTH_CONTENT: JSON.stringify(await AppRuntime.runPromise(Auth.Service.use((auth) => auth.all()))),
-    MIMOCODE_WORKSPACE_ID: config.id,
-    MIMOCODE_EXPERIMENTAL_WORKSPACES: "true",
+    ARC_AUTH_CONTENT: JSON.stringify(await AppRuntime.runPromise(Auth.Service.use((auth) => auth.all()))),
+    ARC_WORKSPACE_ID: config.id,
+    ARC_EXPERIMENTAL_WORKSPACES: "true",
     OTEL_EXPORTER_OTLP_HEADERS: process.env.OTEL_EXPORTER_OTLP_HEADERS,
     OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
     OTEL_RESOURCE_ATTRIBUTES: process.env.OTEL_RESOURCE_ATTRIBUTES,

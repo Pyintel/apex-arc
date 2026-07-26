@@ -20,7 +20,7 @@ export const AcpCommand = cmd({
     })
   },
   handler: async (args) => {
-    process.env.MIMOCODE_CLIENT = "acp"
+    process.env.ARC_CLIENT = "acp"
     await bootstrap(process.cwd(), async () => {
       const opts = await resolveNetworkOptions(args)
       const server = await Server.listen(opts)

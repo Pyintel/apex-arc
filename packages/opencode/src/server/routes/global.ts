@@ -26,7 +26,7 @@ const log = Log.create({ service: "server" })
 // is safe under sustained backpressure. At ~1KB/event the default is ≈10MB
 // worst-case per stalled connection. See routes/instance/event.ts for the full
 // rationale (incl. heartbeat/sentinel lag under saturation). Tune via env.
-const EVENT_QUEUE_CAPACITY = Number(process.env["MIMOCODE_EVENT_QUEUE_CAPACITY"]) || 10_000
+const EVENT_QUEUE_CAPACITY = Number(process.env["ARC_EVENT_QUEUE_CAPACITY"]) || 10_000
 
 export const GlobalDisposedEvent = BusEvent.define("global.disposed", z.object({}))
 

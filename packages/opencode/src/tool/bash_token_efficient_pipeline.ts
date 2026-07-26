@@ -20,12 +20,12 @@
 // This is the extension point used by the heuristic shape plugins (gitdiff /
 // pytest / npm / make / tsc / stacktrace / kubectl / json / md / gostest).
 //
-// Opt-out: `# nofilter` / `# raw` in the command, or env MIMOCODE_BASH_RAW=1.
+// Opt-out: `# nofilter` / `# raw` in the command, or env ARC_BASH_RAW=1.
 //
 // Tunables (positive ints via env; defaults shown):
-//   MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY_MAX_LINE_CHARS=500
-//   MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY_LINE_HEAD_KEEP=160
-//   MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY_NEVER_WORSE_MARGIN=0
+//   ARC_EXPERIMENTAL_TOKEN_EFFICIENCY_MAX_LINE_CHARS=500
+//   ARC_EXPERIMENTAL_TOKEN_EFFICIENCY_LINE_HEAD_KEEP=160
+//   ARC_EXPERIMENTAL_TOKEN_EFFICIENCY_NEVER_WORSE_MARGIN=0
 
 import { Flag } from "@/flag/flag"
 
@@ -88,7 +88,7 @@ export type CleanPipeline = {
 }
 
 function shouldSkip(command: string | undefined): boolean {
-  if (process.env["MIMOCODE_BASH_RAW"] === "1") return true
+  if (process.env["ARC_BASH_RAW"] === "1") return true
   if (!command) return false
   return SKIP_MARKERS.some((mark) => command.includes(mark))
 }

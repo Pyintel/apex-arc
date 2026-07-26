@@ -19,8 +19,8 @@ const describeWatcher = FileWatcher.hasNativeBinding() && !process.env.CI ? desc
 
 const watcherConfigLayer = ConfigProvider.layer(
   ConfigProvider.fromUnknown({
-    MIMOCODE_EXPERIMENTAL_FILEWATCHER: "true",
-    MIMOCODE_EXPERIMENTAL_DISABLE_FILEWATCHER: "false",
+    ARC_EXPERIMENTAL_FILEWATCHER: "true",
+    ARC_EXPERIMENTAL_DISABLE_FILEWATCHER: "false",
   }),
 )
 

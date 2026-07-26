@@ -16,11 +16,11 @@ const dryRun = values["dry-run"]
 const repo = process.env.GH_REPO
 if (!repo) throw new Error("GH_REPO is required")
 
-const releaseId = process.env.MIMOCODE_RELEASE
-if (!releaseId) throw new Error("MIMOCODE_RELEASE is required")
+const releaseId = process.env.ARC_RELEASE
+if (!releaseId) throw new Error("ARC_RELEASE is required")
 
-const version = process.env.MIMOCODE_VERSION
-if (!version) throw new Error("MIMOCODE_VERSION is required")
+const version = process.env.ARC_VERSION
+if (!version) throw new Error("ARC_VERSION is required")
 
 const dir = process.env.LATEST_YML_DIR
 if (!dir) throw new Error("LATEST_YML_DIR is required")

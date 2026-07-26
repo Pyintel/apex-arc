@@ -14,7 +14,7 @@ await fs.mkdir(dir, { recursive: true })
 // containment check (security: unauthenticated servers restrict directory to cwd subtree).
 const fixtureRoot = path.join(process.cwd(), ".mimocode-test-fixtures-" + process.pid)
 await fs.mkdir(fixtureRoot, { recursive: true })
-process.env["MIMOCODE_TEST_TMPDIR_ROOT"] = fixtureRoot
+process.env["ARC_TEST_TMPDIR_ROOT"] = fixtureRoot
 afterAll(async () => {
   const { Database } = await import("../src/storage")
   Database.close()
@@ -40,7 +40,7 @@ process.env["XDG_DATA_HOME"] = path.join(dir, "share")
 process.env["XDG_CACHE_HOME"] = path.join(dir, "cache")
 process.env["XDG_CONFIG_HOME"] = path.join(dir, "config")
 process.env["XDG_STATE_HOME"] = path.join(dir, "state")
-process.env["MIMOCODE_MODELS_PATH"] = path.join(import.meta.dir, "tool", "fixtures", "models-api.json")
+process.env["ARC_MODELS_PATH"] = path.join(import.meta.dir, "tool", "fixtures", "models-api.json")
 
 // Set test home directory to isolate tests from user's actual home directory.
 // This prevents tests from picking up real user configs/skills from ~/.claude/skills.
@@ -53,8 +53,8 @@ process.env["USERPROFILE"] = testHome
 
 // Set test managed config directory to isolate tests from system managed settings
 const testManagedConfigDir = path.join(dir, "managed")
-process.env["MIMOCODE_TEST_MANAGED_CONFIG_DIR"] = testManagedConfigDir
-process.env["MIMOCODE_DISABLE_DEFAULT_PLUGINS"] = "true"
+process.env["ARC_TEST_MANAGED_CONFIG_DIR"] = testManagedConfigDir
+process.env["ARC_DISABLE_DEFAULT_PLUGINS"] = "true"
 
 // Write the cache version file to prevent global/index.ts from clearing the cache
 const cacheDir = path.join(dir, "cache", "mimocode")
@@ -82,18 +82,18 @@ delete process.env["DEEPSEEK_API_KEY"]
 delete process.env["FIREWORKS_API_KEY"]
 delete process.env["CEREBRAS_API_KEY"]
 delete process.env["SAMBANOVA_API_KEY"]
-delete process.env["MIMOCODE_SERVER_PASSWORD"]
-delete process.env["MIMOCODE_SERVER_USERNAME"]
-delete process.env["MIMOCODE_HOME"]
+delete process.env["ARC_SERVER_PASSWORD"]
+delete process.env["ARC_SERVER_USERNAME"]
+delete process.env["ARC_HOME"]
 
 // Use in-memory sqlite
-process.env["MIMOCODE_DB"] = ":memory:"
+process.env["ARC_DB"] = ":memory:"
 
 // Enable the experimental Orchestrator feature in tests (default OFF in prod).
 // The Orchestrator agent, `session` tool, and approval routing are gated behind
-// MIMOCODE_EXPERIMENTAL_ORCHESTRATOR; the orchestrator test suites exercise the
+// ARC_EXPERIMENTAL_ORCHESTRATOR; the orchestrator test suites exercise the
 // feature, so enable it here (Flag is read once at import — must be set first).
-process.env["MIMOCODE_EXPERIMENTAL_ORCHESTRATOR"] = "true"
+process.env["ARC_EXPERIMENTAL_ORCHESTRATOR"] = "true"
 
 // Now safe to import from src/
 const { Log } = await import("../src/util")

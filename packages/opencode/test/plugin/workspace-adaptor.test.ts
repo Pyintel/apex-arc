@@ -4,8 +4,8 @@ import path from "path"
 import { pathToFileURL } from "url"
 import { tmpdir } from "../fixture/fixture"
 
-const disableDefault = process.env.MIMOCODE_DISABLE_DEFAULT_PLUGINS
-process.env.MIMOCODE_DISABLE_DEFAULT_PLUGINS = "1"
+const disableDefault = process.env.ARC_DISABLE_DEFAULT_PLUGINS
+process.env.ARC_DISABLE_DEFAULT_PLUGINS = "1"
 
 const { Flag } = await import("../../src/flag/flag")
 const { Plugin } = await import("../../src/plugin/index")
@@ -22,9 +22,9 @@ afterEach(async () => {
 
 afterAll(() => {
   if (disableDefault === undefined) {
-    delete process.env.MIMOCODE_DISABLE_DEFAULT_PLUGINS
+    delete process.env.ARC_DISABLE_DEFAULT_PLUGINS
   } else {
-    process.env.MIMOCODE_DISABLE_DEFAULT_PLUGINS = disableDefault
+    process.env.ARC_DISABLE_DEFAULT_PLUGINS = disableDefault
   }
 
   Flag.ARC_EXPERIMENTAL_WORKSPACES = experimental

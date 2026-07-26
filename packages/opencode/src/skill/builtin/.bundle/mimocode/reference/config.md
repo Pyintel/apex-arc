@@ -6,13 +6,13 @@ Config is JSON or JSONC. MiMoCode discovers it by walking up from the cwd to the
 
 - Project: `.mimocode/mimocode.json` or `.mimocode/mimocode.jsonc`
 - Global: `~/.config/mimocode/mimocode.json` (XDG config dir)
-- Extra config dirs are also searched via `$MIMOCODE_CONFIG_DIR`.
+- Extra config dirs are also searched via `$ARC_CONFIG_DIR`.
 
 Project config merges **over** global. Always include `"$schema": "https://mimo.xiaomi.com/mimocode/config.json"` for validation.
 
 ## On-disk data layout
 
-Base directories resolve from `MIMOCODE_HOME` if set (must be absolute → `<home>/{data,cache,config,state}`), otherwise from XDG:
+Base directories resolve from `ARC_HOME` if set (must be absolute → `<home>/{data,cache,config,state}`), otherwise from XDG:
 
 | Kind | Default location | Holds |
 |------|------------------|-------|
@@ -28,15 +28,15 @@ Memory files live under `~/.local/share/mimocode/memory/`:
 
 ## Environment variables & flags
 
-- `MIMOCODE_HOME` — override all base dirs (absolute path).
-- `MIMOCODE_CONFIG_DIR` — extra config directory to search.
-- `MIMOCODE_PURE` — run without external plugins (same as `mimo --pure`). Does **not** change models or Claude Code inheritance.
-- `MIMOCODE_MIMO_ONLY` — pure-MiMo mode: don't inherit Claude Code settings (CLAUDE.md, `~/.claude/skills`), don't read provider API keys from env, fall back to the mimo-auto model.
-- `MIMOCODE_DISABLE_LOG_ROTATION` — keep a single growing log file instead of rotating.
-- `MIMOCODE_TEXT_TOOL_CALL_RETRY_LIMIT` — retries when a model emits a tool call as prose markup instead of a structured call (default 2).
-- `MIMOCODE_EXPERIMENTAL_CRON` — scheduled prompts (cron/loop); **on by default**. `MIMOCODE_DISABLE_CRON` kills it at runtime. Tune loop keepalive with `MIMOCODE_LOOP_KEEPALIVE_BUDGET` (default 1) and `MIMOCODE_LOOP_KEEPALIVE_DELAY_S` (default 1200).
-- `MIMOCODE_EXPERIMENTAL_TOKEN_EFFICIENCY_HEURISTIC` — shape-based compaction of bash output to save tokens; off by default.
-- `MIMOCODE_DISABLE_BUILTIN_SKILLS`, `_COMPOSE_SKILLS`, `_EXTERNAL_SKILLS`, `_CLAUDE_CODE_SKILLS`, `_CODEX_SKILLS`, `_OPENCODE_SKILLS`, `_PROJECT_CONFIG`, `_CLAUDE_IMPORT` — feature toggles.
+- `ARC_HOME` — override all base dirs (absolute path).
+- `ARC_CONFIG_DIR` — extra config directory to search.
+- `ARC_PURE` — run without external plugins (same as `mimo --pure`). Does **not** change models or Claude Code inheritance.
+- `ARC_MIMO_ONLY` — pure-MiMo mode: don't inherit Claude Code settings (CLAUDE.md, `~/.claude/skills`), don't read provider API keys from env, fall back to the mimo-auto model.
+- `ARC_DISABLE_LOG_ROTATION` — keep a single growing log file instead of rotating.
+- `ARC_TEXT_TOOL_CALL_RETRY_LIMIT` — retries when a model emits a tool call as prose markup instead of a structured call (default 2).
+- `ARC_EXPERIMENTAL_CRON` — scheduled prompts (cron/loop); **on by default**. `ARC_DISABLE_CRON` kills it at runtime. Tune loop keepalive with `ARC_LOOP_KEEPALIVE_BUDGET` (default 1) and `ARC_LOOP_KEEPALIVE_DELAY_S` (default 1200).
+- `ARC_EXPERIMENTAL_TOKEN_EFFICIENCY_HEURISTIC` — shape-based compaction of bash output to save tokens; off by default.
+- `ARC_DISABLE_BUILTIN_SKILLS`, `_COMPOSE_SKILLS`, `_EXTERNAL_SKILLS`, `_CLAUDE_CODE_SKILLS`, `_CODEX_SKILLS`, `_OPENCODE_SKILLS`, `_PROJECT_CONFIG`, `_CLAUDE_IMPORT` — feature toggles.
 
 ## Top-level config keys
 
