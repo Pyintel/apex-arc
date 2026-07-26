@@ -285,6 +285,7 @@
       "version": "0.0.0-master-202607260103",
       "bin": {
         "arc": "./bin/apex-arc.cjs",
+        "apex-arc": "./bin/apex-arc.cjs",
       },
       "dependencies": {
         "@actions/core": "1.11.1",
@@ -338,7 +339,7 @@
         "@parcel/watcher": "2.5.1",
         "@pierre/diffs": "catalog:",
         "@pyintel/plugin": "^0.1.6",
-        "@pyintel/script": "^0.1.4",
+        "@pyintel/script": "workspace:*",
         "@pyintel/sdk": "^0.1.5",
         "@pyintel/ui": "^0.1.5",
         "@solid-primitives/event-bus": "1.1.2",
@@ -5691,8 +5692,6 @@
     "@protobuf-ts/plugin/typescript": ["typescript@3.9.10", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q=="],
 
     "@pyintel/arc/@pyintel/plugin": ["@pyintel/plugin@0.1.6", "", { "dependencies": { "@pyintel/sdk": "^0.1.4", "effect": "^3.12.0", "zod": "^3.24.1" }, "peerDependencies": { "@opentui/core": ">=0.1.101", "@opentui/solid": ">=0.1.101" }, "optionalPeers": ["@opentui/core", "@opentui/solid"] }, "sha512-m8S8HUCf1vQoEOnZ84RqQZIZI9L6Y4jCLsIDvUsVhGOi/iaUeiai7RflXKDH7qokKs7moaTc+qK6O7vl7SCvnw=="],
-
-    "@pyintel/arc/@pyintel/script": ["@pyintel/script@0.1.4", "", { "dependencies": { "semver": "^7.6.3" } }, "sha512-X8SOTSNfseqB9/xwFMjOauqkO1WqyDWD9IUvpquWjEoXExpBD9lQou7HAMdAb02cvh2grNJWgjkpD6FeulT79Q=="],
 
     "@pyintel/arc/@pyintel/sdk": ["@pyintel/sdk@0.1.5", "", { "dependencies": { "cross-spawn": "^1.0.0" } }, "sha512-Lb4aFKpwSZ49XahODZxH0OCVJeLuLaFxM1ho/47LqNWAfidvWsMSYQv5OwJcmCLQ3WJ6GAQ0kfzqDQ8xynZXFQ=="],
 

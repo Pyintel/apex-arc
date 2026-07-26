@@ -52,6 +52,15 @@ console.log(`Loaded ${migrations.length} migrations`)
 const singleFlag = process.argv.includes("--single")
 const baselineFlag = process.argv.includes("--baseline")
 const skipInstall = process.argv.includes("--skip-install")
+const targetOS = (() => {
+  const value = process.argv.find((arg) => arg.startsWith("--os="))?.slice("--os=".length)
+  if (!value) return
+  const normalized = value.toLowerCase()
+  if (normalized === "windows" || normalized === "win32") return "win32"
+  if (normalized === "macos" || normalized === "darwin") return "darwin"
+  if (normalized === "linux") return "linux"
+  throw new Error(`Invalid --os value: ${value}. Use windows, linux, or macos.`)
+})()
 const plugin = createSolidTransformPlugin()
 const sharpPlugin: import("bun").BunPlugin = {
   name: "sharp-stub",
@@ -197,8 +206,9 @@ const allTargets: {
   },
 ]
 
+const osTargets = targetOS ? allTargets.filter((item) => item.os === targetOS) : allTargets
 const targets = singleFlag
-  ? allTargets.filter((item) => {
+  ? osTargets.filter((item) => {
       if (item.os !== process.platform || item.arch !== process.arch) {
         return false
       }
@@ -216,7 +226,11 @@ const targets = singleFlag
 
       return true
     })
-  : allTargets
+  : osTargets
+
+if (targets.length === 0) {
+  throw new Error(`No build targets matched${targetOS ? ` --os=${targetOS}` : ""}${singleFlag ? " --single" : ""}`)
+}
 
 await $`rm -rf dist`
 
