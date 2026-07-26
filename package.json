@@ -13,7 +13,7 @@
     "dev:storybook": "bun --cwd packages/storybook storybook",
     "lint": "oxlint",
     "typecheck": "bun turbo typecheck",
-    "postinstall": "bun run --cwd packages/opencode fix-node-pty",
+    "postinstall": "bun run --cwd packages/opencode fix-node-pty && node -e \"console.log('\\x1b[32m%s\\x1b[0m', 'Antigravity / Arc successfully installed! To install globally, run: npm install -g @pyintel/arc')\"",
     "prepare": "husky",
     "random": "echo 'Random script'",
     "hello": "echo 'Hello World!'",

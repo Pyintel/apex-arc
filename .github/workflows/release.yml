@@ -1,0 +1,56 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-release:
+    name: Build Multi-Platform Binaries & Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build binaries for all platforms
+        working-directory: packages/opencode
+        run: bun run script/build.ts
+
+      - name: Package standalone archives
+        run: |
+          mkdir -p release-dist
+          cd packages/opencode/dist
+          for dir in apex-arc-*; do
+            if [ -d "$dir/bin" ]; then
+              if [[ "$dir" == *"windows"* ]]; then
+                (cd "$dir/bin" && zip -r "../../../release-dist/${dir}.zip" *)
+              else
+                (cd "$dir/bin" && tar -czf "../../../release-dist/${dir}.tar.gz" *)
+              fi
+            fi
+          done
+
+      - name: Create GitHub Release and Upload Binaries
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: release-dist/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
