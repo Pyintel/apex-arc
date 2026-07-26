@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { Script } from "@mimo-ai/script"
+import { Script } from "@pyintel/script"
 import { $ } from "bun"
 import { fileURLToPath } from "url"
 
@@ -23,7 +23,7 @@ for (const file of pkgjsons) {
 }
 
 await $`bun install`
-await $`./packages/sdk/js/script/build.ts`
+await $`bun ./packages/sdk/js/script/build.ts`
 
 console.log("\n=== cli ===\n")
 await $`bun ./packages/opencode/script/publish.ts`

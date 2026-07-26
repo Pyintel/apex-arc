@@ -14,7 +14,7 @@ process.chdir(dir)
 
 await import("./generate.ts")
 
-import { Script } from "@mimo-ai/script"
+import { Script } from "@pyintel/script"
 import pkg from "../package.json"
 
 const BINARY_PREFIX = "apex-arc"
