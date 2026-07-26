@@ -207,7 +207,15 @@ const allTargets: {
   },
 ]
 
-const osTargets = targetOS ? allTargets.filter((item) => item.os === targetOS) : allTargets
+const osTargets = (targetOS ? allTargets.filter((item) => item.os === targetOS) : allTargets).filter((item) => {
+  if (item.os === "win32" && item.arch === "arm64" && process.env.ARC_BUILD_WINDOWS_ARM64 !== "1") {
+    return false
+  }
+  if (item.os === "win32" && item.avx2 === false && process.env.ARC_BUILD_WINDOWS_BASELINE !== "1") {
+    return false
+  }
+  return true
+})
 const targets = singleFlag
   ? osTargets.filter((item) => {
       if (item.os !== process.platform || item.arch !== process.arch) {
