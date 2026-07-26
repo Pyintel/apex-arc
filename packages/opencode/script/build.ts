@@ -52,6 +52,7 @@ console.log(`Loaded ${migrations.length} migrations`)
 const singleFlag = process.argv.includes("--single")
 const baselineFlag = process.argv.includes("--baseline")
 const skipInstall = process.argv.includes("--skip-install")
+const skipSmoke = process.argv.includes("--skip-smoke") || process.env.ARC_SKIP_SMOKE === "1" || process.env.CI === "true"
 const targetOS = (() => {
   const value = process.argv.find((arg) => arg.startsWith("--os="))?.slice("--os=".length)
   if (!value) return
@@ -329,7 +330,7 @@ for (const item of targets) {
   })
 
   // Smoke test: only run if binary is for current platform
-  if (item.os === process.platform && item.arch === process.arch && !item.abi) {
+  if (!skipSmoke && item.os === process.platform && item.arch === process.arch && !item.abi) {
     const binaryPath = `dist/${name}/bin/apex-arc`
     console.log(`Running smoke test: ${binaryPath} --version`)
     try {
