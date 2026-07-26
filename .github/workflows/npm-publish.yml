@@ -1,0 +1,102 @@
+name: npm publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }} packages
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux
+            runner: ubuntu-latest
+          - target: macos
+            runner: macos-latest
+          - target: windows
+            runner: windows-latest
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      - name: Build ${{ matrix.target }} npm packages
+        env:
+          ARC_CHANNEL: latest
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          ARC_VERSION="$VERSION" bun run --cwd packages/opencode build:${{ matrix.target }}
+
+      - name: Upload ${{ matrix.target }} packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-dist-${{ matrix.target }}
+          path: packages/opencode/dist/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish npm packages
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      - name: Setup Node for npmjs
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          scope: "@pyintel"
+
+      - name: Download built packages
+        uses: actions/download-artifact@v7
+        with:
+          pattern: npm-dist-*
+          path: packages/opencode/dist
+          merge-multiple: true
+
+      - name: Publish to npmjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.TOKEN }}
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+          ARC_CHANNEL: latest
+          ARC_VERSION: ${{ github.ref_name }}
+        run: |
+          export ARC_VERSION="${GITHUB_REF_NAME#v}"
+          bun run --cwd packages/opencode script/publish.ts
+
+      - name: Configure GitHub Packages registry
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "@pyintel:registry=https://npm.pkg.github.com" > ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_REGISTRY: https://npm.pkg.github.com
+          ARC_CHANNEL: latest
+          ARC_VERSION: ${{ github.ref_name }}
+        run: |
+          export ARC_VERSION="${GITHUB_REF_NAME#v}"
+          bun run --cwd packages/opencode script/publish.ts

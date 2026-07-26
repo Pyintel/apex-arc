@@ -8,9 +8,12 @@ import fs from "fs"
 const dir = fileURLToPath(new URL("..", import.meta.url))
 process.chdir(dir)
 
+const registry = process.env.npm_config_registry || process.env.NPM_CONFIG_REGISTRY || "https://registry.npmjs.org"
+const npmjs = registry.includes("registry.npmjs.org")
+
 async function published(name: string, version: string) {
   try {
-    const res = await $`npm view ${name}@${version} version`.text()
+    const res = await $`npm view ${name}@${version} version --registry ${registry}`.text()
     return res.trim() === version
   } catch {
     return false
@@ -24,7 +27,11 @@ async function publish(dir: string, name: string, version: string) {
     return
   }
   await $`bun pm pack`.cwd(dir)
-  await $`npm publish --access public --tag ${Script.channel}`.cwd(dir)
+  if (npmjs) {
+    await $`npm publish --access public --tag ${Script.channel} --registry ${registry}`.cwd(dir)
+    return
+  }
+  await $`npm publish --tag ${Script.channel} --registry ${registry}`.cwd(dir)
 }
 
 const binaries: { dir: string; name: string; version: string }[] = []
@@ -61,6 +68,13 @@ await Bun.file(`${targetDir}/package.json`).write(
       version: version,
       description: "Apex Arc",
       license: "MIT",
+      author: "Apex Arc Team",
+      homepage: "https://github.com/Pyintel/apex-arc",
+      repository: {
+        type: "git",
+        url: "git+https://github.com/Pyintel/apex-arc.git",
+      },
+      keywords: ["ai", "coding", "agent", "cli", "arc"],
       bin: {
         arc: "./bin/apex-arc.cjs",
         "apex-arc": "./bin/apex-arc.cjs",
