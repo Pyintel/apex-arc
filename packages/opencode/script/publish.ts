@@ -57,7 +57,6 @@ await $`rm -rf ${targetDir}`
 await $`mkdir -p ${targetDir}/bin`
 await Bun.write(`${targetDir}/bin/apex-arc.cjs`, await Bun.file("./bin/apex-arc.cjs").text())
 await Bun.write(`${targetDir}/bin/apex-arc`, await Bun.file("./bin/apex-arc.cjs").text())
-await Bun.file(`${targetDir}/postinstall.mjs`).write(await Bun.file("./script/postinstall.mjs").text())
 await Bun.file(`${targetDir}/LICENSE`).write(await Bun.file("../../LICENSE").text())
 await Bun.file(`${targetDir}/README.md`).write(await Bun.file("../../README_npm.md").text())
 
@@ -78,9 +77,6 @@ await Bun.file(`${targetDir}/package.json`).write(
       bin: {
         arc: "./bin/apex-arc",
         "apex-arc": "./bin/apex-arc",
-      },
-      scripts: {
-        postinstall: "bun ./postinstall.mjs || node ./postinstall.mjs",
       },
       optionalDependencies: Object.fromEntries(binaries.map((b) => [b.name, b.version])),
     },

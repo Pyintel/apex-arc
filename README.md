@@ -19,6 +19,22 @@ arc
 
 The npm package links both `apex-arc` and `arc` to the same CLI wrapper.
 
+If you install without `-g`, npm installs Apex Arc into the current directory's
+`node_modules` and does not add `apex-arc` or `arc` to your shell PATH. Run a
+local install with:
+
+```bash
+npx apex-arc
+```
+
+Older published versions may show an npm `approve-scripts` warning for the
+package postinstall script. Current releases do not require that script; if you
+see the warning on an older version, reinstall the latest global package:
+
+```bash
+npm install -g @pyintel/arc@latest
+```
+
 ## Build From Source
 
 Install dependencies from the repo root:

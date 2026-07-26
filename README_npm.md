@@ -22,6 +22,29 @@ npm install -g @pyintel/arc
 apex-arc
 ```
 
+The global install links both commands:
+
+```bash
+apex-arc
+arc
+```
+
+If you install without `-g`, npm installs Apex Arc into the current directory's
+`node_modules` and does not add the commands to your shell PATH. Run a local
+install with:
+
+```bash
+npx apex-arc
+```
+
+Older published versions may show an npm `approve-scripts` warning for the
+package postinstall script. Current releases do not require that script; if you
+see the warning on an older version, reinstall the latest global package:
+
+```bash
+npm install -g @pyintel/arc@latest
+```
+
 The first launch guides you through configuration automatically. Supported options:
 - **Import from Claude Code** — migrate existing authentication in one step
 - **Custom Provider** — add any OpenAI-compatible API in the TUI
