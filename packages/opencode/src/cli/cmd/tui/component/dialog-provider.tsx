@@ -16,6 +16,8 @@ import { useToast, type ToastContext } from "../ui/toast"
 import { isConsoleManagedProvider } from "@tui/util/provider-origin"
 import { isPopularProvider, PROVIDER_PRIORITY } from "@/util/provider-priority"
 
+import { DialogHelixConnect } from "./dialog-helix-connect"
+
 export function createDialogProviderOptions() {
   const sync = useSync()
   const dialog = useDialog()
@@ -37,12 +39,16 @@ export function createDialogProviderOptions() {
             anthropic: "(API key)",
             openai: "(ChatGPT Plus/Pro or API key)",
             "opencode-go": "Low cost subscription for everyone",
+            "pyintel-helix": "(Nine Router / Local Proxy)",
           }[provider.id],
           footer: consoleManaged ? sync.data.console_state.activeOrgName : undefined,
           category: isPopularProvider(provider.id) ? "Popular" : "Other",
           gutter: connected ? <text fg={theme.success}>✓</text> : undefined,
           async onSelect() {
             if (consoleManaged) return
+            if (provider.id === "pyintel-helix") {
+              return dialog.replace(() => <DialogHelixConnect />)
+            }
 
             const stored = sync.data.provider_auth[provider.id]
             const methods: ProviderAuthMethod[] =
@@ -206,7 +212,7 @@ export async function runCustomProviderWizard(opts: {
     },
   } as const
 
-  const updateRes = await sdk.client.global.config.update({ config: patch as any })
+  const updateRes = await sdk.client.global.config.update(patch as any)
   if (updateRes.error) {
     toast.show({ variant: "error", message: JSON.stringify(updateRes.error) })
     return
@@ -214,7 +220,7 @@ export async function runCustomProviderWizard(opts: {
 
   const authRes = await sdk.client.auth.set({
     providerID,
-    auth: { type: "api", key: apiKey },
+    body: { type: "api", key: apiKey },
   })
   if (authRes.error) {
     toast.show({ variant: "error", message: JSON.stringify(authRes.error) })
@@ -373,7 +379,7 @@ function ApiMethod(props: ApiMethodProps) {
         if (!value) return
         await sdk.client.auth.set({
           providerID: props.providerID,
-          auth: {
+          body: {
             type: "api",
             key: value,
             ...(props.metadata ? { metadata: props.metadata } : {}),

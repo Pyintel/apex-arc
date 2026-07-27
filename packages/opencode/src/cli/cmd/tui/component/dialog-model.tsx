@@ -4,8 +4,7 @@ import { useSync } from "@tui/context/sync"
 import { map, pipe, flatMap, entries, filter, sortBy, take } from "remeda"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useDialog, type DialogContext } from "@tui/ui/dialog"
-import { createDialogProviderOptions } from "./dialog-provider"
-import { DialogMimoLogin } from "./dialog-mimo-login"
+import { createDialogProviderOptions, DialogProvider } from "./dialog-provider"
 import { DialogVariant } from "./dialog-variant"
 import { useKeybind } from "../context/keybind"
 import { useSDK } from "../context/sdk"
@@ -24,7 +23,6 @@ export function useConnected() {
     sync.data.provider.some((x) => x.id !== "opencode" || Object.values(x.models).some((y) => y.cost?.input !== 0)),
   )
 }
-
 export function DialogModel(props: { providerID?: string }) {
   const local = useLocal()
   const sync = useSync()
@@ -170,7 +168,7 @@ export function DialogModel(props: { providerID?: string }) {
           // intentionally show only that provider's own models. The free
           // mimo-auto belongs to the `mimo` provider, so it is NOT surfaced
           // here — it stays pinned in the unscoped picker. Don't re-add it.
-          filter(([_, info]) => (props.providerID ? info.providerID === props.providerID : true)),
+          filter(([_, info]) => (props.providerID ? (info.providerID ?? provider.id) === props.providerID : true)),
           map(([model, info]) => ({
             value: { providerID: provider.id, modelID: model },
             title: info.name ?? model,
@@ -274,7 +272,7 @@ export function DialogModel(props: { providerID?: string }) {
           keybind: keybind.all.model_provider_list?.[0],
           title: "Connect provider",
           onTrigger() {
-            dialog.replace(() => <DialogMimoLogin />)
+            dialog.replace(() => <DialogProvider />)
           },
         },
         {
@@ -331,7 +329,7 @@ async function runAddModelWizard(opts: {
     },
   }
 
-  const updateRes = await sdk.client.global.config.update({ config: patch as any })
+  const updateRes = await sdk.client.global.config.update(patch as any)
   if (updateRes.error) {
     toast.show({ variant: "error", message: JSON.stringify(updateRes.error) })
     return

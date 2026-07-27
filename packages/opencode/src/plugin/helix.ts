@@ -14,36 +14,65 @@ async function fetchHelixModels(
   const headers: Record<string, string> = { "Content-Type": "application/json" }
   if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`
 
-  const url = `${baseURL.replace(/\/+$/, "")}/models`
-  const res = await fetch(url, { headers, signal: AbortSignal.timeout(5_000) })
-  if (!res.ok) throw new Error(`helix /models returned ${res.status}`)
+  const cleanBase = baseURL.replace(/\/+$/, "")
+  const primaryUrl = cleanBase.endsWith("/v1") ? `${cleanBase}/models` : `${cleanBase}/v1/models`
 
-  const data = await res.json()
-  if (!data || !Array.isArray(data.data)) throw new Error("helix /models unexpected shape")
+  let res = await fetch(primaryUrl, { headers, signal: AbortSignal.timeout(5_000) }).catch(() => null)
+  if (!res || !res.ok) {
+    if (!cleanBase.endsWith("/v1")) {
+      const fallbackUrl = `${cleanBase}/models`
+      res = await fetch(fallbackUrl, { headers, signal: AbortSignal.timeout(5_000) }).catch(() => null)
+    }
+  }
+
+  if (!res || !res.ok) return existing
+
+  const contentType = res.headers.get("content-type") || ""
+  if (contentType && !contentType.includes("json")) return existing
+
+  const data = await res.json().catch(() => null)
+  if (!data || !Array.isArray(data.data) || data.data.length === 0) return existing
 
   const result: Record<string, Model> = { ...existing }
   for (const m of data.data) {
     const id: string = m.id
+    const caps = m.capabilities || {}
     result[id] = {
       id,
       providerID: "pyintel-helix",
       api: {
         id,
-        url: baseURL,
+        url: cleanBase.endsWith("/v1") ? cleanBase : `${cleanBase}/v1`,
         npm: "@ai-sdk/openai-compatible",
       },
       status: "active",
       name: m.name || id,
       capabilities: {
-        temperature: existing[id]?.capabilities.temperature ?? true,
-        reasoning: existing[id]?.capabilities.reasoning ?? false,
-        attachment: existing[id]?.capabilities.attachment ?? false,
-        toolcall: existing[id]?.capabilities.toolcall ?? true,
-        input: { text: true, audio: false, image: false, video: false, pdf: false },
-        output: { text: true, audio: false, image: false, video: false, pdf: false },
+        temperature: caps.temperature ?? existing[id]?.capabilities?.temperature ?? true,
+        reasoning: caps.reasoning ?? existing[id]?.capabilities?.reasoning ?? false,
+        attachment: caps.attachment ?? existing[id]?.capabilities?.attachment ?? false,
+        toolcall: caps.tools ?? caps.toolcall ?? existing[id]?.capabilities?.toolcall ?? true,
+        input: {
+          text: true,
+          audio: caps.audioInput ?? false,
+          image: caps.vision ?? false,
+          video: caps.videoInput ?? false,
+          pdf: caps.pdf ?? false,
+        },
+        output: {
+          text: true,
+          audio: caps.audioOutput ?? false,
+          image: caps.imageOutput ?? false,
+          video: false,
+          pdf: false,
+        },
         interleaved: false,
       },
-      limit: existing[id]?.limit ?? {},
+      limit: {
+        context: caps.contextWindow ?? existing[id]?.limit?.context ?? 128000,
+        input: caps.contextWindow ?? existing[id]?.limit?.input ?? 128000,
+        output: caps.maxOutput ?? existing[id]?.limit?.output ?? 64000,
+      },
       cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
       options: existing[id]?.options ?? {},
       headers: existing[id]?.headers ?? {},
@@ -76,7 +105,8 @@ export async function HelixOnlyPlugin(_input: PluginInput): Promise<Hooks> {
       async models(provider, ctx) {
         const apiKey =
           ctx.auth?.type === "api" ? ctx.auth.key : (process.env.NINE_ROUTER_API_KEY ?? process.env.PYINTEL_HELIX_API_KEY)
-        return fetchHelixModels(BASE_URL, apiKey, provider.models).catch(() => provider.models)
+        const baseUrl = (provider.options as any)?.baseURL ?? provider.api ?? BASE_URL
+        return fetchHelixModels(baseUrl, apiKey, provider.models).catch(() => provider.models)
       },
     },
   }

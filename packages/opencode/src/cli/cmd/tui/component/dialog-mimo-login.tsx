@@ -88,7 +88,7 @@ export function DialogMimoLogin() {
 
           await sdk.client.auth.set({
             providerID: "anthropic",
-            auth: { type: "api", key },
+            body: { type: "api", key },
           })
           await sdk.client.global.config.update({
             config: {

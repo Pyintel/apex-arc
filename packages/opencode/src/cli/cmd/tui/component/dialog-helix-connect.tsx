@@ -42,44 +42,79 @@ export async function runHelixProviderWizard(opts: {
   if (!apiKey) return
 
   const providerID = "pyintel-helix"
+  let fetchedModels: Record<string, { name: string; providerID: string }> = {}
 
-  let fetchedModels: Record<string, { name: string }> = {
-    helix: { name: "Pyintel Helix" },
-  }
+  let cleanBase = baseURL.replace(/\/+$/, "")
+  let targetUrl = cleanBase.endsWith("/v1") ? `${cleanBase}/models` : `${cleanBase}/v1/models`
 
   try {
-    let modelsUrl = `${baseURL.replace(/\/+$/, "")}/models`
-    let res = await fetch(modelsUrl, {
+    let res = await fetch(targetUrl, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
     })
-    
-    if (!res.ok && !baseURL.endsWith("/v1")) {
-      modelsUrl = `${baseURL.replace(/\/+$/, "")}/v1/models`
-      res = await fetch(modelsUrl, {
+
+    if (!res.ok && !cleanBase.endsWith("/v1")) {
+      const fallbackUrl = `${cleanBase}/models`
+      const fallbackRes = await fetch(fallbackUrl, {
         headers: {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
       })
-      if (res.ok) {
-        baseURL = `${baseURL.replace(/\/+$/, "")}/v1`
+      if (fallbackRes.ok) {
+        res = fallbackRes
+        targetUrl = fallbackUrl
       }
     }
 
     if (res.ok) {
-      const data = await res.json()
+      if (targetUrl.includes("/v1/models") && !cleanBase.endsWith("/v1")) {
+        baseURL = `${cleanBase}/v1`
+      } else {
+        baseURL = cleanBase
+      }
+
+      const contentType = res.headers.get("content-type") || ""
+      if (contentType && !contentType.includes("json")) {
+        const text = await res.text().catch(() => "")
+        const cleanPreview = text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150)
+        toast.show({
+          variant: "error",
+          message: `Endpoint returned HTML page instead of JSON (${res.status}). Preview: "${cleanPreview}". Please check your endpoint URL.`,
+        })
+        return
+      }
+
+      const data = await res.json().catch(() => null)
+      if (!data) {
+        toast.show({ variant: "error", message: `Failed to parse JSON response from ${targetUrl}` })
+        return
+      }
+
+      if (data && data.success === false && data.error) {
+        const errMsg = typeof data.error === "string" ? data.error : (data.error.message || data.error.note || JSON.stringify(data.error))
+        toast.show({ variant: "error", message: `Helix API Error: ${errMsg}` })
+        return
+      }
       if (data && Array.isArray(data.data) && data.data.length > 0) {
         fetchedModels = {}
         for (const model of data.data) {
-          fetchedModels[model.id] = { name: model.name || model.id }
+          fetchedModels[model.id] = { name: model.name || model.id, providerID }
         }
       }
+    } else {
+      const errText = await res.text().catch(() => "")
+      const cleanErr = (errText.startsWith("<") || errText.includes("<html") || errText.includes("<!DOCTYPE"))
+        ? `HTTP ${res.status} HTML 404 page returned at ${targetUrl}. Ensure your endpoint URL includes /v1.`
+        : errText.slice(0, 200)
+      toast.show({ variant: "error", message: `Helix server error (${res.status}): ${cleanErr}` })
+      return
     }
-  } catch (err) {
-    // fallback to default if fetch fails
+  } catch (err: any) {
+    toast.show({ variant: "error", message: `Failed to connect to Helix endpoint (${targetUrl}): ${err.message || String(err)}` })
+    return
   }
 
   const patch = {
@@ -98,7 +133,7 @@ export async function runHelixProviderWizard(opts: {
     },
   } as const
 
-  const updateRes = await sdk.client.global.config.update({ config: patch as any })
+  const updateRes = await sdk.client.global.config.update(patch as any)
   if (updateRes.error) {
     toast.show({ variant: "error", message: JSON.stringify(updateRes.error) })
     return
@@ -106,7 +141,7 @@ export async function runHelixProviderWizard(opts: {
 
   const authRes = await sdk.client.auth.set({
     providerID,
-    auth: { type: "api", key: apiKey },
+    body: { type: "api", key: apiKey },
   })
   if (authRes.error) {
     toast.show({ variant: "error", message: JSON.stringify(authRes.error) })

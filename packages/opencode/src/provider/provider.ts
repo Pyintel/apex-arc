@@ -1396,7 +1396,25 @@ const layer: Layer.Layer<
           // A non-empty `models` config acts as an implicit whitelist: only the
           // configured model IDs are shown, hiding the rest of the models.dev catalog.
           const configModelKeys = Object.keys(configProvider?.models ?? {})
-          const implicitWhitelist = configModelKeys.length > 0 ? configModelKeys : undefined
+          const implicitWhitelist = (configModelKeys.length > 0 && providerID !== "pyintel-helix") ? configModelKeys : undefined
+
+          // Ensure models saved in config (e.g. from TUI dynamic fetch) are merged into provider.models
+          if (configProvider?.models) {
+            for (const [modelID, model] of Object.entries(configProvider.models)) {
+              if (!provider.models[modelID]) {
+                provider.models[modelID] = {
+                  id: ModelID.make(modelID),
+                  providerID,
+                  name: model.name || modelID,
+                  api: { id: modelID, npm: provider.npm ?? "@ai-sdk/openai-compatible" },
+                  status: "active",
+                  capabilities: { input: { text: true }, output: { text: true } },
+                  limit: { context: 128000, input: 128000, output: 64000 },
+                  cost: { input: 0, output: 0 },
+                } as any
+              }
+            }
+          }
 
           for (const [modelID, model] of Object.entries(provider.models)) {
             model.api.id = model.api.id ?? model.id ?? modelID
