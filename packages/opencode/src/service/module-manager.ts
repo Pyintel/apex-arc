@@ -1,4 +1,4 @@
-import { Database as SqliteDb } from "bun:sqlite"
+import { openSqlite } from "@/storage/sqlite"
 import { embed } from "@/util/embeddings"
 import { Path as GlobalPath } from "@/global"
 import { Process } from "@/util"
@@ -52,7 +52,7 @@ export async function fetchNpmModules(): Promise<ModuleInfo[]> {
 export async function getCustomModules(): Promise<ModuleInfo[]> {
   const customPath = getCustomRegistryPath()
   if (!existsSync(customPath)) return []
-  const content = await Bun.file(customPath).text()
+  const content = await fs.readFile(customPath, "utf-8")
   return JSON.parse(content) as ModuleInfo[]
 }
 
@@ -85,7 +85,7 @@ async function getInstalledModules(): Promise<ModuleInfo[]> {
       let arcDescription: string | undefined
       if (existsSync(arcConfigPath)) {
         try {
-          const arc = JSON.parse(await Bun.file(arcConfigPath).text())
+          const arc = JSON.parse(await fs.readFile(arcConfigPath, "utf-8"))
           arcName = arc.name
           arcDescription = arc.description
         } catch {}
@@ -94,7 +94,7 @@ async function getInstalledModules(): Promise<ModuleInfo[]> {
       const manifestPath = path.join(moduleDir, "manifest.json")
       if (existsSync(manifestPath)) {
         try {
-          const manifest = JSON.parse(await Bun.file(manifestPath).text())
+          const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8"))
           installed.push({
             id: entry.name,
             name: arcName || manifest.name || entry.name,
@@ -336,7 +336,7 @@ export async function installModule(
 
   onProgress("Initializing vector database...")
   const vectorDbPath = path.join(modulesDir, "modules_vector.db")
-  const vecDb = new SqliteDb(vectorDbPath, { create: true })
+  const vecDb = openSqlite(vectorDbPath, { create: true })
 
   vecDb.run(`
     CREATE TABLE IF NOT EXISTS module_embeddings (
@@ -366,7 +366,7 @@ export async function installModule(
   const prebuiltVectorDbPath = path.join(targetDir, "boards_vector.db")
   if (existsSync(prebuiltVectorDbPath)) {
     onProgress("Importing pre-built vector database...")
-    const preDb = new SqliteDb(prebuiltVectorDbPath, { readonly: true })
+    const preDb = openSqlite(prebuiltVectorDbPath, { readonly: true })
     const rows = preDb.query("SELECT item_id, text, embedding FROM module_embeddings").all() as {
       item_id: string
       text: string
@@ -412,7 +412,7 @@ export async function installModule(
 
   if (isDb) {
     onProgress("Loading database records...")
-    const srcDb = new SqliteDb(dbPath, { readonly: true })
+    const srcDb = openSqlite(dbPath, { readonly: true })
     const rows = srcDb.query("SELECT * FROM boards").all() as Record<string, unknown>[]
     srcDb.close()
 
@@ -461,7 +461,7 @@ URL: ${row.url || "none"}`
     for (let i = 0; i < mdFiles.length; i++) {
       const filePath = mdFiles[i]!
       const relPath = path.relative(targetDir, filePath)
-      const content = await Bun.file(filePath).text()
+      const content = await fs.readFile(filePath, "utf-8")
 
       const chunks = content
         .split(/(?=\n#{1,3} )|\n\n/)
@@ -525,7 +525,7 @@ export async function uninstallModule(moduleId: string) {
 
   const vectorDbPath = path.join(modulesDir, "modules_vector.db")
   if (existsSync(vectorDbPath)) {
-    const vecDb = new SqliteDb(vectorDbPath)
+    const vecDb = openSqlite(vectorDbPath)
     vecDb.query("DELETE FROM module_embeddings WHERE module_id = ?").run(moduleId)
     vecDb.close()
   }
@@ -560,7 +560,7 @@ export async function queryModuleKnowledge(
   if (!existsSync(vectorDbPath)) return []
 
   const queryEmbedding = await embed(query)
-  const vecDb = new SqliteDb(vectorDbPath, { readonly: true })
+  const vecDb = openSqlite(vectorDbPath, { readonly: true })
 
   try {
     const sql = moduleId
