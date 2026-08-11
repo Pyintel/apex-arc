@@ -395,7 +395,7 @@ function createGlobalSync() {
   const updateConfig = async (config: Config) => {
     setGlobalStore("reload", "pending")
     return globalSDK.client.global.config
-      .update({ config })
+      .update(config as any)
       .then(bootstrap)
       .then(() => {
         queue.refresh()

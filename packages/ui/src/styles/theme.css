@@ -16,8 +16,8 @@
   --line-height-x-large: 180%;
   --line-height-2x-large: 200%;
   --letter-spacing-normal: 0;
-  --letter-spacing-tight: -0.1599999964237213;
-  --letter-spacing-tightest: -0.3199999928474426;
+  --letter-spacing-tight: -0.1599999964237213px;
+  --letter-spacing-tightest: -0.3199999928474426px;
   --paragraph-spacing-base: 0;
 
   --spacing: 0.25rem;

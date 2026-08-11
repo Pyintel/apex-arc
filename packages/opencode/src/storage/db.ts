@@ -1,5 +1,4 @@
-import { type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
-import { migrate } from "drizzle-orm/bun-sqlite/migrator"
+
 import { type SQLiteTransaction } from "drizzle-orm/sqlite-core"
 export * from "drizzle-orm"
 import { LocalContext } from "../util"
@@ -14,7 +13,7 @@ import { Flag } from "../flag/flag"
 import { InstallationChannel } from "../installation/version"
 import { InstanceState } from "@/effect"
 import { iife } from "@/util/iife"
-import { init } from "#db"
+import { init, runMigrations } from "#db"
 
 declare const ARC_MIGRATIONS: { sql: string; timestamp: number; name: string }[] | undefined
 
@@ -108,7 +107,7 @@ export const Client = lazy(() => {
         item.sql = "select 1;"
       }
     }
-    migrate(db, entries)
+    runMigrations(db, entries)
   }
 
   return db

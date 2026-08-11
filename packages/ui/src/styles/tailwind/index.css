@@ -3,6 +3,7 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source("../../../../");
 @import "./utilities.css";
+@import "./colors.css";
 
 @import "../index.css";
 
@@ -75,4 +76,3 @@
   --animate-pulse: var(--animate-pulse);
 }
 
-@import "./colors.css";

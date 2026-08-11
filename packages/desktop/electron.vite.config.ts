@@ -1,5 +1,5 @@
 import { defineConfig } from "electron-vite"
-import appPlugin from "@mimo-ai/app/vite"
+import appPlugin from "@pyintel/app/vite"
 import * as fs from "node:fs/promises"
 
 const channel = (() => {
@@ -20,6 +20,7 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: { index: "src/main/index.ts" },
+        external: [nodePtyPkg],
       },
       externalizeDeps: { include: [nodePtyPkg] },
     },
@@ -35,15 +36,23 @@ export default defineConfig({
         name: "opencode:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
-          if (id === "virtual:opencode-server") return this.resolve(`${OPENCODE_SERVER_DIST}/node.js`)
+          if (id === "virtual:opencode-server") return { id: "./opencode-server.js", external: true }
         },
       },
       {
         name: "opencode:copy-server-assets",
-        async writeBundle() {
+        async buildStart() {
+          await fs.mkdir("./out/main", { recursive: true })
           for (const l of await fs.readdir(OPENCODE_SERVER_DIST)) {
-            if (!l.endsWith(".wasm")) continue
-            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`))
+            const targetName = l === "node.js" ? "opencode-server.js" : l
+            await fs.writeFile(`./out/main/${targetName}`, await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`))
+          }
+        },
+        async writeBundle() {
+          await fs.mkdir("./out/main", { recursive: true })
+          for (const l of await fs.readdir(OPENCODE_SERVER_DIST)) {
+            const targetName = l === "node.js" ? "opencode-server.js" : l
+            await fs.writeFile(`./out/main/${targetName}`, await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`))
           }
         },
       },
@@ -67,7 +76,17 @@ export default defineConfig({
     define: {
       "import.meta.env.VITE_OPENCODE_CHANNEL": JSON.stringify(channel),
     },
+    css: {
+      transformer: "lightningcss",
+      lightningcss: {
+        drafts: {
+          customMedia: true,
+        },
+        errorRecovery: true,
+      },
+    },
     build: {
+      cssMinify: "lightningcss",
       rollupOptions: {
         input: {
           main: "src/renderer/index.html",

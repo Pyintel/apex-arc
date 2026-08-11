@@ -38,10 +38,12 @@ export type EventLspUpdated = {
 
 export type FileDiff = {
   file: string
-  before: string
-  after: string
+  before?: string
+  after?: string
+  patch?: string
   additions: number
   deletions: number
+  status?: "added" | "deleted" | "modified"
 }
 
 export type UserMessage = {
@@ -57,9 +59,13 @@ export type UserMessage = {
     diffs: Array<FileDiff>
   }
   agent: string
+  agentID?: string
+  format?: { type: "text" } | { type: "json_schema"; schema: { [key: string]: unknown }; retryCount?: number }
+  provenance?: unknown
   model: {
     providerID: string
     modelID: string
+    variant?: string
   }
   system?: string
   tools?: {
@@ -113,11 +119,22 @@ export type AssistantMessage = {
   id: string
   sessionID: string
   role: "assistant"
+  agent?: string
+  agentID?: string
+  variant?: string
   time: {
     created: number
     completed?: number
   }
-  error?: ProviderAuthError | UnknownError | MessageOutputLengthError | MessageAbortedError | ApiError
+  error?:
+    | ProviderAuthError
+    | UnknownError
+    | MessageOutputLengthError
+    | MessageAbortedError
+    | ApiError
+    | { name: "APIError"; data: { message: string; statusCode?: number; isRetryable: boolean; responseHeaders?: { [key: string]: string }; responseBody?: string; metadata?: { [key: string]: string } } }
+    | { name: "StructuredOutputError"; data: { message: string; retries: number } }
+    | { name: string; data: any }
   parentID: string
   modelID: string
   providerID: string
@@ -221,7 +238,14 @@ export type SymbolSource = {
   kind: number
 }
 
-export type FilePartSource = FileSource | SymbolSource
+export type ResourceSource = {
+  text: FilePartSourceText
+  type: "resource"
+  clientName: string
+  uri: string
+}
+
+export type FilePartSource = FileSource | SymbolSource | ResourceSource
 
 export type FilePart = {
   id: string
@@ -402,6 +426,15 @@ export type Part =
   | AgentPart
   | RetryPart
   | CompactionPart
+  | {
+      id: string
+      sessionID: string
+      messageID: string
+      type: "checkpoint"
+      checkpointDir: string
+      checkpointNumber: number
+      coveredUpTo: string
+    }
 
 export type EventMessagePartUpdated = {
   type: "message.part.updated"
@@ -488,22 +521,10 @@ export type EventFileEdited = {
 }
 
 export type Todo = {
-  /**
-   * Brief description of the task
-   */
   content: string
-  /**
-   * Current status of the task: pending, in_progress, completed, cancelled
-   */
   status: string
-  /**
-   * Priority level of the task: high, medium, low
-   */
-  priority: string
-  /**
-   * Unique identifier for the todo item
-   */
-  id: string
+  priority?: string
+  id?: string
 }
 
 export type EventTodoUpdated = {
@@ -544,6 +565,7 @@ export type Session = {
     created: number
     updated: number
     compacting?: number
+    archived?: number
   }
   revert?: {
     messageID: string
@@ -726,6 +748,14 @@ export type Event =
   | EventPtyUpdated
   | EventPtyExited
   | EventPtyDeleted
+  | { type: "worktree.failed"; properties: any }
+  | { type: "worktree.ready"; properties: any }
+  | { type: "message.part.delta"; properties: any }
+  | { type: "global.disposed"; properties: any }
+  | { type: "question.replied"; properties: any }
+  | { type: "question.rejected"; properties: any }
+  | { type: "permission.asked"; properties: any }
+  | { type: "question.asked"; properties: any }
   | EventServerConnected
 
 export type GlobalEvent = {
@@ -736,11 +766,20 @@ export type GlobalEvent = {
 export type Project = {
   id: string
   worktree: string
+  name?: string
+  icon?: {
+    override?: string
+    color?: string
+    url?: string
+  }
+  sandboxes?: Array<string>
+  commands?: Record<string, unknown>
   vcsDir?: string
   vcs?: "git"
   time: {
     created: number
     initialized?: number
+    updated?: number
   }
 }
 
@@ -987,17 +1026,11 @@ export type AgentConfig = {
    * Maximum number of agentic iterations before forcing text-only response
    */
   maxSteps?: number
-  permission?: {
-    edit?: "ask" | "allow" | "deny"
-    bash?:
-      | ("ask" | "allow" | "deny")
-      | {
-          [key: string]: "ask" | "allow" | "deny"
-        }
-    webfetch?: "ask" | "allow" | "deny"
-    doom_loop?: "ask" | "allow" | "deny"
-    external_directory?: "ask" | "allow" | "deny"
-  }
+  permission?:
+    | ("ask" | "allow" | "deny")
+    | {
+        [key: string]: unknown
+      }
   [key: string]:
     | unknown
     | string
@@ -1066,7 +1099,8 @@ export type ProviderConfig = {
         [key: string]: string
       }
       provider?: {
-        npm: string
+        npm?: string
+        api?: string
       }
     }
   }
@@ -1216,7 +1250,7 @@ export type Config = {
   watcher?: {
     ignore?: Array<string>
   }
-  plugin?: Array<string>
+  plugin?: Array<string | [string, Record<string, unknown>]>
   snapshot?: boolean
   /**
    * Control sharing behavior:'manual' allows manual sharing via commands, 'auto' enables automatic sharing, 'disabled' disables all sharing
@@ -1278,10 +1312,11 @@ export type Config = {
    * MCP (Model Context Protocol) server configurations
    */
   mcp?: {
-    [key: string]: McpLocalConfig | McpRemoteConfig
+    [key: string]: McpLocalConfig | McpRemoteConfig | { enabled?: boolean }
   }
+  config?: Record<string, unknown>
   formatter?:
-    | false
+    | boolean
     | {
         [key: string]: {
           disabled?: boolean
@@ -1293,7 +1328,7 @@ export type Config = {
         }
       }
   lsp?:
-    | false
+    | boolean
     | {
         [key: string]:
           | {
@@ -1316,17 +1351,11 @@ export type Config = {
    */
   instructions?: Array<string>
   layout?: LayoutConfig
-  permission?: {
-    edit?: "ask" | "allow" | "deny"
-    bash?:
-      | ("ask" | "allow" | "deny")
-      | {
-          [key: string]: "ask" | "allow" | "deny"
-        }
-    webfetch?: "ask" | "allow" | "deny"
-    doom_loop?: "ask" | "allow" | "deny"
-    external_directory?: "ask" | "allow" | "deny"
-  }
+  permission?:
+    | ("allow" | "ask" | "deny")
+    | {
+        [key: string]: any
+      }
   tools?: {
     [key: string]: boolean
   }
@@ -1384,6 +1413,7 @@ export type ToolListItem = {
 export type ToolList = Array<ToolListItem>
 
 export type Path = {
+  home?: string
   state: string
   config: string
   worktree: string
@@ -1392,6 +1422,7 @@ export type Path = {
 
 export type VcsInfo = {
   branch: string
+  default_branch?: string
 }
 
 export type TextPartInput = {
@@ -1444,6 +1475,7 @@ export type Command = {
   model?: string
   template: string
   subtask?: boolean
+  source?: "command" | "mcp" | "skill" | string
 }
 
 export type Model = {
@@ -1521,6 +1553,7 @@ export type Provider = {
 export type ProviderAuthMethod = {
   type: "oauth" | "api"
   label: string
+  prompts?: Array<any>
 }
 
 export type ProviderAuthAuthorization = {
@@ -1580,6 +1613,8 @@ export type Agent = {
   description?: string
   mode: "subagent" | "primary" | "all"
   builtIn: boolean
+  hidden?: boolean
+  variant?: string
   topP?: number
   temperature?: number
   color?: string
@@ -1625,7 +1660,11 @@ export type McpStatusNeedsAuth = {
 
 export type McpStatusNeedsClientRegistration = {
   status: "needs_client_registration"
-  error: string
+  error?: string
+}
+
+export type McpStatusPending = {
+  status: "pending"
 }
 
 export type McpStatus =
@@ -1634,6 +1673,7 @@ export type McpStatus =
   | McpStatusFailed
   | McpStatusNeedsAuth
   | McpStatusNeedsClientRegistration
+  | McpStatusPending
 
 export type LspStatus = {
   id: string

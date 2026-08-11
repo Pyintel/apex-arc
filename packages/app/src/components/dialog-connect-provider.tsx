@@ -211,7 +211,7 @@ export function DialogConnectProvider(props: { provider: string }) {
     }
     const current = createMemo(() => {
       const all = prompts()
-      const index = all.findIndex((prompt, index) => index >= formStore.index && matches(prompt, formStore.value))
+      const index = all.findIndex((prompt: any, index: any) => index >= formStore.index && matches(prompt, formStore.value))
       if (index === -1) return
       return {
         index,
@@ -227,7 +227,7 @@ export function DialogConnectProvider(props: { provider: string }) {
 
     async function next(index: number, value: Record<string, string>) {
       if (store.methodIndex === undefined) return
-      const next = prompts().findIndex((prompt, i) => i > index && matches(prompt, value))
+      const next = prompts().findIndex((prompt: any, i: any) => i > index && matches(prompt, value))
       if (next !== -1) {
         setFormStore("index", next)
         return
@@ -281,7 +281,7 @@ export function DialogConnectProvider(props: { provider: string }) {
                 <List
                   items={select()?.options ?? []}
                   key={(x) => x.value}
-                  current={select()?.options.find((x) => x.value === formStore.value[select()!.key])}
+                  current={select()?.options.find((x: any) => x.value === formStore.value[select()!.key])}
                   onSelect={(value) => {
                     if (!value) return
                     const prompt = select()
@@ -411,7 +411,7 @@ export function DialogConnectProvider(props: { provider: string }) {
       setFormStore("error", undefined)
       await globalSDK.client.auth.set({
         providerID: props.provider,
-        auth: {
+        body: {
           type: "api",
           key: apiKey,
         },

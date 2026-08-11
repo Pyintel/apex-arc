@@ -8,8 +8,18 @@ export default defineConfig({
     allowedHosts: true,
     port: 3000,
   },
+  css: {
+    transformer: "lightningcss",
+    lightningcss: {
+      drafts: {
+        customMedia: true,
+      },
+      errorRecovery: true,
+    },
+  },
   build: {
     target: "esnext",
+    cssMinify: "lightningcss",
     // sourcemap: true,
   },
 })

@@ -3,21 +3,55 @@ export type {
   AgentPart,
   Event,
   FilePart,
+  FilePartSource,
+  FileSource,
+  SymbolSource,
   LspStatus,
   McpStatus,
   Todo,
   Message,
+  UserMessage,
+  AssistantMessage,
+  ReasoningPart,
+  ToolPart,
   Part,
   Provider,
   SessionStatus,
   TextPart,
   Model,
   Config,
+  Session,
+  Project,
+  FileContent,
+  Agent,
+  Command,
+  Path,
+  VcsInfo,
+  EventSessionError,
+  FileNode,
+  AgentPartInput,
+  FilePartInput,
+  TextPartInput,
+  ProviderAuthAuthorization,
+  ProviderAuthMethod,
 } from "../gen/types.gen.js"
+
+export type SnapshotFileDiff = {
+  file: string
+  patch?: string
+  before?: string
+  after?: string
+  additions: number
+  deletions: number
+  status?: "added" | "deleted" | "modified"
+}
+export type VcsFileDiff = SnapshotFileDiff
 
 import type { PermissionListResponse, QuestionListResponse } from "./gen/types.gen.js"
 export type PermissionRequest = PermissionListResponse[number]
 export type QuestionRequest = QuestionListResponse[number]
+export type QuestionInfo = QuestionRequest
+export type QuestionAnswer = string[]
 
 import { createClient } from "./gen/client/client.gen.js"
 import { type Config } from "./gen/client/types.gen.js"

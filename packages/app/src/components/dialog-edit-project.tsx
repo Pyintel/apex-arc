@@ -28,7 +28,7 @@ export function DialogEditProject(props: { project: LocalProject }) {
     name: defaultName(),
     color: props.project.icon?.color || "pink",
     iconUrl: props.project.icon?.override || "",
-    startup: props.project.commands?.start ?? "",
+    startup: (props.project.commands as any)?.start ?? "",
     dragOver: false,
     iconHover: false,
   })
@@ -73,8 +73,8 @@ export function DialogEditProject(props: { project: LocalProject }) {
 
   const saveMutation = useMutation(() => ({
     mutationFn: async () => {
-      const name = store.name.trim() === folderName() ? "" : store.name.trim()
-      const start = store.startup.trim()
+      const name = String(store.name).trim() === folderName() ? "" : String(store.name).trim()
+      const start = String(store.startup ?? "").trim()
 
       if (props.project.id && props.project.id !== "global") {
         await globalSDK.client.project.update({
@@ -234,7 +234,7 @@ export function DialogEditProject(props: { project: LocalProject }) {
             label={language.t("dialog.project.edit.worktree.startup")}
             description={language.t("dialog.project.edit.worktree.startup.description")}
             placeholder={language.t("dialog.project.edit.worktree.startup.placeholder")}
-            value={store.startup}
+            value={String(store.startup ?? "")}
             onChange={(v) => setStore("startup", v)}
             spellcheck={false}
             class="max-h-14 w-full overflow-y-auto font-mono text-xs"

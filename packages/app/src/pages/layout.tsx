@@ -774,7 +774,7 @@ export default function Layout(props: ParentProps) {
             if (!isSessionPrefetchCurrent(directory, sessionID, rev)) return
 
             const items = (messages.data ?? []).filter((x) => !!x?.info?.id)
-            const next = items.map((x) => x.info).filter((m): m is Message => !!m?.id)
+            const next = items.map((x) => x.info).filter((m): m is any => !!m?.id)
             const sorted = mergeByID([], next)
             const stale = markPrefetched(directory, sessionID)
             const cursor = messages.response.headers.get("x-next-cursor") ?? undefined
@@ -1496,7 +1496,7 @@ export default function Layout(props: ParentProps) {
     setBusy(directory, true)
 
     const result = await globalSDK.client.worktree
-      .remove({ directory: root, worktreeRemoveInput: { directory } })
+      .remove({ query_directory: root, body_directory: directory })
       .then((x) => x.data)
       .catch((err) => {
         showToast({
@@ -1519,7 +1519,7 @@ export default function Layout(props: ParentProps) {
       produce((draft) => {
         const project = draft.find((item) => item.worktree === root)
         if (!project) return
-        project.sandboxes = (project.sandboxes ?? []).filter((sandbox) => sandbox !== directory)
+        project.sandboxes = (project.sandboxes ?? []).filter((sandbox: string) => sandbox !== directory)
       }),
     )
     setStore("workspaceOrder", root, (order) => (order ?? []).filter((workspace) => workspace !== directory))
@@ -1566,7 +1566,7 @@ export default function Layout(props: ParentProps) {
     await globalSDK.client.instance.dispose({ directory }).catch(() => undefined)
 
     const result = await globalSDK.client.worktree
-      .reset({ directory: root, worktreeResetInput: { directory } })
+      .reset({ query_directory: root, body_directory: directory })
       .then((x) => x.data)
       .catch((err) => {
         showToast({
@@ -2132,7 +2132,7 @@ export default function Layout(props: ParentProps) {
                       }}
                     >
                       <span class="text-12-regular text-text-base truncate select-text">
-                        {worktree().replace(homedir(), "~")}
+                        {worktree().replace(homedir() ?? "", "~")}
                       </span>
                     </Tooltip>
                   </div>
