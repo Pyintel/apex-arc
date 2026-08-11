@@ -1,5 +1,5 @@
 import { defineConfig } from "electron-vite"
-import appPlugin from "@pyintel/app/vite"
+import appPlugin from "@pyintel/web/vite"
 import * as fs from "node:fs/promises"
 
 const channel = (() => {
@@ -71,7 +71,7 @@ export default defineConfig({
   },
   renderer: {
     plugins: [appPlugin],
-    publicDir: "../../../app/public",
+    publicDir: "../../../web/public",
     root: "src/renderer",
     define: {
       "import.meta.env.VITE_OPENCODE_CHANNEL": JSON.stringify(channel),

@@ -13,7 +13,7 @@ import {
   PlatformProvider,
   ServerConnection,
   useCommand,
-} from "@pyintel/app"
+} from "@pyintel/web"
 import type { AsyncStorage } from "@solid-primitives/storage"
 import { MemoryRouter } from "@solidjs/router"
 import { createEffect, createResource, onCleanup, onMount, Show } from "solid-js"

@@ -1,6 +1,6 @@
 import { MetaProvider } from "@solidjs/meta"
 import { render } from "solid-js/web"
-import "@pyintel/app/index.css"
+import "@pyintel/web/index.css"
 import { Font } from "@pyintel/ui/font"
 import { Splash } from "@pyintel/ui/logo"
 import { Progress } from "@pyintel/ui/progress"
