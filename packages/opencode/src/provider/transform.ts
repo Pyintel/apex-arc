@@ -176,6 +176,17 @@ function normalizeMessages(
     return result
   }
 
+  // Google/Gemini rejects reasoning parts in message history with 400 INVALID_ARGUMENT.
+  // They are output-only — strip them before sending context back.
+  if (model.api.npm === "@ai-sdk/google" || model.api.npm === "@ai-sdk/google-vertex") {
+    msgs = msgs.map((msg) => {
+      if (msg.role !== "assistant" || !Array.isArray(msg.content)) return msg
+      const filtered = msg.content.filter((part: any) => part.type !== "reasoning")
+      if (filtered.length === msg.content.length) return msg
+      return { ...msg, content: filtered }
+    })
+  }
+
   if (typeof model.capabilities.interleaved === "object" && model.capabilities.interleaved.field) {
     const field = model.capabilities.interleaved.field
     return msgs.map((msg) => {
@@ -851,6 +862,10 @@ export function variants(model: Provider.Model): Record<string, Record<string, a
           },
         }
       }
+      // Only expose thinkingLevel variants for major-version-3 Gemini models.
+      // "gemini-3.6" matches "gemini-3" as substring but is a different minor-versioned
+      // family that may not support thinkingLevel, causing 400 INVALID_ARGUMENT.
+      if (!/gemini-3[^.\d]/.test(id) && !id.endsWith("gemini-3")) return {}
       let levels = ["low", "high"]
       if (id.includes("3.1")) {
         levels = ["low", "medium", "high"]
@@ -998,11 +1013,19 @@ export function options(input: {
   }
 
   if (input.model.api.npm === "@ai-sdk/google" || input.model.api.npm === "@ai-sdk/google-vertex") {
-    if (input.model.capabilities.reasoning) {
+    const googleId = input.model.api.id.toLowerCase()
+    // Only inject thinkingConfig for known Gemini model families that support it.
+    // Use boundary-aware checks: "gemini-3-" and "gemini-3." match major version 3
+    // exactly, while "gemini-3.6" would also match "gemini-3" as a substring but
+    // refers to a different minor-versioned family that may not support thinkingLevel.
+    const isGemini25 = googleId.includes("gemini-2.5")
+    const isGemini3 = /gemini-3[^.\d]/.test(googleId) || googleId.endsWith("gemini-3")
+    const supportsThinking = input.model.capabilities.reasoning && (isGemini25 || isGemini3)
+    if (supportsThinking) {
       result["thinkingConfig"] = {
         includeThoughts: true,
       }
-      if (input.model.api.id.includes("gemini-3")) {
+      if (isGemini3) {
         result["thinkingConfig"]["thinkingLevel"] = "high"
       }
     }

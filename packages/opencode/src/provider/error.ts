@@ -89,6 +89,12 @@ function message(providerID: ProviderID, e: APICallError) {
       // try to extract common error message fields
       const errMsg = body.message || body.error || body.error?.message
       if (errMsg && typeof errMsg === "string") {
+        // Surface a helpful hint for Google INVALID_ARGUMENT — the most common
+        // cause is an unsupported parameter (e.g. thinkingConfig on a model
+        // that doesn't support reasoning). Non-retryable.
+        if (e.statusCode === 400 && body.error?.status === "INVALID_ARGUMENT") {
+          return `${errMsg} (the request may include an unsupported parameter for this model)`
+        }
         return `${msg}: ${errMsg}`
       }
     } catch {}

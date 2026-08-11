@@ -6,10 +6,12 @@ import { List } from "@pyintel/ui/list"
 import { Tag } from "@pyintel/ui/tag"
 import { ProviderIcon } from "@pyintel/ui/provider-icon"
 import { DialogConnectProvider } from "./dialog-connect-provider"
+import { DialogConnectHelix } from "./dialog-connect-helix"
 import { useLanguage } from "@/context/language"
 import { DialogCustomProvider } from "./dialog-custom-provider"
 
 const CUSTOM_ID = "_custom"
+const HELIX_ID = "pyintel-helix"
 
 export const DialogSelectProvider: Component = () => {
   const dialog = useDialog()
@@ -20,6 +22,7 @@ export const DialogSelectProvider: Component = () => {
   const otherGroup = () => language.t("dialog.provider.group.other")
   const customLabel = () => language.t("settings.providers.tag.custom")
   const note = (id: string) => {
+    if (id === HELIX_ID) return "High-performance Pyintel Helix engine"
     if (id === "anthropic") return language.t("dialog.provider.anthropic.note")
     if (id === "openai") return language.t("dialog.provider.openai.note")
     if (id.startsWith("github-copilot")) return language.t("dialog.provider.copilot.note")
@@ -35,13 +38,18 @@ export const DialogSelectProvider: Component = () => {
         key={(x) => x?.id}
         items={() => {
           language.locale()
-          return [{ id: CUSTOM_ID, name: customLabel() }, ...providers.all()]
+          const all = providers.all()
+          const hasHelix = all.some((p) => p.id === HELIX_ID)
+          const helixItem = hasHelix ? [] : [{ id: HELIX_ID, name: "Pyintel Helix" }]
+          return [{ id: CUSTOM_ID, name: customLabel() }, ...helixItem, ...all]
         }}
         filterKeys={["id", "name"]}
         groupBy={(x) => (popularProviders.includes(x.id) ? popularGroup() : otherGroup())}
         sortBy={(a, b) => {
           if (a.id === CUSTOM_ID) return -1
           if (b.id === CUSTOM_ID) return 1
+          if (a.id === HELIX_ID) return -1
+          if (b.id === HELIX_ID) return 1
           if (popularProviders.includes(a.id) && popularProviders.includes(b.id))
             return popularProviders.indexOf(a.id) - popularProviders.indexOf(b.id)
           return a.name.localeCompare(b.name)
@@ -58,6 +66,10 @@ export const DialogSelectProvider: Component = () => {
             dialog.show(() => <DialogCustomProvider back="providers" />)
             return
           }
+          if (x.id === HELIX_ID) {
+            dialog.show(() => <DialogConnectHelix />)
+            return
+          }
           dialog.show(() => <DialogConnectProvider provider={x.id} />)
         }}
       >
@@ -65,6 +77,9 @@ export const DialogSelectProvider: Component = () => {
           <div class="px-1.25 w-full flex items-center gap-x-3">
             <ProviderIcon data-slot="list-item-extra-icon" id={i.id} />
             <span>{i.name}</span>
+            <Show when={i.id === HELIX_ID}>
+              <Tag>{language.t("dialog.provider.tag.recommended")}</Tag>
+            </Show>
             <Show when={i.id === "opencode"}>
               <div class="text-14-regular text-text-weak">{language.t("dialog.provider.opencode.tagline")}</div>
             </Show>

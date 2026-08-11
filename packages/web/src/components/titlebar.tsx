@@ -288,7 +288,7 @@ export function Titlebar() {
                 </div>
               </Show>
               <div id="opencode-titlebar-left" class="flex items-center gap-2 min-w-0 px-2">
-                <span class="text-12-medium text-text-strong font-semibold tracking-tight opacity-90 select-none">Apex ARC</span>
+                <span class="text-12-medium text-text-strong font-semibold tracking-tight opacity-90 select-none">APEX ARC 1.0</span>
               </div>
               {["beta", "dev"].includes(import.meta.env.VITE_OPENCODE_CHANNEL) && (
                 <div class="bg-icon-interactive-base text-[#FFF] font-medium px-2 rounded-sm uppercase font-mono">

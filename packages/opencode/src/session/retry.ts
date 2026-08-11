@@ -112,6 +112,13 @@ export function retryable(error: Err) {
     // Upstream processing failures (e.g. multimodal data corruption) return 400
     // but are transient — retry them.
     if (status === 400 && error.data.responseBody?.includes("upstream_error")) return error.data.message
+    // Gemini INVALID_ARGUMENT (400): the request contained an unsupported argument
+    // (e.g. thinkingConfig on a model/version that doesn't support thinking, or
+    // reasoning parts in history). Retry once — the next attempt will have
+    // reasoning parts stripped from history (see transform.ts normalizeMessages).
+    if (status === 400 && error.data.responseBody?.includes("INVALID_ARGUMENT")) {
+      return "Retrying after stripping unsupported context (INVALID_ARGUMENT)"
+    }
     // 5xx errors are transient server failures and should always be retried,
     // even when the provider SDK doesn't explicitly mark them as retryable.
     if (!error.data.isRetryable && !(status !== undefined && status >= 500)) return undefined

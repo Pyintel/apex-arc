@@ -708,7 +708,7 @@ export const dict = {
   "debugBar.mem.tipUnavailable": "Used JS heap vs heap limit. Chromium only.",
   "debugBar.mem.tip": "Used JS heap vs heap limit. {{used}} of {{limit}}.",
 
-  "app.name.desktop": "Apex ARC",
+  "app.name.desktop": "APEX ARC 1.0",
 
   "settings.section.desktop": "Desktop",
   "settings.section.server": "Server",

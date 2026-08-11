@@ -4,6 +4,7 @@ import { useParams } from "@solidjs/router"
 import { createMemo } from "solid-js"
 
 export const popularProviders = [
+  "pyintel-helix",
   "opencode",
   "opencode-go",
   "anthropic",
