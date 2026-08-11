@@ -1,4 +1,4 @@
-# MiMoCode Feature Roadmap
+# Apex ARC Feature Roadmap
 
 This document outlines the detailed breakdown, technical specifications, and prioritizations for the 10 dream features to build the ultimate agentic CLI.
 

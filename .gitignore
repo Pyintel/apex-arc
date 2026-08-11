@@ -35,15 +35,14 @@ tsconfig.tsbuildinfo
 # Local agent harness state
 .claude/
 *.pid
-.mimo-worktrees
-.mimocode/
+
 
 # experiment run artifacts (regenerated per run, not source)
 experiment/*.log
 experiment/last-outcome.json
 /experiment
 
-/mimoapi/
+
 /packages/opencode/src/ext
 
 # temp
