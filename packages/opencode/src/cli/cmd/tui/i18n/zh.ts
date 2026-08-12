@@ -125,7 +125,7 @@ export const dict = {
   "tui.tips.upgrade": "运行 {highlight}mimo upgrade{/highlight} 升级到最新版本",
   "tui.tips.auth_list": "运行 {highlight}mimo auth list{/highlight} 查看所有已配置的 provider",
   "tui.tips.agent_create": "运行 {highlight}mimo agent create{/highlight} 引导式创建智能体",
-  "tui.tips.github_trigger": "在 GitHub issue/PR 中输入 {highlight}/opencode{/highlight} 触发 AI 操作",
+  "tui.tips.github_trigger": "在 GitHub issue/PR 中输入 {highlight}/arc{/highlight} 触发 AI 操作",
   "tui.tips.github_install": "运行 {highlight}mimo github install{/highlight} 配置 GitHub workflow",
   "tui.tips.github_oc": "在 PR 代码行上评论 {highlight}/oc{/highlight} 进行针对性代码审查",
   "tui.tips.theme_system": '使用 {highlight}"theme": "system"{/highlight} 跟随终端配色',
@@ -155,7 +155,7 @@ export const dict = {
   "tui.tips.scroll_accel":
     "在 {highlight}tui.json{/highlight} 中开启 {highlight}scroll_acceleration{/highlight} 享受平滑滚动",
   "tui.tips.username_toggle": "通过命令面板（{highlight}Ctrl+P{/highlight}）切换聊天中用户名的显示",
-  "tui.tips.docker": "运行 {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} 使用容器化版本",
+  "tui.tips.docker": "运行 {highlight}docker run -it --rm ghcr.io/anomalyco/arc{/highlight} 使用容器化版本",
   "tui.tips.zen": "搭配 ARC 使用 {highlight}/connect{/highlight} 选用经过测试的精选模型",
   "tui.tips.agents_md": "把项目里的 {highlight}AGENTS.md{/highlight} 提交到 Git 与团队共享",
   "tui.tips.review": "用 {highlight}/review{/highlight} 审阅未提交改动、分支或 PR",

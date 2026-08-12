@@ -142,7 +142,7 @@ export const dict = {
   "tui.tips.upgrade": "{highlight}mimo upgrade{/highlight} で最新バージョンに更新します",
   "tui.tips.auth_list": "{highlight}mimo auth list{/highlight} で設定済みプロバイダを確認します",
   "tui.tips.agent_create": "{highlight}mimo agent create{/highlight} でガイド付きエージェント作成を行います",
-  "tui.tips.github_trigger": "GitHub の issue/PR で {highlight}/opencode{/highlight} を入力すると AI を起動します",
+  "tui.tips.github_trigger": "GitHub の issue/PR で {highlight}/arc{/highlight} を入力すると AI を起動します",
   "tui.tips.github_install": "{highlight}mimo github install{/highlight} で GitHub workflow を設定します",
   "tui.tips.github_oc": "PR のコード行に {highlight}/oc{/highlight} とコメントすると的を絞ったレビューが行われます",
   "tui.tips.theme_system": '{highlight}"theme": "system"{/highlight} でターミナルの配色に合わせます',
@@ -179,7 +179,7 @@ export const dict = {
   "tui.tips.username_toggle":
     "コマンドパレット（{highlight}Ctrl+P{/highlight}）でチャット内のユーザー名表示を切り替えます",
   "tui.tips.docker":
-    "{highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} でコンテナ版を実行できます",
+    "{highlight}docker run -it --rm ghcr.io/anomalyco/arc{/highlight} でコンテナ版を実行できます",
   "tui.tips.zen": "ARC と組み合わせて {highlight}/connect{/highlight} で厳選されたモデルを使えます",
   "tui.tips.agents_md": "プロジェクトの {highlight}AGENTS.md{/highlight} を Git にコミットしてチームで共有します",
   "tui.tips.review": "{highlight}/review{/highlight} で未コミット変更、ブランチ、PR をレビューします",

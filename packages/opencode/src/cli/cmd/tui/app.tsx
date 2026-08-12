@@ -875,7 +875,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       category: "system",
     },
     {
-      title: "Factory Reset Opencode (Memory & Config)",
+      title: "Factory Reset Arc (Memory & Config)",
       value: "app.factory_reset",
       category: "system",
       slash: {

@@ -234,7 +234,7 @@ export const dict = {
   "tui.tips.username_toggle":
     "Переключайте отображение имени пользователя через палитру команд ({highlight}Ctrl+P{/highlight})",
   "tui.tips.docker":
-    "Выполните {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} для контейнерного запуска",
+    "Выполните {highlight}docker run -it --rm ghcr.io/anomalyco/arc{/highlight} для контейнерного запуска",
   "tui.tips.zen":
     "Используйте {highlight}/connect{/highlight} с ARC для подобранных и протестированных моделей",
   "tui.tips.agents_md":

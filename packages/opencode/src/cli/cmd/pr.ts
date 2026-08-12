@@ -131,7 +131,7 @@ export const PrCommand = cmd({
           cwd: process.cwd(),
         })
         const code = await mimoProcess.exited
-        if (code !== 0) throw new Error(`mimo exited with code ${code}`)
+        if (code !== 0) throw new Error(`arc exited with code ${code}`)
       },
     })
   },

@@ -169,7 +169,7 @@ export const dict = {
   "tui.tips.agent_create":
     "Exécutez {highlight}apex-arc agent create{/highlight} pour créer un agent en mode guidé",
   "tui.tips.github_trigger":
-    "Utilisez {highlight}/opencode{/highlight} dans les issues/PR GitHub pour déclencher des actions IA",
+    "Utilisez {highlight}/arc{/highlight} dans les issues/PR GitHub pour déclencher des actions IA",
   "tui.tips.github_install":
     "Exécutez {highlight}apex-arc github install{/highlight} pour configurer le workflow GitHub",
   "tui.tips.github_oc":
@@ -221,7 +221,7 @@ export const dict = {
   "tui.tips.username_toggle":
     "Activez/désactivez l'affichage du nom d'utilisateur via la palette de commandes ({highlight}Ctrl+P{/highlight})",
   "tui.tips.docker":
-    "Exécutez {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} pour une utilisation conteneurisée",
+    "Exécutez {highlight}docker run -it --rm ghcr.io/anomalyco/arc{/highlight} pour une utilisation conteneurisée",
   "tui.tips.zen":
     "Utilisez {highlight}/connect{/highlight} avec ARC pour des modèles testés et sélectionnés",
   "tui.tips.agents_md":
