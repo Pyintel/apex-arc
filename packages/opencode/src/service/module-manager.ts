@@ -188,6 +188,7 @@ async function collectMarkdownFiles(dir: string, includes?: string[]): Promise<s
     for (const pattern of includes) {
       const glob = new Bun.Glob(pattern)
       for await (const file of glob.scan({ cwd: dir, onlyFiles: true })) {
+        if (file.split(/[\/\\]/).some(part => EXCLUDED_DIRS.has(part) || (part.startsWith(".") && part !== "." && part !== ".."))) continue;
         const abs = path.join(dir, file)
         if (!results.includes(abs)) results.push(abs)
       }
