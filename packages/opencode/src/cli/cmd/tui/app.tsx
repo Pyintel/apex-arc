@@ -907,6 +907,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
                     const fs = await import("fs/promises");
                     
                     try {
+                      const { xdgData, xdgConfig, xdgCache, xdgState } = await import("xdg-basedir");
                       const rootPaths = [
                         path.join(os.homedir(), ".arc"),
                         path.join(os.homedir(), ".mimo"),
@@ -914,6 +915,12 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
                         path.join(os.homedir(), ".config", "mimo"),
                         path.join(process.cwd(), ".dev-home", "data"),
                       ];
+                      for (const app of ["arc", "apex-arc", "mimo"]) {
+                        if (xdgData) rootPaths.push(path.join(xdgData, app));
+                        if (xdgConfig) rootPaths.push(path.join(xdgConfig, app));
+                        if (xdgCache) rootPaths.push(path.join(xdgCache, app));
+                        if (xdgState) rootPaths.push(path.join(xdgState, app));
+                      }
                       
                       for (const root of rootPaths) {
                         try {
