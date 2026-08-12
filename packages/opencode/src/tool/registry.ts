@@ -309,7 +309,7 @@ export const layer = Layer.effect(
         )
         const modulesDir = path.join(Global.Path.data, "modules")
         const moduleMatches = existsSync(modulesDir)
-          ? Glob.scanSync("*/{tool,tools}/*.{js,ts}", { cwd: modulesDir, absolute: true, dot: true, symlink: true })
+          ? Glob.scanSync("*/{tool,tools,dist}/*.{js,ts}", { cwd: modulesDir, absolute: true, dot: true, symlink: true })
           : []
 
         const allMatches = [...matches, ...moduleMatches]
