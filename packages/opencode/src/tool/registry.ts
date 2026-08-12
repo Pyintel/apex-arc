@@ -316,7 +316,7 @@ export const layer = Layer.effect(
         if (allMatches.length) yield* config.waitForDependencies()
         for (const match of allMatches) {
           const namespace = path.basename(match, path.extname(match))
-          const mod = yield* Effect.promise(() => import(`${pathToFileURL(match).href}?v=${Date.now()}`))
+          const mod = yield* Effect.promise(() => import(`${pathToFileURL(match).href}`))
           
           let targets: Record<string, any> = { ...mod }
           if (mod.default && typeof mod.default === "object") {
