@@ -404,14 +404,14 @@ export function Session() {
 
   const local = useLocal()
 
-  // Free "mimo-auto" channel: on a rate-limit / queue ("too many requests"),
+  // Free "arc-auto" channel: on a rate-limit / queue ("too many requests"),
   // nudge the user toward a Token Plan — at most once per 24h.
   event.on("session.status", (evt) => {
     if (evt.properties.sessionID !== route.sessionID) return
     if (evt.properties.status.type !== "retry") return
     if (!SessionRetry.isRateLimitMessage(evt.properties.status.message)) return
     const model = local.model.current()
-    if (!model || model.providerID !== "mimo" || model.modelID !== "mimo-auto") return
+    if (!model || model.providerID !== "arc" || model.modelID !== "arc-auto") return
     if (dialog.stack.length > 0) return
 
     const seen = kv.get(QUEUE_TOKEN_PLAN_LAST_SEEN_AT)
@@ -1522,8 +1522,8 @@ function AssistantMessage(props: { message: AssistantMessage; parts: Part[]; las
   const [copyHover, setCopyHover] = createSignal(false)
   const messages = createMemo(() => sync.data.message[props.message.sessionID]?.[props.message.agentID ?? "main"] ?? [])
   const model = createMemo(() =>
-    props.message.modelID === "mimo-auto"
-      ? t("tui.model.mimo_auto.name")
+    props.message.modelID === "arc-auto"
+      ? t("tui.model.arc_auto.name")
       : Model.name(ctx.providers(), props.message.providerID, props.message.modelID),
   )
 

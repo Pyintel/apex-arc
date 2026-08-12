@@ -19,7 +19,7 @@ import { Flag } from "@/flag/flag"
 import { isSystemSession } from "@/session/auto-dream"
 import semver from "semver"
 import { DialogProvider, useDialog } from "@tui/ui/dialog"
-import { DialogMimoLogin } from "@tui/component/dialog-mimo-login"
+import { DialogArcLogin } from "@tui/component/dialog-arc-login"
 import { DialogHelixConnect } from "@tui/component/dialog-helix-connect"
 import { ErrorComponent } from "@tui/component/error-component"
 import { PluginRouteMissing } from "@tui/component/plugin-route-missing"
@@ -337,14 +337,14 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
     if (!terminalTitleEnabled() || Flag.ARC_DISABLE_TERMINAL_TITLE) return
 
     if (route.data.type === "home") {
-      renderer.setTerminalTitle("MiMoCode")
+      renderer.setTerminalTitle("Arc")
       return
     }
 
     if (route.data.type === "session") {
       const session = sync.session.get(route.data.sessionID)
       if (!session || SessionApi.isDefaultTitle(session.title)) {
-        renderer.setTerminalTitle("MiMoCode")
+        renderer.setTerminalTitle("Arc")
         return
       }
 
@@ -698,7 +698,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         name: "logout",
       },
       onSelect: async () => {
-        await sdk.client.auth.remove({ providerID: "xiaomi" })
+        await sdk.client.auth.remove({ providerID: "pyintel" })
         await sdk.client.instance.dispose()
         await sync.bootstrap()
         toast.show({ message: t("tui.command.logout.toast"), variant: "info" })
@@ -859,7 +859,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         aliases: ["docs"],
       },
       onSelect: () => {
-        open("https://mimo.xiaomi.com/coder/docs").catch(() => {})
+        open("https://arc.pyintel.com/coder/docs").catch(() => {})
         dialog.clear()
       },
       category: "system",
@@ -910,8 +910,8 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
                       const rootPaths = [
                         path.join(os.homedir(), ".arc"),
                         path.join(os.homedir(), ".config", "arc"),
-                        path.join(os.homedir(), ".config", "mimo"),
-                        path.join(os.homedir(), ".mimo"),
+                        path.join(os.homedir(), ".config", "arc"),
+                        path.join(os.homedir(), ".arc"),
                         path.join(process.cwd(), ".dev-home", "data"),
                       ];
                       

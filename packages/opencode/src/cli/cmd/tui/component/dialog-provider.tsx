@@ -164,12 +164,12 @@ export async function runCustomProviderWizard(opts: {
     return DialogPrompt.show(dialog, `${title} (${n}/${total})`, { placeholder, value })
   }
 
-  const providerIDRaw = await step(1, 6, "Provider id", "e.g. mimorouter")
+  const providerIDRaw = await step(1, 6, "Provider id", "e.g. arcrouter")
   if (providerIDRaw === null) return
   const providerID = providerIDRaw.trim()
   if (!providerID) return
 
-  const nameRaw = await step(2, 6, "Display name", "e.g. MiMo Router", providerID)
+  const nameRaw = await step(2, 6, "Display name", "e.g. Arc Router", providerID)
   if (nameRaw === null) return
   const name = nameRaw.trim() || providerID
 

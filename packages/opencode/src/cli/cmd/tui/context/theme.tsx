@@ -539,7 +539,7 @@ async function getCustomThemes() {
     Global.Path.config,
     ...(await Array.fromAsync(
       Filesystem.up({
-        targets: [".mimocode"],
+        targets: [".arc"],
         start: process.cwd(),
       }),
     )),
@@ -605,20 +605,20 @@ function generateSystem(colors: TerminalColors, mode: "dark" | "light"): ThemeJs
   const diffRemovedLineNumberBg = tint(diffContextBg, ansiColors.red, diffAlpha)
   const diffLineNumber = textMuted
 
-  const xiaomiOrange = RGBA.fromInts(255, 103, 0)
+  const pyintelOrange = RGBA.fromInts(255, 103, 0)
 
   return {
     theme: {
-      // Primary colors using Xiaomi Orange
-      primary: xiaomiOrange,
-      secondary: xiaomiOrange,
-      accent: xiaomiOrange,
+      // Primary colors using Pyintel Orange
+      primary: pyintelOrange,
+      secondary: pyintelOrange,
+      accent: pyintelOrange,
 
       // Status colors using ANSI
       error: ansiColors.red,
       warning: ansiColors.yellow,
-      success: xiaomiOrange,
-      info: xiaomiOrange,
+      success: pyintelOrange,
+      info: pyintelOrange,
 
       // Text colors
       text: fg,

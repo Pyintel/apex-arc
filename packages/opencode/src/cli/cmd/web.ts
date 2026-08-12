@@ -32,7 +32,7 @@ function getNetworkIPs() {
 export const WebCommand = cmd({
   command: "web",
   builder: (yargs) => withNetworkOptions(yargs),
-  describe: "start mimocode server and open web interface",
+  describe: "start arc server and open web interface",
   handler: async (args) => {
     const opts = await resolveNetworkOptions(args)
     const isLoopback = opts.hostname === "127.0.0.1" || opts.hostname === "localhost" || opts.hostname === "::1"

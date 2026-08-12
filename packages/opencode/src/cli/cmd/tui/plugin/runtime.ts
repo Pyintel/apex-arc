@@ -158,9 +158,9 @@ function createThemeInstaller(
     const name = path.basename(src, path.extname(src))
     const source_dir = path.dirname(meta.source)
     const local_dir =
-      path.basename(source_dir) === ".mimocode"
+      path.basename(source_dir) === ".arc"
         ? path.join(source_dir, "themes")
-        : path.join(source_dir, ".mimocode", "themes")
+        : path.join(source_dir, ".arc", "themes")
     const dest_dir = meta.scope === "local" ? local_dir : path.join(Global.Path.config, "themes")
     const dest = path.join(dest_dir, `${name}.json`)
     const stat = await Filesystem.statAsync(src)
@@ -749,7 +749,7 @@ function defaultPluginOrigin(state: RuntimeState, spec: string): ConfigPlugin.Or
   return {
     spec,
     scope: "local",
-    source: state.api.state.path.config || path.join(state.directory, ".mimocode", "tui.json"),
+    source: state.api.state.path.config || path.join(state.directory, ".arc", "tui.json"),
   }
 }
 
@@ -1017,10 +1017,10 @@ async function load(input: { api: Api; config: TuiConfig.Info }) {
         const ready = await resolveExternalPlugins(records, () => TuiConfig.waitForDependencies())
         await addExternalPluginEntries(next, ready)
 
-        // File-based TUI plugins from .mimocode/tui/*.{ts,tsx}
+        // File-based TUI plugins from .arc/tui/*.{ts,tsx}
         const configDirs = [
           path.join(Global.Path.config, "tui"),
-          path.join(cwd, ".mimocode", "tui"),
+          path.join(cwd, ".arc", "tui"),
         ]
         const fileTuiOrigins: ConfigPlugin.Origin[] = []
         for (const dir of configDirs) {

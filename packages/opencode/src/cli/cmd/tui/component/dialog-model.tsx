@@ -36,7 +36,7 @@ export function DialogModel(props: { providerID?: string }) {
   const providers = createDialogProviderOptions()
   const t = useLanguage().t
   const modelName = (providerID: string, modelID: string) =>
-    modelID === "mimo-auto" ? t("tui.model.mimo_auto.name") : Model.name(sync.data.provider, providerID, modelID)
+    modelID === "arc-auto" ? t("tui.model.arc_auto.name") : Model.name(sync.data.provider, providerID, modelID)
 
   const showExtra = createMemo(() => connected() && !props.providerID)
 
@@ -63,8 +63,8 @@ export function DialogModel(props: { providerID?: string }) {
             key: item,
             value: { providerID: provider.id, modelID: model.id },
             title: modelName(provider.id, model.id),
-            // Hide provider name for mimo-auto to avoid redundancy
-            description: item.modelID === "mimo-auto" ? undefined : provider.name,
+            // Hide provider name for arc-auto to avoid redundancy
+            description: item.modelID === "arc-auto" ? undefined : provider.name,
             category,
             disabled: provider.id === "opencode" && model.id.includes("-nano"),
             footer: model.cost?.input === 0 && provider.id === "opencode" ? "Free" : undefined,
@@ -84,63 +84,63 @@ export function DialogModel(props: { providerID?: string }) {
       "Recent",
     )
 
-    // mimo-free and xiaomi provider pinned at top (after favorites/recents)
-    const mimoProvider = sync.data.provider.find((p) => p.id === "mimo")
-    const xiaomiProvider = sync.data.provider.find((p) => p.id === "xiaomi")
-    const pinnedCategory = xiaomiProvider?.name ?? "MiMo"
+    // arc-free and pyintel provider pinned at top (after favorites/recents)
+    const arcProvider = sync.data.provider.find((p) => p.id === "arc")
+    const pyintelProvider = sync.data.provider.find((p) => p.id === "pyintel")
+    const pinnedCategory = pyintelProvider?.name ?? "Arc"
     // Show pinned section when not scoped to a specific provider
     const showPinned = connected() && !props.providerID
 
     const pinnedOptions = showPinned
       ? [
-          // mimo-free model
-          ...(mimoProvider && "mimo-auto" in mimoProvider.models && mimoProvider.models["mimo-auto"].status !== "deprecated" && (!showSections || !inShortcuts("mimo", "mimo-auto"))
+          // arc-free model
+          ...(arcProvider && "arc-auto" in arcProvider.models && arcProvider.models["arc-auto"].status !== "deprecated" && (!showSections || !inShortcuts("arc", "arc-auto"))
             ? [
                 {
-                  value: { providerID: "mimo", modelID: "mimo-auto" },
-                  title: modelName("mimo", "mimo-auto"),
+                  value: { providerID: "arc", modelID: "arc-auto" },
+                  title: modelName("arc", "arc-auto"),
                   description: undefined as string | undefined,
                   category: pinnedCategory,
                   disabled: false,
                   footer: undefined as "Free" | undefined,
                   onSelect() {
-                    onSelect("mimo", "mimo-auto")
+                    onSelect("arc", "arc-auto")
                   },
                 },
               ]
             : []),
-          // xiaomi provider models
-          ...(xiaomiProvider
+          // pyintel provider models
+          ...(pyintelProvider
             ? [
                 ...pipe(
-                  xiaomiProvider.models,
+                  pyintelProvider.models,
                   entries(),
                   filter(([_, info]) => info.status !== "deprecated"),
                   map(([model, info]) => ({
-                    value: { providerID: xiaomiProvider.id, modelID: model },
+                    value: { providerID: pyintelProvider.id, modelID: model },
                     title: info.name ?? model,
                     description: undefined as string | undefined,
                     category: pinnedCategory,
                     disabled: false,
                     footer: undefined as "Free" | undefined,
                     onSelect() {
-                      onSelect(xiaomiProvider.id, model)
+                      onSelect(pyintelProvider.id, model)
                     },
                   })),
                   filter((x) => !showSections || !inShortcuts(x.value.providerID, x.value.modelID)),
                 ),
                 // "+ Add model" for config-sourced providers
-                ...(xiaomiProvider.source === "config"
+                ...(pyintelProvider.source === "config"
                   ? [
                       {
-                        value: { providerID: xiaomiProvider.id, modelID: ADD_MODEL_SENTINEL },
+                        value: { providerID: pyintelProvider.id, modelID: ADD_MODEL_SENTINEL },
                         title: "+ Add model",
                         description: undefined,
                         category: pinnedCategory,
                         disabled: false,
                         footer: undefined as "Free" | undefined,
                         onSelect() {
-                          void runAddModelWizard({ dialog, sdk, sync, toast, providerID: xiaomiProvider.id })
+                          void runAddModelWizard({ dialog, sdk, sync, toast, providerID: pyintelProvider.id })
                         },
                       },
                     ]
@@ -152,8 +152,8 @@ export function DialogModel(props: { providerID?: string }) {
 
     const providerOptions = pipe(
       sync.data.provider,
-      // Exclude xiaomi/mimo from regular list only when pinned section is shown
-      filter((provider) => !showPinned || (provider.id !== "xiaomi" && provider.id !== "mimo")),
+      // Exclude pyintel/arc from regular list only when pinned section is shown
+      filter((provider) => !showPinned || (provider.id !== "pyintel" && provider.id !== "arc")),
       sortBy(
         (provider) => provider.id !== "opencode",
         (provider) => PROVIDER_PRIORITY[provider.id] ?? 99,
@@ -166,7 +166,7 @@ export function DialogModel(props: { providerID?: string }) {
           filter(([_, info]) => info.status !== "deprecated"),
           // Scoped views ("you just connected provider X, pick a model from X")
           // intentionally show only that provider's own models. The free
-          // mimo-auto belongs to the `mimo` provider, so it is NOT surfaced
+          // arc-auto belongs to the `arc` provider, so it is NOT surfaced
           // here — it stays pinned in the unscoped picker. Don't re-add it.
           filter(([_, info]) => (props.providerID ? (info.providerID ?? provider.id) === props.providerID : true)),
           map(([model, info]) => ({

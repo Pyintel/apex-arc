@@ -212,7 +212,7 @@ export const McpAuthCommand = cmd({
 
         if (servers.length === 0) {
           prompts.log.warn("No OAuth-capable MCP servers configured")
-          prompts.log.info("Remote MCP servers support OAuth by default. Add a remote server in mimocode.json:")
+          prompts.log.info("Remote MCP servers support OAuth by default. Add a remote server in arc.json:")
           prompts.log.info(`
   "mcp": {
     "my-server": {
@@ -424,11 +424,11 @@ export const McpLogoutCommand = cmd({
 })
 
 async function resolveConfigPath(baseDir: string, global = false) {
-  // Check for existing config files (prefer .jsonc over .json, check .mimocode/ subdirectory too)
-  const candidates = [path.join(baseDir, "mimocode.json"), path.join(baseDir, "mimocode.jsonc")]
+  // Check for existing config files (prefer .jsonc over .json, check .arc/ subdirectory too)
+  const candidates = [path.join(baseDir, "arc.json"), path.join(baseDir, "arc.jsonc")]
 
   if (!global) {
-    candidates.push(path.join(baseDir, ".mimocode", "mimocode.json"), path.join(baseDir, ".mimocode", "mimocode.jsonc"))
+    candidates.push(path.join(baseDir, ".arc", "arc.json"), path.join(baseDir, ".arc", "arc.jsonc"))
   }
 
   for (const candidate of candidates) {
@@ -437,7 +437,7 @@ async function resolveConfigPath(baseDir: string, global = false) {
     }
   }
 
-  // Default to mimocode.json if none exist
+  // Default to arc.json if none exist
   return candidates[0]
 }
 
@@ -713,7 +713,7 @@ export const McpDebugCommand = cmd({
               params: {
                 protocolVersion: "2024-11-05",
                 capabilities: {},
-                clientInfo: { name: "mimocode-debug", version: InstallationVersion },
+                clientInfo: { name: "arc-debug", version: InstallationVersion },
               },
               id: 1,
             }),
@@ -761,7 +761,7 @@ export const McpDebugCommand = cmd({
 
             try {
               const client = new Client({
-                name: "mimocode-debug",
+                name: "arc-debug",
                 version: InstallationVersion,
               })
               await client.connect(transport)

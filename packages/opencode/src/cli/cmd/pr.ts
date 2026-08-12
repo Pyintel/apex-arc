@@ -7,7 +7,7 @@ import { Process } from "@/util"
 
 export const PrCommand = cmd({
   command: "pr <number>",
-  describe: "fetch and checkout a GitHub PR branch, then run mimocode",
+  describe: "fetch and checkout a GitHub PR branch, then run arc",
   builder: (yargs) =>
     yargs.positional("number", {
       type: "number",
@@ -93,15 +93,15 @@ export const PrCommand = cmd({
               )
             }
 
-            // Check for mimocode session link in PR body
+            // Check for arc session link in PR body
             if (prInfo && prInfo.body) {
               const sessionMatch = prInfo.body.match(/https:\/\/opncd\.ai\/s\/([a-zA-Z0-9_-]+)/)
               if (sessionMatch) {
                 const sessionUrl = sessionMatch[0]
-                UI.println(`Found mimocode session: ${sessionUrl}`)
+                UI.println(`Found arc session: ${sessionUrl}`)
                 UI.println(`Importing session...`)
 
-                const importResult = await Process.text(["mimo", "import", sessionUrl], {
+                const importResult = await Process.text(["arc", "import", sessionUrl], {
                   nothrow: true,
                 })
                 if (importResult.code === 0) {
@@ -120,17 +120,17 @@ export const PrCommand = cmd({
 
         UI.println(`Successfully checked out PR #${prNumber} as branch '${localBranchName}'`)
         UI.println()
-        UI.println("Starting mimocode...")
+        UI.println("Starting arc...")
         UI.println()
 
-        const mimoArgs = sessionId ? ["-s", sessionId] : []
-        const mimoProcess = Process.spawn(["mimo", ...mimoArgs], {
+        const arcArgs = sessionId ? ["-s", sessionId] : []
+        const arcProcess = Process.spawn(["arc", ...arcArgs], {
           stdin: "inherit",
           stdout: "inherit",
           stderr: "inherit",
           cwd: process.cwd(),
         })
-        const code = await mimoProcess.exited
+        const code = await arcProcess.exited
         if (code !== 0) throw new Error(`arc exited with code ${code}`)
       },
     })

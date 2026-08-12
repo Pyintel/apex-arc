@@ -126,12 +126,12 @@ async function promptWorkspaceTrust(directory: string, level: "untrusted" | "dan
 
 export const TuiThreadCommand = cmd({
   command: "$0 [project]",
-  describe: "start mimocode tui",
+  describe: "start arc tui",
   builder: (yargs) =>
     withNetworkOptions(yargs)
       .positional("project", {
         type: "string",
-        describe: "path to start mimocode in",
+        describe: "path to start arc in",
       })
       .option("model", {
         type: "string",

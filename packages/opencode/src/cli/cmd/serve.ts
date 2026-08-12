@@ -6,7 +6,7 @@ import { Flag } from "../../flag/flag"
 export const ServeCommand = cmd({
   command: "serve",
   builder: (yargs) => withNetworkOptions(yargs),
-  describe: "starts a headless mimocode server",
+  describe: "starts a headless arc server",
   handler: async (args) => {
     const opts = await resolveNetworkOptions(args)
     const isLoopback = opts.hostname === "127.0.0.1" || opts.hostname === "localhost" || opts.hostname === "::1"
@@ -22,7 +22,7 @@ export const ServeCommand = cmd({
     }
 
     const server = await Server.listen(opts)
-    console.log(`mimocode server listening on http://${server.hostname}:${server.port}`)
+    console.log(`arc server listening on http://${server.hostname}:${server.port}`)
 
     await new Promise(() => {})
     await server.stop()

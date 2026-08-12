@@ -221,7 +221,7 @@ async function load(text: string, configFilepath: string): Promise<Info> {
       if (!isRecord(data)) return {}
 
       // Flatten a nested "tui" key so users who wrote `{ "tui": { ... } }` inside tui.json
-      // (mirroring the old mimocode.json shape) still get their settings applied.
+      // (mirroring the old arc.json shape) still get their settings applied.
       return ConfigParse.schema(Info, normalize(data), configFilepath)
     })
     .then((data) => resolvePlugins(data, configFilepath))

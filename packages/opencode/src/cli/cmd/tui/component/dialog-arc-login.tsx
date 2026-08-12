@@ -26,13 +26,13 @@ export function DialogArcLogin() {
   const options = createMemo(() => {
     const recommended = [
       {
-        title: t("tui.dialog.login.xiaomi"),
-        value: "xiaomi",
-        description: t("tui.dialog.login.xiaomi.desc"),
+        title: t("tui.dialog.login.pyintel"),
+        value: "pyintel",
+        description: t("tui.dialog.login.pyintel.desc"),
         category: "Recommended",
         onSelect: async () => {
           const result = await sdk.client.provider.oauth.authorize({
-            providerID: "xiaomi",
+            providerID: "pyintel",
             method: 0,
           })
           if (result.error) {
@@ -41,7 +41,7 @@ export function DialogArcLogin() {
             return
           }
           dialog.replace(() => (
-            <MimoOAuthFlow url={result.data!.url} instructions={result.data!.instructions} />
+            <ArcOAuthFlow url={result.data!.url} instructions={result.data!.instructions} />
           ))
         },
       },
@@ -131,7 +131,7 @@ export function DialogArcLogin() {
 
     return [
       ...recommended,
-      ...providerOptions().filter((option) => option.value !== "xiaomi"),
+      ...providerOptions().filter((option) => option.value !== "pyintel"),
     ]
   })
 
@@ -143,7 +143,7 @@ export function DialogArcLogin() {
   )
 }
 
-function MimoOAuthFlow(props: { url: string; instructions: string }) {
+function ArcOAuthFlow(props: { url: string; instructions: string }) {
   const dialog = useDialog()
   const sdk = useSDK()
   const sync = useSync()
@@ -167,17 +167,17 @@ function MimoOAuthFlow(props: { url: string; instructions: string }) {
   async function onLoginSuccess() {
     await sdk.client.instance.dispose()
     await sync.bootstrap()
-    const xiaomi = sync.data.provider.find((p) => p.id === "xiaomi")
-    const defaultModel = xiaomi && "arc-v2.5-pro" in xiaomi.models ? "arc-v2.5-pro" : xiaomi ? Object.keys(xiaomi.models)[0] : undefined
+    const pyintel = sync.data.provider.find((p) => p.id === "pyintel")
+    const defaultModel = pyintel && "arc-v2.5-pro" in pyintel.models ? "arc-v2.5-pro" : pyintel ? Object.keys(pyintel.models)[0] : undefined
     if (defaultModel) {
-      local.model.set({ providerID: "xiaomi", modelID: defaultModel }, { recent: true })
+      local.model.set({ providerID: "pyintel", modelID: defaultModel }, { recent: true })
     }
     dialog.clear()
   }
 
   onMount(async () => {
     const callbackResult = await sdk.client.provider.oauth.callback({
-      providerID: "xiaomi",
+      providerID: "pyintel",
       method: 0,
     })
     if (callbackResult.error) return
@@ -217,7 +217,7 @@ function MimoOAuthFlow(props: { url: string; instructions: string }) {
         if (!value) return
         setBusy(true)
         const { error: err } = await sdk.client.provider.oauth.callback({
-          providerID: "xiaomi",
+          providerID: "pyintel",
           method: 0,
           code: value.trim(),
         })

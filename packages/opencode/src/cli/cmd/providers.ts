@@ -259,20 +259,20 @@ async function loadLoginExtension(): Promise<LoginExtension | undefined> {
   return undefined
 }
 
-async function mimoLogin() {
+async function arcLogin() {
   const hooks = await AppRuntime.runPromise(
     Effect.gen(function* () {
       const plugin = yield* Plugin.Service
       return yield* plugin.list()
     }),
   )
-  const mimoHook = hooks.findLast((h) => h.auth?.provider === "xiaomi")
-  if (!mimoHook?.auth) {
-    prompts.log.error("MiMo auth plugin not found")
+  const arcHook = hooks.findLast((h) => h.auth?.provider === "pyintel")
+  if (!arcHook?.auth) {
+    prompts.log.error("Arc auth plugin not found")
     return
   }
 
-  const method = mimoHook.auth.methods[0]
+  const method = arcHook.auth.methods[0]
   if (method.type !== "oauth") return
 
   const authorize = await method.authorize()
@@ -288,7 +288,7 @@ async function mimoLogin() {
 
     if (raceResult.source === "browser") {
       if (raceResult.data.type === "success" && "key" in raceResult.data) {
-        await put("xiaomi", {
+        await put("pyintel", {
           type: "api",
           key: raceResult.data.key,
           ...(raceResult.data.metadata ? { metadata: raceResult.data.metadata } : {}),
@@ -304,7 +304,7 @@ async function mimoLogin() {
 
     const callbackResult = await authorize.callback(raceResult.input)
     if (callbackResult.type === "success" && "key" in callbackResult) {
-      await put("xiaomi", {
+      await put("pyintel", {
         type: "api",
         key: callbackResult.key,
         ...(callbackResult.metadata ? { metadata: callbackResult.metadata } : {}),
@@ -316,9 +316,9 @@ async function mimoLogin() {
 
     const remaining = MAX_RETRIES - attempt - 1
     if (remaining > 0) {
-      prompts.log.error(t("cli.providers.mimo_login.decrypt_retry", { remaining }))
+      prompts.log.error(t("cli.providers.arc_login.decrypt_retry", { remaining }))
     } else {
-      prompts.log.error(t("cli.providers.mimo_login.decrypt_exhausted"))
+      prompts.log.error(t("cli.providers.arc_login.decrypt_exhausted"))
     }
   }
 }
@@ -425,7 +425,7 @@ export const ProvidersLoginCommand = cmd({
   builder: (yargs) =>
     yargs
       .positional("url", {
-        describe: "mimocode auth provider",
+        describe: "arc auth provider",
         type: "string",
       })
       .option("provider", {
@@ -489,7 +489,7 @@ export const ProvidersWhoamiCommand = cmd({
     const info = await AppRuntime.runPromise(
       Effect.gen(function* () {
         const auth = yield* Auth.Service
-        return yield* auth.get("xiaomi")
+        return yield* auth.get("pyintel")
       }),
     )
     if (!info) {
@@ -497,10 +497,10 @@ export const ProvidersWhoamiCommand = cmd({
       return
     }
     if (info.type === "api" && info.metadata) {
-      prompts.log.info(`Provider: MiMo`)
+      prompts.log.info(`Provider: Arc`)
       prompts.log.info(`User ID: ${info.metadata.uid ?? "unknown"}`)
     } else {
-      prompts.log.info(`Provider: MiMo`)
+      prompts.log.info(`Provider: Arc`)
       prompts.log.info(`Type: ${info.type}`)
     }
     prompts.outro("")
