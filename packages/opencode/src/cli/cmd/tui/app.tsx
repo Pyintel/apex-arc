@@ -921,7 +921,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
                         } catch (e) {}
                       }
                       
-                      exit(new Error("FACTORY_RESET"));
+                      exit();
                     } catch (e) {
                       toast.show({ variant: "error", message: "Failed to reset completely. Check logs." });
                     }
