@@ -317,11 +317,21 @@ export const layer = Layer.effect(
         for (const match of allMatches) {
           const namespace = path.basename(match, path.extname(match))
           const mod = yield* Effect.promise(() => import(`${pathToFileURL(match).href}?v=${Date.now()}`))
-          for (const [id, def] of Object.entries<ToolDefinition>(mod)) {
-            if (def && typeof def === "object" && typeof (def as any).execute === "function") {
-              custom.push(fromPlugin(id === "default" ? namespace : id, def))
+          
+          let targets: Record<string, any> = { ...mod }
+          if (mod.default && typeof mod.default === "object") {
+            if (typeof mod.default.execute === "function") {
+              targets[namespace] = mod.default
+            } else {
+              targets = { ...targets, ...mod.default }
             }
+          }
 
+          for (const [id, def] of Object.entries<ToolDefinition>(targets)) {
+            if (id === "default") continue;
+            if (def && typeof def === "object" && typeof (def as any).execute === "function") {
+              custom.push(fromPlugin(id, def))
+            }
           }
         }
 
