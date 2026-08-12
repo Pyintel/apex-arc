@@ -3,7 +3,7 @@
 ## File Format
 
 ```ts
-import { tool } from "@mimo-ai/plugin"
+import { tool } from "@pyintel/plugin"
 
 // Single tool (default export)
 export default tool({
@@ -70,7 +70,7 @@ return {
 
 ### Wrap a shell command
 ```ts
-import { tool } from "@mimo-ai/plugin"
+import { tool } from "@pyintel/plugin"
 import { execSync } from "child_process"
 
 export default tool({
@@ -91,7 +91,7 @@ export default tool({
 
 ### HTTP API call
 ```ts
-import { tool } from "@mimo-ai/plugin"
+import { tool } from "@pyintel/plugin"
 
 export default tool({
   description: "Query project's health endpoint",
@@ -113,3 +113,4 @@ export default tool({
 - Use `ctx.abort` for cancellable long-running operations
 - Tool id is derived from filename (e.g., `deploy-check.ts` → tool id `deploy-check`)
 - Same id as a builtin overrides it (bash, read, edit, write, glob, grep, etc.)
+

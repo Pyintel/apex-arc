@@ -3,7 +3,7 @@
 ## File Format
 
 ```ts
-import type { Hooks } from "@mimo-ai/plugin"
+import type { Hooks } from "@pyintel/plugin"
 
 const hooks: Hooks = {
   "event.name": async (input, output) => {
@@ -234,9 +234,10 @@ import { readFileSync } from "fs"
 export default {
   "experimental.chat.system.transform": async (input, output) => {
     try {
-      const ctx = readFileSync(".mimocode/project-context.md", "utf-8")
+      const ctx = readFileSync(".arccode/project-context.md", "utf-8")
       output.system.push(ctx)
     } catch {}
   },
 }
 ```
+

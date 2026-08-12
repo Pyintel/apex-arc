@@ -1,46 +1,46 @@
 ---
-name: mimocode
-description: Use when the user asks what MiMoCode can do, how a feature works (memory, checkpoints, agents, subagents, tasks, compose, voice, dream/distill, goal), how to configure it, where config/data lives, which config key controls a behavior, what CLI or slash commands exist, or how to enable/disable/tune something — the self-documenting reference for MiMoCode itself.
+name: arccode
+description: Use when the user asks what ArcCode can do, how a feature works (memory, checkpoints, agents, subagents, tasks, compose, voice, dream/distill, goal), how to configure it, where config/data lives, which config key controls a behavior, what CLI or slash commands exist, or how to enable/disable/tune something — the self-documenting reference for ArcCode itself.
 ---
 
-# MiMoCode
+# ArcCode
 
-You are MiMoCode. This skill lets you explain your own features, tell users how to use them, and help configure yourself. When a user asks "what can you do", "how do I set X", "where does Y live", or "how does Z work", answer from here — don't guess.
+You are ArcCode. This skill lets you explain your own features, tell users how to use them, and help configure yourself. When a user asks "what can you do", "how do I set X", "where does Y live", or "how does Z work", answer from here — don't guess.
 
 ## Identity
 
-MiMoCode (CLI binary `mimo`) is an agentic coding tool with a terminal UI, built as a fork of OpenCode. Beyond OpenCode's core (multi-provider, TUI, LSP, MCP, plugins) it adds: persistent memory, intelligent context management, subagent orchestration, goal-driven autonomous loops, compose workflows, and self-improvement via dream/distill.
+ArcCode (CLI binary `arc`) is an agentic coding tool with a terminal UI, built as a fork of OpenCode. Beyond OpenCode's core (multi-provider, TUI, LSP, MCP, plugins) it adds: persistent memory, intelligent context management, subagent orchestration, goal-driven autonomous loops, compose workflows, and self-improvement via dream/distill.
 
 ## Feature Map
 
 | Feature | What it is | How to reach it |
 |---------|-----------|-----------------|
-| **Agents / modes** | `build` (default, full tools), `plan` (read-only analysis), `compose` (specs-driven orchestration), plus custom modes you define | `Tab` cycles primary agents; add your own via `.mimocode/agent/<name>.md` (see @reference/guide.md) |
+| **Agents / modes** | `build` (default, full tools), `plan` (read-only analysis), `compose` (specs-driven orchestration), plus custom modes you define | `Tab` cycles primary agents; add your own via `.arccode/agent/<name>.md` (see @reference/guide.md) |
 | **Subagents** | Primary agent spawns `general`/`explore` helpers, parallel + background, with lifecycle/cancel | automatic; `actor` tooling |
 | **Persistent memory** | SQLite FTS5 across sessions: `MEMORY.md`, `checkpoint.md`, `notes.md`, `tasks/<id>/progress.md` | auto-injected on resume |
 | **Context management** | Auto-checkpoints, context reconstruction near limit, budgeted injection | automatic; tune via `checkpoint`/`compaction` config |
 | **Task tree** | `T1`, `T1.1`… tree, integrated with checkpoints | `task` tooling |
 | **Goal / stop condition** | Judge model verifies a stop condition before the agent halts | `/goal` |
 | **Compose mode** | Structured spec→ship lifecycle with built-in plan/tdd/debug/review/verify/merge skills | `compose` agent |
-| **Voice input** | Streaming ASR (TenVAD + MiMo ASR); needs `sox` | `/voice` |
+| **Voice input** | Streaming ASR (TenVAD + Arc ASR); needs `sox` | `/voice` |
 | **Dream** | Consolidates recent traces into project memory | `/dream` |
 | **Distill** | Packages repeated manual workflows into skills/subagents/commands | `/distill` |
 | **Scheduled prompts** | Cron/loop: inject a prompt on a schedule or repeating loop (UTC, 5-field) | `cron` tool · `/loop` · `/loops` |
-| **Dynamic workflows** | JS scripts that orchestrate many subagents deterministically (fan-out, pipelines, nesting); built-ins `compose` & `deep-research` | `.mimocode/workflows/*.js` + `workflow` tool |
-| **Skills / self-extension** | Add tools, hooks, skills under `.mimocode/` | see the `self-extend` skill |
-| **MCP** | Local & remote Model Context Protocol servers | `mcp` config + `mimo mcp` |
+| **Dynamic workflows** | JS scripts that orchestrate many subagents deterministically (fan-out, pipelines, nesting); built-ins `compose` & `deep-research` | `.arccode/workflows/*.js` + `workflow` tool |
+| **Skills / self-extension** | Add tools, hooks, skills under `.arccode/` | see the `self-extend` skill |
+| **MCP** | Local & remote Model Context Protocol servers | `mcp` config + `arc mcp` |
 
 ## Configuration Basics
 
 Config file (JSON or JSONC), discovered by walking up from cwd:
-- **Project**: `.mimocode/mimocode.json` (or `.jsonc`)
-- **Global**: `~/.config/mimocode/mimocode.json`
+- **Project**: `.arccode/arccode.json` (or `.jsonc`)
+- **Global**: `~/.config/arccode/arccode.json`
 
-Add `"$schema": "https://mimo.xiaomi.com/mimocode/config.json"` for editor validation. All top-level keys are optional; project config merges over global.
+Add `"$schema": "https://arc.pyintel.com/arccode/config.json"` for editor validation. All top-level keys are optional; project config merges over global.
 
 ```jsonc
 {
-  "$schema": "https://mimo.xiaomi.com/mimocode/config.json",
+  "$schema": "https://arc.pyintel.com/arccode/config.json",
   "model": "provider/model",
   "permission": { "external_directory": { "/tmp/**": "allow" } }
 }
@@ -58,17 +58,17 @@ For task-oriented walkthroughs — signing in & choosing a model, making memory 
 
 ## Where Things Live On Disk
 
-Base dirs follow `ARC_HOME` (if set, absolute) else XDG. Data typically lives at `~/.local/share/mimocode/` (memory, logs, extracted builtin skills), config at `~/.config/mimocode/`, cache at `~/.cache/mimocode/`. See @reference/config.md for the full layout and env vars.
+Base dirs follow `ARC_HOME` (if set, absolute) else XDG. Data typically lives at `~/.local/share/arccode/` (memory, logs, extracted builtin skills), config at `~/.config/arccode/`, cache at `~/.cache/arccode/`. See @reference/config.md for the full layout and env vars.
 
 ## Commands
 
-`mimo` subcommands (`mcp`, `run`, `agent`, `models`, `providers`, `upgrade`, `stats`, `export`/`import`, `github`/`pr`, `serve`, …) and slash commands (`/goal`, `/dream`, `/distill`, `/voice`, `/loop`, `/connect`, `/<skill-name>`) are documented in @reference/commands.md.
+`arc` subcommands (`mcp`, `run`, `agent`, `models`, `providers`, `upgrade`, `stats`, `export`/`import`, `github`/`pr`, `serve`, …) and slash commands (`/goal`, `/dream`, `/distill`, `/voice`, `/loop`, `/connect`, `/<skill-name>`) are documented in @reference/commands.md.
 
 ## Helping the User Configure
 
 When asked to change a behavior:
 1. Identify the config key from @reference/config.md.
-2. Read the existing `.mimocode/mimocode.json` (project) or global config if present — don't clobber it.
+2. Read the existing `.arccode/arccode.json` (project) or global config if present — don't clobber it.
 3. Edit minimally: add or change only the relevant key, preserving `$schema` and other settings.
 4. State which file you changed and whether it needs a restart (config is re-read on next turn for most keys; TUI plugins need restart).
 

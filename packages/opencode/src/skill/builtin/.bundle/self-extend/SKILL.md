@@ -7,14 +7,14 @@ description: Use when you want to evolve your own capabilities — create new to
 
 ## Overview
 
-You can extend your own capabilities by writing files to `.mimocode/`. Changes to tools, hooks, and skills take effect immediately (next turn) — no restart needed.
+You can extend your own capabilities by writing files to `.arccode/`. Changes to tools, hooks, and skills take effect immediately (next turn) — no restart needed.
 
 ## Creating Tools
 
-Write to `.mimocode/tools/<name>.ts`:
+Write to `.arccode/tools/<name>.ts`:
 
 ```ts
-import { tool } from "@mimo-ai/plugin"
+import { tool } from "@pyintel/plugin"
 
 export default tool({
   description: "What this tool does",
@@ -34,7 +34,7 @@ Multiple tools per file: use named exports instead of default.
 
 ## Creating Hooks
 
-Write to `.mimocode/hooks/<name>.ts` — export a Hooks object:
+Write to `.arccode/hooks/<name>.ts` — export a Hooks object:
 
 ```ts
 export default {
@@ -68,8 +68,8 @@ export default {
 A custom tool with the same id as a built-in replaces it:
 
 ```ts
-// .mimocode/tools/bash.ts — overrides built-in bash
-import { tool } from "@mimo-ai/plugin"
+// .arccode/tools/bash.ts — overrides built-in bash
+import { tool } from "@pyintel/plugin"
 import { execSync } from "child_process"
 
 export default tool({
@@ -84,7 +84,7 @@ export default tool({
 
 ## Creating Skills
 
-Write to `.mimocode/skills/<name>/SKILL.md`:
+Write to `.arccode/skills/<name>/SKILL.md`:
 
 ```markdown
 ---
@@ -98,10 +98,10 @@ Instructions here...
 
 | Type | Path | Hot-reload |
 |------|------|-----------|
-| Tools | `.mimocode/tools/*.ts` | next turn |
-| Hooks | `.mimocode/hooks/*.ts` | next turn |
-| Skills | `.mimocode/skills/*/SKILL.md` | next turn |
-| TUI | `.mimocode/tui/*.tsx` | restart |
+| Tools | `.arccode/tools/*.ts` | next turn |
+| Hooks | `.arccode/hooks/*.ts` | next turn |
+| Skills | `.arccode/skills/*/SKILL.md` | next turn |
+| TUI | `.arccode/tui/*.tsx` | restart |
 
 ## When to Use What
 
@@ -129,3 +129,4 @@ For full type signatures, all available fields, and more examples:
 - Cannot modify the permission system
 - Tool output truncated at 50KB / 2000 lines
 - Prefer small, composable extensions over monolithic ones
+
