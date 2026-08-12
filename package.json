@@ -93,7 +93,7 @@
     "oxlint": "1.60.0",
     "oxlint-tsgolint": "0.21.0",
     "prettier": "3.6.2",
-    "semver": "^7.6.0",
+    "semver": "7.8.5",
     "sst": "3.18.10",
     "turbo": "2.8.13"
   },
@@ -130,7 +130,21 @@
   ],
   "overrides": {
     "@types/bun": "catalog:",
-    "@types/node": "catalog:"
+    "@types/node": "catalog:",
+    "fast-xml-parser": "latest",
+    "protobufjs": "latest",
+    "js-yaml": "latest",
+    "ws": "latest",
+    "turbo": "latest",
+    "@modelcontextprotocol/sdk": "latest",
+    "fast-uri": "latest",
+    "builder-util-runtime": "latest",
+    "react-router": "latest",
+    "hono": "latest",
+    "vite": "latest",
+    "shell-quote": "latest",
+    "@remix-run/router": "latest",
+    "find-my-way": "latest"
   },
   "patchedDependencies": {
     "@npmcli/agent@4.0.0": "patches/@npmcli%2Fagent@4.0.0.patch",
