@@ -7,7 +7,7 @@ import path from "path"
 import { spawnSync } from "child_process"
 import { parseUrdf } from "./urdf-parse"
 import { HardwareDescriptorSchema } from "../robotics/descriptor"
-import jsYaml from "js-yaml"
+import * as jsYaml from "js-yaml"
 
 const EnvelopeSchema = z.object({
   ok: z.boolean(),
