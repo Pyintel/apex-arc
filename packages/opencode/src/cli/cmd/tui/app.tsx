@@ -909,9 +909,9 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
                     try {
                       const rootPaths = [
                         path.join(os.homedir(), ".arc"),
+                        path.join(os.homedir(), ".mimo"),
                         path.join(os.homedir(), ".config", "arc"),
-                        path.join(os.homedir(), ".config", "arc"),
-                        path.join(os.homedir(), ".arc"),
+                        path.join(os.homedir(), ".config", "mimo"),
                         path.join(process.cwd(), ".dev-home", "data"),
                       ];
                       
