@@ -590,13 +590,10 @@
     },
   },
   "trustedDependencies": [
+    "electron",
     "sharp",
     "esbuild",
-    "tree-sitter-powershell",
     "protobufjs",
-    "electron",
-    "web-tree-sitter",
-    "tree-sitter-bash",
   ],
   "patchedDependencies": {
     "solid-js@1.9.10": "patches/solid-js@1.9.10.patch",
