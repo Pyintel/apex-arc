@@ -133,7 +133,7 @@
     "@types/node": "catalog:",
     "fast-xml-parser": "latest",
     "protobufjs": "latest",
-    "js-yaml": "latest",
+    "js-yaml": "^3.14.1",
     "ws": "latest",
     "turbo": "latest",
     "@modelcontextprotocol/sdk": "latest",
