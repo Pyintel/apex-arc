@@ -116,7 +116,13 @@ export function retryable(error: Err) {
     // (e.g. thinkingConfig on a model/version that doesn't support thinking, or
     // reasoning parts in history). Retry once — the next attempt will have
     // reasoning parts stripped from history (see transform.ts normalizeMessages).
-    if (status === 400 && error.data.responseBody?.includes("INVALID_ARGUMENT")) {
+    const isInvalidArgument =
+      status === 400 &&
+      (error.data.responseBody?.includes("INVALID_ARGUMENT") ||
+        error.data.responseBody?.toLowerCase().includes("invalid argument") ||
+        error.data.message?.toLowerCase().includes("invalid argument") ||
+        error.data.message?.toLowerCase().includes("invalid_argument"))
+    if (isInvalidArgument) {
       return "Retrying after stripping unsupported context (INVALID_ARGUMENT)"
     }
     // 5xx errors are transient server failures and should always be retried,

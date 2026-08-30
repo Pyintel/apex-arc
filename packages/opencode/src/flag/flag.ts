@@ -169,8 +169,7 @@ export const Flag = {
   ARC_EXPERIMENTAL_TOKEN_EFFICIENCY_HEURISTIC: truthy("ARC_EXPERIMENTAL_TOKEN_EFFICIENCY_HEURISTIC"),
   ARC_EXPERIMENTAL_OUTPUT_TOKEN_MAX: number(process.env["ARC_EXPERIMENTAL_OUTPUT_TOKEN_MAX"] ?? ""),
   ARC_EXPERIMENTAL_OXFMT: ARC_EXPERIMENTAL || truthy("ARC_EXPERIMENTAL_OXFMT"),
-  ARC_EXPERIMENTAL_LSP_TY: truthy("ARC_EXPERIMENTAL_LSP_TY"),
-  ARC_EXPERIMENTAL_LSP_TOOL: ARC_EXPERIMENTAL || truthy("ARC_EXPERIMENTAL_LSP_TOOL"),
+  ARC_EXPERIMENTAL_LSP_TOOL: !falsy(process.env["ARC_EXPERIMENTAL_LSP_TOOL"] ?? "true"),
   // Defaults to OFF (opt-in): the Orchestrator primary mode — a general
   // coordinator that delegates to child sessions via the `session` tool, with a
   // global singleton workspace and child permission-approval routing. Enable with
