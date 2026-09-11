@@ -192,7 +192,7 @@
     "quickjs-emscripten-core": "0.32.0",
     "remeda": "catalog:",
     "semver": "^7.6.3",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "shell-quote": "^1.8.3",
     "solid-js": "catalog:",
     "strip-ansi": "7.1.2",
